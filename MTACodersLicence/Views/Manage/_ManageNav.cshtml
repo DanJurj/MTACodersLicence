@@ -1,4 +1,6 @@
-﻿@using MTACodersLicence.Views.Manage
+﻿@using Microsoft.AspNetCore.Identity
+@using MTACodersLicence.Models
+@using MTACodersLicence.Views.Manage
 @inject SignInManager<ApplicationUser> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
@@ -11,6 +13,6 @@
     {
         <li class="@ManageNavPages.ExternalLoginsNavClass(ViewContext)"><a asp-action="ExternalLogins">External logins</a></li>
     }
-    <li class="@ManageNavPages.TwoFactorAuthenticationNavClass(ViewContext)"><a asp-action="TwoFactorAuthentication">Two-factor authentication</a></li>
+    <li class="@ManageNavPages.TwoFactorAuthenticationNavClass(ViewContext)"><a asp-action="ListGroups">My Groups</a></li>
 </ul>
 

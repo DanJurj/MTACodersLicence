@@ -1,4 +1,5 @@
 ﻿body {
+    font-family: 'Roboto', sans-serif;
     padding-top: 50px;
     padding-bottom: 20px;
 }
@@ -31,5 +32,106 @@
     /* Hide captions */
     .carousel-caption {
         display: none;
+    }
+}
+
+
+
+/*Navigation bar effects*/
+small {
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.4);
+}
+
+
+
+/* NAVIGATION */
+nav {
+    margin: 0 auto;
+    background: #fff;
+    box-shadow: 0px 1px 0px black;
+}
+
+    nav ul {
+        list-style: none;
+        text-align: center;
+    }
+
+        nav ul li {
+            display: inline-block;
+        }
+
+            nav ul li a {
+                display: block;
+                padding: 15px;
+                text-decoration: none;
+                color: black;
+                font-weight: 600;
+                margin: 0 10px;
+            }
+
+                nav ul li a,
+                nav ul li a:after,
+                nav ul li a:before {
+                    transition: all .5s;
+                }
+
+                    nav ul li a:hover {
+                        color: #555;
+                    }
+
+    /* Circle */
+    nav.circle ul li a {
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+        nav.circle ul li a:after {
+            display: block;
+            position: absolute;
+            margin: 0;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            content: '.';
+            color: transparent;
+            width: 1px;
+            height: 1px;
+            border-radius: 50%;
+            background: transparent;
+        }
+
+        nav.circle ul li a:hover:after {
+            -webkit-animation: circle 1.5s ease-in forwards;
+        }
+
+/* Keyframes */
+@-webkit-keyframes circle {
+    0% {
+        width: 1px;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        margin: auto;
+        height: 1px;
+        z-index: -1;
+        background: #eee;
+        border-radius: 100%;
+    }
+
+    100% {
+        background: #aaa;
+        height: 5000%;
+        width: 5000%;
+        z-index: -1;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+        border-radius: 0;
     }
 }

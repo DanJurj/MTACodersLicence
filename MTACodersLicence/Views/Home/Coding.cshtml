@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Editor</title>
+    <style type="text/css" media="screen">
+        .ace_editor {
+            position: relative !important;
+            border: 1px solid lightgray;
+            margin: auto;
+            height: 800px;
+        }
+    </style>
+    <link href="~/lib/bootstrap/dist/css/bootstrap-grid.css" rel="stylesheet" />
+    <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+</head>
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <p>
+                    Using the JavaScript language, have the function LongestWord(sen) take the sen parameter being passed and return the largest word in the string.
+                    If there are two or more words that are the same length, return the first word from the string with that length.
+                    Ignore punctuation and assume sen will not be empty.
+                </p>
+            </div>
+            <div class="col-md-6">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <h3>Solution:</h3>
+                        </div>
+                        <div class="col">
+                            <form class="form">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col">
+                                            <label for="mode" class="control-label"><h3>Language:</h3></label>
+                                        </div>
+                                        <div class="col">
+                                            <select id="mode" class="form-control" style="background-color:yellowgreen">
+                                                <option>C (gcc)</option>
+                                                <option>C++ (g++)</option>
+                                                <option>Java (OpenJDK)</option>
+                                                <option>Python</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <form action="/Home/Index" method="post" id="form">
+                    <pre id="editor" name="editor">
+                    </pre>
+                    <textarea id="code" name="code" style="display:none"></textarea>
+                    <input type="submit" value="run" onclick="run();" class="btn btn-success float-right" style="width:80px" />
+                    <input type="submit" value="submit" onclick="submit();" class="btn btn-warning float-right" style="margin-right:20px; width:80px" />
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        var cSource = "\
+#include <stdio.h>\n\
+\n\
+int main(void) {\n\
+                        printf(\"hello, world\\n\");\n\
+                        return 0;\n\
+}\n";
+        document.getElementById(editor).value = cSource;
+    </script>
+    <script src="~/lib/Ace/src/ace.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script>
+        var editor = ace.edit("editor");
+        editor.setTheme("ace/theme/dracula");
+        editor.session.setMode("ace/mode/c_cpp");
+        function run() {
+            var editor = ace.edit("editor");
+            var code = editor.getSession().getValue();
+            document.getElementById("code").value = code;
+        }
+    </script>
+
+</body>
+</html>

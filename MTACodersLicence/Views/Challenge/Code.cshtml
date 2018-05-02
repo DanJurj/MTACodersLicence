@@ -1,0 +1,105 @@
+﻿@model MTACodersLicence.Models.ChallengeModel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Editor</title>
+    <style type="text/css" media="screen">
+        .ace_editor {
+            position: relative !important;
+            border: 1px solid lightgray;
+            margin: auto;
+            height: 800px;
+        }
+    </style>
+    <link href="~/lib/bootstrap/dist/css/bootstrap-grid.css" rel="stylesheet" />
+    <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="row">
+        <div class="col-md-6">
+            <h3 style="color: rebeccapurple">
+                @Html.DisplayFor(m => m.Name)
+            </h3>
+        </div>
+        <div class="col-md-6">
+            <h3 style="color: rebeccapurple">
+                Solution:
+            </h3>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 table-bordered">
+                <h4>@Html.DisplayNameFor(m => m.Desciption) :</h4>
+                <p>@Html.DisplayFor(m => m.Desciption)</p>
+            </div>
+            <div class="col-md-6 table-bordered">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h3>Language:</h3>
+                    </div>
+                    <div class="col">
+                        <form class="form">
+                            <div class="form-group">
+                                <select id="mode" class="form-control" style="background-color: blanchedalmond; float: right">
+                                    <option>C (gcc)</option>
+                                    <option>C++ (g++)</option>
+                                    <option>Java (OpenJDK)</option>
+                                    <option>Python</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <form action="/Challenge/Code" method="post" id="form">
+                    <pre id="editor" name="editor">
+#include&lt;stdio.h&gt;
+int main(void) 
+{
+    int d;
+    scanf(\"%d\",&d);
+    printf(\"%d\",d);
+    return 0;
+}
+                    </pre>
+                    <textarea id="code" name="code" style="display: none"></textarea>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>Input</h4>
+                            <textarea id="input" name="input" cols="30"></textarea>
+                        </div>
+                        <div class="col-md-6 table-bordered">
+                            <h4>Output</h4>
+                            <h5 style="color: blue">STDOUT: @ViewData["stdout"] </h5>
+                            <h5 style="color: red">STDERR: @ViewData["stderr"] </h5>
+                            <h5 style="color: red">ERROR: @ViewData["error"] </h5>
+                            <p>@ViewData["result"]</p>
+                        </div>
+                    </div>
+                    <input type="submit" value="Run Input" onclick="run();" class="btn btn-success" style="width: 120px; margin-bottom: 5px" />
+                    <input type="submit" value="Run Tests" onclick="run();" class="btn btn-danger" style="width: 120px; margin-bottom: 5px" />
+                    <input type="submit" value="Submit Code" onclick="submit();" class="btn btn-warning" style="margin-right: 20px; width: 120px; margin-bottom: 5px" />
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/Ace/src/ace.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script>
+        var editor = ace.edit("editor");
+        editor.setTheme("ace/theme/dracula");
+        editor.session.setMode("ace/mode/c_cpp");
+
+        function run() {
+            var editor = ace.edit("editor");
+            var code = editor.getSession().getValue();
+            document.getElementById("code").value = code;
+        }
+    </script>
+
+</body>
+</html>

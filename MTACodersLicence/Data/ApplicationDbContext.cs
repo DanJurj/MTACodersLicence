@@ -15,6 +15,8 @@ namespace MTACodersLicence.Data
         {
         }
 
+        public DbSet<GroupModel> Groups { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -22,5 +24,11 @@ namespace MTACodersLicence.Data
             // For example, you can rename the ASP.NET Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);
         }
+
+        public DbSet<MTACodersLicence.Models.GroupItem> GroupItems { get; set; }
+
+        public DbSet<MTACodersLicence.Models.ChallengeModel> Challenges { get; set; }
+
+        public DbSet<MTACodersLicence.Models.TestModel> Tests { get; set; }
     }
 }
