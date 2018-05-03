@@ -31,23 +31,45 @@
     </div>
     <div class="container">
         <div class="row">
-            <div class="col-md-6 table-bordered">
+            <div class="col-md-6 table-bordered" style="background-color: azure">
                 <h4>@Html.DisplayNameFor(m => m.Desciption) :</h4>
-                <p>@Html.DisplayFor(m => m.Desciption)</p>
+                <p style="white-space:pre-wrap">@Html.DisplayFor(m => m.Desciption)</p>
             </div>
             <div class="col-md-6 table-bordered">
-                <div class="row">
-                    <div class="col-md-6">
+                <div class="row table-bordered">
+                    <div class="col-md-3">
                         <h3>Language:</h3>
                     </div>
-                    <div class="col">
+                    <div class="col-md-3">
                         <form class="form">
                             <div class="form-group">
-                                <select id="mode" class="form-control" style="background-color: blanchedalmond; float: right">
-                                    <option>C (gcc)</option>
-                                    <option>C++ (g++)</option>
-                                    <option>Java (OpenJDK)</option>
+                                <select id="mode" class="form-control" style="background-color: blanchedalmond; float: right" onchange="changeLanguage()">
+                                    <option>C / C++</option>
+                                    <option>Java</option>
                                     <option>Python</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-3">
+                        <h3>Theme:</h3>
+                    </div>
+                    <div class="col-md-3">
+                        <form class="form">
+                            <div class="form-group">
+                                <select id="theme" class="form-control" style="background-color:cornsilk; float: right" onchange="changeTheme()">
+                                    <option>Ambiance</option>
+                                    <option>Chaos</option>
+                                    <option>Chrome</option>
+                                    <option>Clouds</option>
+                                    <option>Cobalt</option>
+                                    <option>Dracula</option>
+                                    <option>Dreamweaver</option>
+                                    <option>Eclipse</option>
+                                    <option>Github</option>
+                                    <option>Sql Server</option>
+                                    <option>Terminal</option>
+                                    <option>XCode</option>
                                 </select>
                             </div>
                         </form>
@@ -60,25 +82,25 @@
 int main(void) 
 {
     int d;
-    scanf(\"%d\",&d);
-    printf(\"%d\",d);
+    scanf("%d",&d);
+    printf("%d",d);
     return 0;
 }
                     </pre>
                     <textarea id="code" name="code" style="display: none"></textarea>
-                    <div class="row">
+                    <div class="row table-bordered">
                         <div class="col-md-6">
                             <h4>Input</h4>
                             <textarea id="input" name="input" cols="30"></textarea>
                         </div>
                         <div class="col-md-6 table-bordered">
                             <h4>Output</h4>
-                            <h5 style="color: blue">STDOUT: @ViewData["stdout"] </h5>
-                            <h5 style="color: red">STDERR: @ViewData["stderr"] </h5>
-                            <h5 style="color: red">ERROR: @ViewData["error"] </h5>
-                            <p>@ViewData["result"]</p>
+                            <h5 style="color: blue">stdout: @ViewData["stdout"] </h5>
+                            <h6 style="color: red">stderr: @ViewData["stderr"] </h6>
+                            <h6 style="color: red">error: @ViewData["error"] </h6>
                         </div>
                     </div>
+                    <input type="hidden" name="language" id="language" value="0" />
                     <input type="submit" value="Run Input" onclick="run();" class="btn btn-success" style="width: 120px; margin-bottom: 5px" />
                     <input type="submit" value="Run Tests" onclick="run();" class="btn btn-danger" style="width: 120px; margin-bottom: 5px" />
                     <input type="submit" value="Submit Code" onclick="submit();" class="btn btn-warning" style="margin-right: 20px; width: 120px; margin-bottom: 5px" />
@@ -91,14 +113,92 @@ int main(void)
     <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
     <script>
         var editor = ace.edit("editor");
-        editor.setTheme("ace/theme/dracula");
+        editor.setTheme("ace/theme/ambiance");
         editor.session.setMode("ace/mode/c_cpp");
 
         function run() {
             var editor = ace.edit("editor");
             var code = editor.getSession().getValue();
-            document.getElementById("code").value = code;
+            var code2 = code.split('"').join("\\\"");
+            document.getElementById("code").value = code2;
         }
+
+        //functie schimbare limbaj de programare
+        function changeLanguage() {
+            var pos = document.getElementById("mode").options.selectedIndex;
+            document.getElementById("language").value = pos;  //trimit la server varianta aleasa impreuna cu codul
+            switch (pos) {
+                case 0: editor.session.setMode("ace/mode/c_cpp");
+                    editor.setValue("#include<stdio.h>\n\
+int main(void) \n\
+{\n\
+    int d; \n\
+    scanf(\"%d\",&d); \n\
+    printf(\"%d\",d); \n\
+    return 0; \n\
+}");
+                    break;
+
+                case 1: editor.session.setMode("ace/mode/java");
+                    editor.setValue("\
+public class Solution {\n\
+\
+    public static void main(String[] args) {\n\
+        // Prints \"Hello, World\" to the terminal window.\n\
+        System.out.println(\"Hello, World\");\n\
+    }\n\
+\
+}");
+                    break;
+                case 2: editor.session.setMode("ace/mode/python");
+                    editor.setValue("print(\"Goodbye, World!\")");
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        //functie schimbare tema
+        function changeTheme() {
+            var pos = document.getElementById("theme").options.selectedIndex;
+            switch (pos) {
+                case 0: editor.setTheme("ace/theme/ambiance");
+                    break;
+                case 1: editor.setTheme("ace/theme/chaos");
+                    break;
+                case 2: editor.setTheme("ace/theme/chrome");
+                    break;
+                case 3: editor.setTheme("ace/theme/clouds");
+                    break;
+                case 4: editor.setTheme("ace/theme/cobalt");
+                    break;
+                case 5: editor.setTheme("ace/theme/dracula");
+                    break;
+                case 6: editor.setTheme("ace/theme/dreamweaver");
+                    break;
+                case 7: editor.setTheme("ace/theme/eclipse");
+                    break;
+                case 8: editor.setTheme("ace/theme/github");
+                    break;
+                case 9: editor.setTheme("ace/theme/sqlserver");
+                    break;
+                case 10: editor.setTheme("ace/theme/terminal");
+                    break;
+                case 11: editor.setTheme("ace/theme/xcode");
+                    break;
+                default:
+                    break;
+            }
+        }
+
+
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "https://www.codecademy.com/", false);
+        xhr.send();
+
+        console.log(xhr.status);
+        console.log(xhr.statusText);
     </script>
 
 </body>

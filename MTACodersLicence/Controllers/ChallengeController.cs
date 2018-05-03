@@ -208,6 +208,18 @@ namespace MTACodersLicence.Controllers
             return View();
         }
 
+        public IActionResult SelectLanguage(int? id)
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult SelectLanguage(int? id, int? pos)
+        {
+
+            return RedirectToAction(nameof(Code));
+        }
+
         [Authorize]
         public async Task<IActionResult> Code(int? id)
         {
@@ -220,19 +232,34 @@ namespace MTACodersLicence.Controllers
         }
 
         [HttpPost]
-        public IActionResult Code(string code, string input)
+        public IActionResult Code(string code, string input, int? language)
         {
             ViewData["Message"] = "Your application description page.";
-
-            string url = "https://run.glot.io/languages/cpp/latest";
-            string data = null;
+            string filename = null, type = null;
+            switch (language)
+            {
+                case 0:
+                    filename = "source.cpp";
+                    type = "cpp";
+                    break;
+                case 1:
+                    filename = "Solution.java";
+                    type = "java";
+                    break;
+                case 2:
+                    filename = "source.py";
+                    type = "python";
+                    break;
+            }
+            string url = "https://run.glot.io/languages/" + type + "/latest";
+            string data;
             if (input != null)
             {
-                data = "{\"stdin\": \"" + input + "\" , \"files\": [{\"name\": \"source.cpp\", \"content\": \"" + code + "\"}]}";
+                data = "{\"stdin\": \"" + input + "\" , \"files\": [{\"name\": \"" + filename + "\", \"content\": \"" + code + "\"}]}";
             }
             else
             {
-                data = "{\"files\": [{\"name\": \"source.cpp\", \"content\": \"" + code + "\"}]}";
+                data = "{\"files\": [{\"name\": \"" + filename + "\", \"content\": \"" + code + "\"}]}";
             }
 
             WebRequest myReq = WebRequest.Create(url);
@@ -256,17 +283,12 @@ namespace MTACodersLicence.Controllers
             Stream receiveStream = wr.GetResponseStream();
             StreamReader reader = new StreamReader(receiveStream, Encoding.UTF8);
             string content = reader.ReadToEnd();
-            //Response.Write(content);
-            string[] response = content.Split("stdout\":\"");
-            //string stdout = response[0].Split(":")[1];
-            //string stderr = response[1].Split(":")[1].Split("\"")[1];
-            //string error = response[2];
-            //string stdout2 = stdout.Split("\"")[1];
-           // ResponseModel response = JsonConvert.DeserializeObject<ResponseModel>(content);
-            //ViewData["stdout"] = stdout2;
-            //ViewData["stderr"] = stderr;
-            //ViewData["error"] = error;
-            ViewData["result"] = content;
+            string stdout = content.Split("stdout\":\"")[1].Split("\"")[0];
+            string stderr = content.Split("stderr\":\"")[1].Split(",\"error")[0];
+            string error = content.Split("error\":\"")[1].Split("\"}")[0];
+            ViewData["stdout"] = stdout;
+            ViewData["stderr"] = stderr;
+            ViewData["error"] = error;
             return View();
         }
     }
