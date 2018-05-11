@@ -1,0 +1,78 @@
+﻿@model MTACodersLicence.Models.ChallengeModels.BatteryModel
+
+@{
+    ViewData["Title"] = "Edit Battery";
+}
+
+<h2>Edit</h2>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="IsPublic" /> @Html.DisplayNameFor(model => model.IsPublic)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group" hidden>
+                <input asp-for="ChallengeId" class="control-label" value="@Model.ChallengeId" />
+            </div>
+            <div class="form-group">
+                <a asp-action="Index" asp-route-challengeId="@Model.ChallengeId" class="btn btn-default">Back</a>
+                <input type="submit" value="Save" class="btn btn-success" />
+            </div>
+        </form>
+    </div>
+    <div class="col-md-8">
+        <dl>
+            <dt>
+                @Html.DisplayNameFor(model => model.Tests)  
+                <a class="btn btn-success" style="float: right" asp-controller="Test" asp-action="Create" asp-route-batteryId="@Model.Id">Add New Test</a>
+            </dt>
+            <dd>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Input</th>
+                            <th>Expected Output</th>
+                            <th>Points</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Tests != null)
+                        {
+                            foreach (var test in Model.Tests)
+                            {
+                                <tr>
+                                    <td>@test.Input</td>
+                                    <td>@test.ExpectedOutput</td>
+                                    <td>@test.Points</td>
+                                    <td>
+                                        <a class="btn btn-warning" asp-controller="Test" asp-action="Edit" asp-route-id="@test.Id">Edit</a>
+                                        <a class="btn btn-danger" asp-controller="Test" asp-action="Delete" asp-route-id="@test.Id">Delete</a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </dd>
+        </dl>
+    </div>
+</div>
+
+<div>
+
+</div>
+

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MTACodersLicence.Models;
+using MTACodersLicence.Models.ChallengeModels;
 
 namespace MTACodersLicence.Data
 {
@@ -30,5 +31,7 @@ namespace MTACodersLicence.Data
         public DbSet<MTACodersLicence.Models.ChallengeModel> Challenges { get; set; }
 
         public DbSet<MTACodersLicence.Models.TestModel> Tests { get; set; }
+
+        public DbSet<MTACodersLicence.Models.ChallengeModels.BatteryModel> Batteries { get; set; }
     }
 }

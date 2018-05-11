@@ -1,0 +1,50 @@
+﻿@model MTACodersLicence.Models.TestModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>Edit</h2>
+
+<h4>TestModel</h4>
+<hr />
+<div class="row">
+
+    <form asp-action="Edit">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="Id" />
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="Input" class="control-label"></label>
+                <textarea asp-for="Input" class="form-control" rows="5"></textarea>
+                <span asp-validation-for="Input" class="text-danger"></span>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="Points" class="control-label"></label>
+                        <input asp-for="Points" class="form-control" />
+                        <span asp-validation-for="Points" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="BatteryId" class="control-label"></label>
+                        <select asp-for="BatteryId" class="form-control" asp-items="ViewBag.BatteryId"></select>
+                        <span asp-validation-for="BatteryId" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <a asp-action="Index" class="btn btn-default" asp-route-batteryId="@Model.BatteryId">Back to List</a>
+                <input type="submit" value="Save" class="btn btn-success"/>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="ExpectedOutput" class="control-label"></label>
+                <textarea asp-for="ExpectedOutput" class="form-control" rows="5"></textarea>
+                <span asp-validation-for="ExpectedOutput" class="text-danger"></span>
+            </div>
+        </div>
+    </form>
+</div>
+

@@ -11,9 +11,10 @@ using System;
 namespace WebApplication5.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180508111219_addedBatteries")]
+    partial class addedBatteries
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -192,8 +193,6 @@ namespace WebApplication5.Data.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<string>("ShortDescription");
-
                     b.Property<string>("Tasks");
 
                     b.Property<DateTime>("Time");
@@ -214,13 +213,11 @@ namespace WebApplication5.Data.Migrations
 
                     b.Property<bool>("IsPublic");
 
-                    b.Property<string>("Name");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ChallengeId");
 
-                    b.ToTable("Batteries");
+                    b.ToTable("BatteryModel");
                 });
 
             modelBuilder.Entity("MTACodersLicence.Models.GroupItem", b =>

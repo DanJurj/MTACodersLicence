@@ -16,6 +16,7 @@ using Newtonsoft.Json;
 
 namespace MTACodersLicence.Controllers
 {
+    [Authorize]
     public class ChallengeController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -27,16 +28,47 @@ namespace MTACodersLicence.Controllers
         }
 
         // GET: Challenge
-        public async Task<IActionResult> Index(string searchString)
+        public async Task<IActionResult> Index(string searchString, string type, string sortOrder)
         {
-
-            var applicationDbContext = _context.Challenges.Include(c => c.Tests).
-                                                                Where(c => c.ApplicationUserId == _userManager.GetUserId(User));
+            var challenges = _context.Challenges.Where(c => c.ApplicationUserId == _userManager.GetUserId(User));
+            if (!String.IsNullOrEmpty(type))
+            {
+                if (type.Equals("my"))
+                {
+                    challenges =
+                        _context.Challenges.Where(c => c.ApplicationUserId == _userManager.GetUserId(User));
+                }
+                else if (type.Equals("all"))
+                {
+                    challenges =
+                        _context.Challenges.Where(c => c.ApplicationUserId == _userManager.GetUserId(User));
+                }
+            }
+            //search
             if (!String.IsNullOrEmpty(searchString))
             {
-                applicationDbContext = applicationDbContext.Where(s => s.Name.Contains(searchString));
+                challenges = challenges.Where(s => s.Name.Contains(searchString));
             }
-            return View(await applicationDbContext.ToListAsync());
+            //ordonare
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["TimeSortParm"] = sortOrder == "Time" ? "time_desc" : "Time";
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    challenges = challenges.OrderByDescending(s => s.Name);
+                    break;
+                case "Time":
+                    challenges = challenges.OrderBy(s => s.Time);
+                    break;
+                case "time_desc":
+                    challenges = challenges.OrderByDescending(s => s.Time);
+                    break;
+                default:
+                    challenges = challenges.OrderBy(s => s.Name);
+                    break;
+            }
+
+            return View(await challenges.AsNoTracking().ToListAsync());
         }
 
         // GET: Challenge/Details/5
@@ -49,7 +81,8 @@ namespace MTACodersLicence.Controllers
 
             var challengeModel = await _context.Challenges
                 .Include(c => c.ApplicationUser)
-                .Include(c => c.Tests)
+                .Include(c => c.Batteries)
+                    .ThenInclude(c => c.Tests)
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (challengeModel == null)
             {
@@ -62,14 +95,13 @@ namespace MTACodersLicence.Controllers
         // GET: Challenge/Create
         public IActionResult Create()
         {
-            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
         // POST: Challenge/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Desciption,Time,Hint")] ChallengeModel challengeModel)
+        public async Task<IActionResult> Create([Bind("Name,ShortDescription,Desciption,Tasks,Time,Hint")] ChallengeModel challengeModel)
         {
             try
             {
@@ -87,7 +119,6 @@ namespace MTACodersLicence.Controllers
                                              "Try again, and if the problem persists " +
                                              "see your system administrator.");
             }
-            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", challengeModel.ApplicationUserId);
             return View(challengeModel);
         }
 
@@ -104,7 +135,6 @@ namespace MTACodersLicence.Controllers
             {
                 return NotFound();
             }
-            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", challengeModel.ApplicationUserId);
             return View(challengeModel);
         }
 
@@ -113,13 +143,9 @@ namespace MTACodersLicence.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Desciption,Time,Hint,ApplicationUserId")] ChallengeModel challengeModel)
+        public async Task<IActionResult> Edit([Bind("Id,Name,ShortDescription,Desciption,Tasks,Time,Hint,ApplicationUserId")] ChallengeModel challengeModel)
         {
-            if (id != challengeModel.Id)
-            {
-                return NotFound();
-            }
-
+            challengeModel.ApplicationUserId = _userManager.GetUserId(User);
             if (ModelState.IsValid)
             {
                 try
@@ -140,7 +166,6 @@ namespace MTACodersLicence.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", challengeModel.ApplicationUserId);
             return View(challengeModel);
         }
 
@@ -154,6 +179,7 @@ namespace MTACodersLicence.Controllers
 
             var challengeModel = await _context.Challenges
                 .Include(c => c.ApplicationUser)
+                .Include(c => c.Batteries)
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (challengeModel == null)
             {
@@ -169,6 +195,16 @@ namespace MTACodersLicence.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var challengeModel = await _context.Challenges.SingleOrDefaultAsync(m => m.Id == id);
+            var batteries = _context.Batteries.Where(m => m.ChallengeId == id);
+            foreach (var battery in batteries)
+            {
+                var tests = _context.Tests.Where(m => m.BatteryId == battery.Id);
+                foreach (var test in tests)
+                {
+                    _context.Tests.Remove(test);
+                }
+                _context.Batteries.Remove(battery);
+            }
             _context.Challenges.Remove(challengeModel);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -204,7 +240,7 @@ namespace MTACodersLicence.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ChallengeId"] = testModel.ChallengeId;
+            ViewData["ChallengeId"] = testModel.BatteryId;
             return View();
         }
 
@@ -291,5 +327,7 @@ namespace MTACodersLicence.Controllers
             ViewData["error"] = error;
             return View();
         }
+
+
     }
 }

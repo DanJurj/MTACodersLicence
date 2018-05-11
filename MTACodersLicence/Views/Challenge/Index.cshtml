@@ -1,62 +1,50 @@
 ﻿@model IEnumerable<MTACodersLicence.Models.ChallengeModel>
 
-@{
-    ViewData["Title"] = "Index";
-}
-
-<h2>Your Challenges</h2>
-
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-success" style="float: right; margin: 25px">Create New Challenge</a>
 </p>
 <form asp-controller="Challenge" asp-action="Index" method="get">
-    <p>
-        Title: <input type="text" name="searchString">
-        <input type="submit" value="Filter" />
-    </p>
+    <h3>Search:</h3>
+    <div class="col-md-4" style="display: flex; justify-content: center">
+        <p style="margin: 7px">Name: </p> <input type="text" name="searchString" class="form-control">
+        <input type="submit" value="Search" class="btn btn-default" />
+    </div>
 </form>
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
+            <th><a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">@Html.DisplayNameFor(model => model.Name)</a></th>
+            <th><a asp-action="Index" asp-route-sortOrder="@ViewData["TimeSortParm"]">@Html.DisplayNameFor(model => model.Time) (hours)</a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Desciption)
+                @Html.DisplayNameFor(model => model.ShortDescription)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Time) (hours)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Hint)
-            </th>
-            <th></th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td style="white-space: pre-wrap">
-                @Html.DisplayFor(modelItem => item.Desciption)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Time)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Hint)
-            </td>
-            <td style="width: 100px">
-                <a asp-action="Code" asp-route-id="@item.Id">Start</a> <br />
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> <br />
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> <br />
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> <br />
-                <a asp-action="AddTest" asp-route-id="@item.Id">Add Test</a> <br />
-            </td>
-        </tr>
-    }
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Time)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ShortDescription)
+                </td>
+                <td>
+                    <div class="row">
+                        <a asp-action="Code" asp-route-id="@item.Id" class="btn btn-success">Start</a>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-default">Details</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                        <a asp-controller="Battery" asp-action="Index" asp-route-challengeId="@item.Id" class="btn btn-default">Test Batteries</a>
+                    </div>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

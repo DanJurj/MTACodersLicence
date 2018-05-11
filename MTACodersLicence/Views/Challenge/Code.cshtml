@@ -105,17 +105,22 @@ int main(void)
                     <input type="submit" value="Run Tests" onclick="run();" class="btn btn-danger" style="width: 120px; margin-bottom: 5px" />
                     <input type="submit" value="Submit Code" onclick="submit();" class="btn btn-warning" style="margin-right: 20px; width: 120px; margin-bottom: 5px" />
                 </form>
+                <button class="btn btn-success" id="runBtn" data-loading-text="Running..." onclick="run2();">
+                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Run (F9)
+                </button>
             </div>
         </div>
     </div>
 
     <script src="~/lib/Ace/src/ace.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="~/js/ide.js"></script>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
     <script>
         var editor = ace.edit("editor");
         editor.setTheme("ace/theme/ambiance");
         editor.session.setMode("ace/mode/c_cpp");
-
+        $runBtn = $('#runBtn');
         function run() {
             var editor = ace.edit("editor");
             var code = editor.getSession().getValue();
@@ -132,10 +137,10 @@ int main(void)
                     editor.setValue("#include<stdio.h>\n\
 int main(void) \n\
 {\n\
-    int d; \n\
-    scanf(\"%d\",&d); \n\
-    printf(\"%d\",d); \n\
-    return 0; \n\
+            int d; \n\
+            scanf(\"%d\",&d); \n\
+            printf(\"%d\",d); \n\
+            return 0; \n\
 }");
                     break;
 
@@ -143,15 +148,15 @@ int main(void) \n\
                     editor.setValue("\
 public class Solution {\n\
 \
-    public static void main(String[] args) {\n\
-        // Prints \"Hello, World\" to the terminal window.\n\
-        System.out.println(\"Hello, World\");\n\
-    }\n\
+            public static void main(String[] args) {\n\
+                // Prints \"Hello, World\" to the terminal window.\n\
+                System.out.println(\"Hello, World\");\n\
+            }\n\
 \
 }");
                     break;
                 case 2: editor.session.setMode("ace/mode/python");
-                    editor.setValue("print(\"Goodbye, World!\")");
+                    editor.setValue("print(\"Hello World!\")");
                     break;
                 default:
                     break;
@@ -191,14 +196,37 @@ public class Solution {\n\
             }
         }
 
+        function run2() {
+            if (editor.getValue().trim() === "") {
+                alert("Source code can't be empty.");
+                return;
+            } else {
+               // $runBtn.button("loading");
+                alert(editor.getValue());
+            }
 
+            var sourceValue = btoa(unescape(encodeURIComponent(editor.getValue())));
+            var inputValue = null;//btoa(unescape(encodeURIComponent(inputEditor.getValue())));
+            var languageId = null;//$selectLanguageBtn.val();
+            var data = {
+                source_code: sourceValue,
+                language_id: languageId,
+                stdin: inputValue
+            };
 
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", "https://www.codecademy.com/", false);
-        xhr.send();
-
-        console.log(xhr.status);
-        console.log(xhr.statusText);
+            $.ajax({
+                url: "https://run.glot.io/languages/cpp/latest",
+                type: "POST",
+                async: true,
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: function (data, textStatus, jqXHR) {
+                    console.log(`success`);
+                  //handleResult(data);
+                },
+                error: handleRunError
+            });
+        }
     </script>
 
 </body>
