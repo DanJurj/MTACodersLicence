@@ -11,9 +11,10 @@ using System;
 namespace WebApplication5.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180516190148_sad")]
+    partial class sad
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -274,13 +275,11 @@ namespace WebApplication5.Data.Migrations
 
                     b.Property<string>("Code");
 
-                    b.Property<DateTime>("Duration");
-
-                    b.Property<string>("Language");
-
                     b.Property<DateTime>("ReceiveDateTime");
 
                     b.Property<int>("Score");
+
+                    b.Property<DateTime>("TimeSpent");
 
                     b.Property<bool>("Verified");
 

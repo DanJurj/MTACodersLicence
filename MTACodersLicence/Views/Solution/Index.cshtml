@@ -1,0 +1,102 @@
+﻿@model IEnumerable<MTACodersLicence.Models.SolutionModel>
+
+@{
+    ViewData["Title"] = "Solutions";
+    var challengeId = Model.FirstOrDefault().ChallengeId;
+}
+<div class="row">
+    <h2>Solution for Challenge: @Model.FirstOrDefault().Challenge.Name</h2>
+    <a asp-controller="Challenge" asp-action="Index" class="btn btn-success">Verify all</a>
+    <a asp-controller="Challenge" asp-action="Index" class="btn btn-danger">Run anti-theft checker</a>
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Verified)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Score)
+                <a asp-action="Index" asp-route-order="scoreAsc" asp-route-challengeId="@challengeId">
+                    <span class="glyphicon glyphicon-triangle-top"></span>
+                </a>
+                <a asp-action="Index" asp-route-order="scoreDesc" asp-route-challengeId="@challengeId">
+                    <span class="glyphicon glyphicon-triangle-bottom"></span>
+                </a>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReceiveDateTime)
+                <a asp-action="Index" asp-route-order="dateAsc" asp-route-challengeId="@challengeId">
+                    <span class="glyphicon glyphicon-triangle-top"></span>
+                </a>
+                <a asp-action="Index" asp-route-order="dateDesc" asp-route-challengeId="@challengeId">
+                    <span class="glyphicon glyphicon-triangle-bottom"></span>
+                </a>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Duration)
+                <a asp-action="Index" asp-route-order="durationAsc" asp-route-challengeId="@challengeId">
+                    <span class="glyphicon glyphicon-triangle-top"></span>
+                </a>
+                <a asp-action="Index" asp-route-order="durationDesc" asp-route-challengeId="@challengeId">
+                    <span class="glyphicon glyphicon-triangle-bottom"></span>
+                </a>
+            </th>
+            <th>
+                Sent by
+                <a asp-action="Index" asp-route-order="ownerAsc" asp-route-challengeId="@challengeId">
+                    <span class="glyphicon glyphicon-triangle-top"></span>
+                </a>
+                <a asp-action="Index" asp-route-order="ownerDesc" asp-route-challengeId="@challengeId">
+                    <span class="glyphicon glyphicon-triangle-bottom"></span>
+                </a>
+            </th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Verified)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Score)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReceiveDateTime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Duration)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Owner.UserName)
+                </td>
+                <td>
+                    <form asp-controller="Solution" asp-action="Delete">
+                        <button type="button" class="btn btn-success" onclick="toggleVerify(@item.Id)">Verify</button>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-warning">Details</a>
+                        <input name="id" value="@item.Id" hidden/>
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            <tr style="display: none;" id="@item.Id">
+                @foreach (var battery in item.Challenge.Batteries)
+                {
+                    <th>@battery.Name</th>
+                    <td><a asp-action="Run" asp-route-id="@item.Id" asp-route-batteryId="@battery.Id" class="btn btn-success">Run</a></td>
+                   
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+<a asp-controller="Challenge" asp-action="Index" class="btn btn-default">Back to Challenges</a>
+<script>
+    function toggleVerify(id) {
+        var elem = document.getElementById(id);
+        $(elem).fadeToggle('fast');
+    }
+</script>

@@ -1,0 +1,81 @@
+﻿@model MTACodersLicence.Models.SolutionModel
+
+@{
+    ViewData["Title"] = "Solution Details";
+}
+
+<h2>Details</h2>
+<style type="text/css" media="screen">
+    .ace_editor {
+        position: relative !important;
+        border: 1px solid lightgray;
+        margin: auto;
+        height: 400px;
+    }
+
+    .cerintaBox {
+        border-radius: 20px;
+        padding: 12px;
+        margin-bottom: 15px;
+        background-color: beige;
+    }
+</style>
+<div>
+    <hr />
+    <div class="col-md-4">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Verified)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Verified)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Score)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Score)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.ReceiveDateTime)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.ReceiveDateTime)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Duration)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Duration)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Challenge)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Challenge.Name)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Language)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Language)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Owner)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Owner.UserName)
+            </dd>
+        </dl>
+    </div>
+    <div class="col-md-2"></div>
+    <div class="col-md-6 table-bordered">
+        <h4>Code:</h4>
+        <pre id="editor" name="editor">@Model.Code</pre>
+    </div>
+</div>
+<div>
+    <a asp-action="Index" class="btn btn-default" asp-route-challengeId="@Model.ChallengeId">Back to Solutions</a>
+</div>
+<script src="~/lib/Ace/src/ace.js"></script>
+<script src="~/js/coding.js"></script>

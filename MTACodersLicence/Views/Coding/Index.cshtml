@@ -1,0 +1,183 @@
+﻿@model MTACodersLicence.Models.ChallengeModel
+@using Newtonsoft.Json
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <style type="text/css" media="screen">
+        .ace_editor {
+            position: relative !important;
+            border: 1px solid lightgray;
+            margin: auto;
+            height: 800px;
+        }
+
+        .cerintaBox {
+            border-radius: 20px;
+            padding: 12px;
+            margin-bottom: 15px;
+            background-color: beige;
+        }
+    </style>
+    <link href="~/lib/bootstrap/dist/css/bootstrap-grid.css" rel="stylesheet" />
+    <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+    <link href="~/css/codemirror.css" rel="stylesheet" />
+    <link href="~/css/ide.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="row">
+        <div class="col-md-4">
+            <h3 style="color: rebeccapurple">
+                @Html.DisplayFor(m => m.Name)
+            </h3>
+        </div>
+        <div class="col-md-2">
+            <div class="row" style="margin-top: 10px">
+                <button type="button" class="btn btn-default btn-sm" onclick="toggleTime()">
+                    <span class="glyphicon glyphicon-time" style="font-size: 1.2em;">
+                        <p id="time" style="color: red"></p>
+                    </span>
+                </button>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="col-md-6">
+                <h3 style="color: rebeccapurple">
+                    Solution:
+                </h3>
+            </div>
+            <div class="col-md-6">
+                <p style="margin-top: 15px; margin-bottom: -2px;">Upload Source from PC:</p>
+                <input type="file" class="btn btn-warning" id="fileinput" style="margin-bottom: 5px">
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-5" id="cerinte">
+                <div class="table-bordered cerintaBox">
+                    <h4>@Html.DisplayNameFor(m => m.Desciption) :</h4>
+                    <p style="white-space: pre-wrap">@Html.DisplayFor(m => m.Desciption)</p>
+                </div>
+                <div class="table-bordered cerintaBox">
+                    <h4>@Html.DisplayNameFor(m => m.Tasks) :</h4>
+                    <p style="white-space: pre-wrap">@Html.DisplayFor(m => m.Tasks)</p>
+                </div>
+                <button id="hintBtn" class="btn btn-success" onclick="showHint()">Show Hint</button>
+                <div class="table-bordered cerintaBox" style="display: none" id="hint">
+                    <h4>@Html.DisplayNameFor(m => m.Hint) :</h4>
+                    <p style="white-space: pre-wrap">@Html.DisplayFor(m => m.Hint)</p>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <button id="hideBtn" type="button" class="btn btn-default btn-sm" onclick="hideCerinte()">
+                    <span class="glyphicon glyphicon-eye-close"></span>
+                </button>
+                <button id="showBtn" type="button" class="btn btn-default btn-sm" onclick="showCerinte()" style="display: none">
+                    <span class="glyphicon glyphicon-eye-open"></span>
+                </button>
+            </div>
+
+            <!-- Coding Part -->
+            <div class="col-md-6 table-bordered" id="codingPart">
+                <div class="row table-bordered">
+                    <div class="col-md-3">
+                        <h3>Language:</h3>
+                    </div>
+                    <div class="col-md-3">
+                        <form class="form">
+                            <div class="form-group">
+                                <select id="mode" class="form-control" style="background-color: blanchedalmond; float: right" onchange="changeLanguage()">
+                                    <option>C / C++</option>
+                                    <option>Java</option>
+                                    <option>Python</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-3">
+                        <h3>Theme:</h3>
+                    </div>
+                    <div class="col-md-3">
+                        <form class="form">
+                            <div class="form-group">
+                                <select id="theme" class="form-control" style="background-color:cornsilk; float: right" onchange="changeTheme()">
+                                    <option>Ambiance</option>
+                                    <option>Chaos</option>
+                                    <option>Chrome</option>
+                                    <option>Clouds</option>
+                                    <option>Cobalt</option>
+                                    <option>Dracula</option>
+                                    <option>Dreamweaver</option>
+                                    <option>Eclipse</option>
+                                    <option>Github</option>
+                                    <option>Sql Server</option>
+                                    <option>Terminal</option>
+                                    <option>XCode</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <form action="/Coding/Code" method="post" id="form">
+                    <input hidden value="@Model.Id" name="challengeId" />
+                    <pre id="editor" name="editor">
+                    </pre>
+                    <textarea id="code" name="code" style="display: none"></textarea>
+                    <input type="hidden" name="language" id="language" value="0" />
+                    <button type="button" value="Run Input" data-loading-text="Running..." onclick="run2();" class="btn btn-success" style="width: 120px; margin-bottom: 5px" id="runBtn">
+                        <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Run
+                    </button>
+                    <input type="submit" value="Run Tests" onclick="run();" class="btn btn-danger" style="width: 120px; margin-bottom: 5px" name="codeButton" />
+                    <input type="submit" value="Submit Code" onclick="run();" class="btn btn-warning" style="margin-right: 20px; width: 120px; margin-bottom: 5px" id="submitBtn" name="codeButton" />
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/Ace/src/ace.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="~/js/ide.js"></script>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/js/coding.js"></script>
+    <script type="text/javascript">
+        document.getElementById('fileinput').addEventListener('change', readSingleFile, false);
+
+        //
+        var hours = @Html.Raw(JsonConvert.SerializeObject(this.Model.Time.Hour));
+        var minutes = @Html.Raw(JsonConvert.SerializeObject(this.Model.Time.Minute));
+        var seconds = @Html.Raw(JsonConvert.SerializeObject(this.Model.Time.Second));
+        var x = setInterval(function () {
+
+            // Output the result in an element with id="demo"
+            document.getElementById("time").innerHTML = hours + "h " + minutes + "m " + seconds + "s ";
+            if (seconds === 0)
+                if (minutes === 0)
+                    if (hours === 0) {
+                        clearInterval(x);
+                        document.getElementById("time").innerHTML = "EXPIRED";
+                        alert("Your Time is up!");
+                    } else {
+                        hours--;
+                        minutes = 59;
+                        seconds = 59;
+                    }
+                else {
+                    minutes--;
+                    seconds = 59;
+                }
+            else {
+                seconds--;
+            }
+        }, 1000);
+
+        $(function() {
+            $('#submitBtn').click(function() {
+                return window.confirm("Sunteti sigur ca doriti sa trimiteti rezolvarea?");
+            });
+        });
+    </script>
+</body>
+</html>

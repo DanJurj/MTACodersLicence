@@ -23,6 +23,7 @@ namespace MTACodersLicence.Models
         public DateTime Time { get; set; }  
         public string Hint { get; set; }
         public ICollection<BatteryModel> Batteries { get; set; }
+        public ICollection<SolutionModel> Solutions { get; set; }
 
         public string ApplicationUserId { get; set; }
         [ForeignKey(nameof(ApplicationUserId))]

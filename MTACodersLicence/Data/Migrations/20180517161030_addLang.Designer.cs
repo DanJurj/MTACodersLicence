@@ -11,9 +11,10 @@ using System;
 namespace WebApplication5.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180517161030_addLang")]
+    partial class addLang
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -275,8 +276,6 @@ namespace WebApplication5.Data.Migrations
                     b.Property<string>("Code");
 
                     b.Property<DateTime>("Duration");
-
-                    b.Property<string>("Language");
 
                     b.Property<DateTime>("ReceiveDateTime");
 

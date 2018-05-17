@@ -4,8 +4,7 @@
     <a asp-action="Create" class="btn btn-success" style="float: right; margin: 25px">Create New Challenge</a>
 </p>
 <form asp-controller="Challenge" asp-action="Index" method="get">
-    <h3>Search:</h3>
-    <div class="col-md-4" style="display: flex; justify-content: center">
+    <div class="col-md-4" style="display: flex; justify-content: center; margin: 20px">
         <p style="margin: 7px">Name: </p> <input type="text" name="searchString" class="form-control">
         <input type="submit" value="Search" class="btn btn-default" />
     </div>
@@ -37,11 +36,12 @@
                 </td>
                 <td>
                     <div class="row">
-                        <a asp-action="Code" asp-route-id="@item.Id" class="btn btn-success">Start</a>
+                        <a asp-controller="Coding" asp-action="Index" asp-route-id="@item.Id" class="btn btn-success">Start</a>
                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
                         <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-default">Details</a>
                         <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
                         <a asp-controller="Battery" asp-action="Index" asp-route-challengeId="@item.Id" class="btn btn-default">Test Batteries</a>
+                        <a asp-controller="Solution" asp-action="Index" asp-route-challengeId="@item.Id" class="btn btn-success">Solutions</a>
                     </div>
                 </td>
             </tr>

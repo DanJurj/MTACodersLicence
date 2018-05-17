@@ -163,7 +163,9 @@ namespace MTACodersLicence.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var tests = _context.Tests.Where(b => b.BatteryId == id);
-            var batteryModel = await _context.Batteries.SingleOrDefaultAsync(m => m.Id == id);
+            var batteryModel = await _context.Batteries
+                                            .Include(m =>m.Tests)
+                                            .SingleOrDefaultAsync(m => m.Id == id);
             var challengeId = batteryModel.ChallengeId;
             foreach (var test in tests)
             {

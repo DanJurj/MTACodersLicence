@@ -11,9 +11,10 @@ using System;
 namespace WebApplication5.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180516150402_addedSolutions")]
+    partial class addedSolutions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -272,13 +273,9 @@ namespace WebApplication5.Data.Migrations
 
                     b.Property<int>("ChallengeId");
 
+                    b.Property<int?>("ChallengeModelId");
+
                     b.Property<string>("Code");
-
-                    b.Property<DateTime>("Duration");
-
-                    b.Property<string>("Language");
-
-                    b.Property<DateTime>("ReceiveDateTime");
 
                     b.Property<int>("Score");
 
@@ -288,7 +285,7 @@ namespace WebApplication5.Data.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.HasIndex("ChallengeId");
+                    b.HasIndex("ChallengeModelId");
 
                     b.ToTable("Solutions");
                 });
@@ -393,10 +390,9 @@ namespace WebApplication5.Data.Migrations
                         .WithMany()
                         .HasForeignKey("ApplicationUserId");
 
-                    b.HasOne("MTACodersLicence.Models.ChallengeModel", "Challenge")
+                    b.HasOne("MTACodersLicence.Models.ChallengeModel")
                         .WithMany("Solutions")
-                        .HasForeignKey("ChallengeId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ChallengeModelId");
                 });
 
             modelBuilder.Entity("MTACodersLicence.Models.TestModel", b =>

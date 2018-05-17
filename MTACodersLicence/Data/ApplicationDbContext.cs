@@ -33,5 +33,8 @@ namespace MTACodersLicence.Data
         public DbSet<MTACodersLicence.Models.TestModel> Tests { get; set; }
 
         public DbSet<MTACodersLicence.Models.ChallengeModels.BatteryModel> Batteries { get; set; }
+
+        public DbSet<MTACodersLicence.Models.SolutionModel> Solutions { get; set; }
+
     }
 }

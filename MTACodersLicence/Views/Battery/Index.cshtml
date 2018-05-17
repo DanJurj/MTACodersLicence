@@ -14,6 +14,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Tests)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsPublic)
+            </th>
             <th> Actions </th>
         </tr>
     </thead>
@@ -32,12 +35,21 @@
                 {
                     <td>0</td>
                 }
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id" asp-route-challengeId="@ViewData["challengeId"]" class="btn btn-warning">Edit</a>
-                        <a asp-action="Details" asp-route-id="@item.Id" asp-route-challengeId="@ViewData["challengeId"]" class="btn btn-success">Details</a>
-                        <a asp-action="Delete" asp-route-id="@item.Id" asp-route-challengeId="@ViewData["challengeId"]" class="btn btn-danger">Delete</a>
-                        <a asp-controller="Test" asp-action="Index" asp-route-batteryId="@item.Id" class="btn btn-default">Tests</a>
-                    </td>
+
+                @if (item.IsPublic)
+                {
+                    <td>Yes</td>
+                }
+                else
+                {
+                    <td>No</td>
+                }
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" asp-route-challengeId="@ViewData["challengeId"]" class="btn btn-warning">Edit</a>
+                    <a asp-action="Details" asp-route-id="@item.Id" asp-route-challengeId="@ViewData["challengeId"]" class="btn btn-success">Details</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" asp-route-challengeId="@ViewData["challengeId"]" class="btn btn-danger">Delete</a>
+                    <a asp-controller="Test" asp-action="Index" asp-route-batteryId="@item.Id" class="btn btn-default">Tests</a>
+                </td>
             </tr>
         }
     </tbody>

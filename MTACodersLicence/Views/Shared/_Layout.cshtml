@@ -33,15 +33,6 @@
                     <li><a asp-area="" asp-controller="Home" asp-action="Index" style="color: black; background-color:dodgerblue;">Home</a></li>
                     <li>
                         <div class="dropdown">
-                            <button class="dropbtn">Groups</button>
-                            <div class="dropdown-content">
-                                <a asp-controller="Challenge" asp-action="Groups" asp-route-type="my">My Groups</a>
-                                <a asp-controller="Challenge" asp-action="Groups" asp-route-type="all">All Groups</a>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="dropdown">
                             <button class="dropbtn">Challenges</button>
                             <div class="dropdown-content">
                                 <a asp-controller="Challenge" asp-action="Index" asp-route-type="my">My Challenges</a>
@@ -60,7 +51,7 @@
         @RenderBody()
         <hr />
         <footer style="text-align: center">
-            <p>&copy; 2018 - MTACodersLicence</p>
+            <p>MTACoders &copy; @DateTime.Now.Year </p>
         </footer>
     </div>
 
