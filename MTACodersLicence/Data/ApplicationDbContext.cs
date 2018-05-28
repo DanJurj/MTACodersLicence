@@ -36,5 +36,11 @@ namespace MTACodersLicence.Data
 
         public DbSet<MTACodersLicence.Models.SolutionModel> Solutions { get; set; }
 
+        public DbSet<MTACodersLicence.Models.ApplicationUser> ApplicationUser { get; set; }
+
+        public DbSet<MTACodersLicence.Models.ResultModels.ResultModel> Results { get; set; }
+
+        public DbSet<MTACodersLicence.Models.ResultModels.TestResultModel> TestResults { get; set; }
+
     }
 }

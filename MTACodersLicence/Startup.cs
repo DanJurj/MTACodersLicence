@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MTACodersLicence.Data;
 using MTACodersLicence.Models;
 using MTACodersLicence.Services;
+using Rotativa.AspNetCore;
 
 namespace MTACodersLicence
 {
@@ -63,6 +64,8 @@ namespace MTACodersLicence
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            RotativaConfiguration.Setup(env);
         }
     }
 }

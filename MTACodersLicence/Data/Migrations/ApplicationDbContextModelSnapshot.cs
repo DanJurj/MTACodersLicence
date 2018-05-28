@@ -143,6 +143,12 @@ namespace WebApplication5.Data.Migrations
 
                     b.Property<bool>("EmailConfirmed");
 
+                    b.Property<string>("FirstName")
+                        .IsRequired();
+
+                    b.Property<string>("LastName")
+                        .IsRequired();
+
                     b.Property<bool>("LockoutEnabled");
 
                     b.Property<DateTimeOffset?>("LockoutEnd");
@@ -263,6 +269,46 @@ namespace WebApplication5.Data.Migrations
                     b.ToTable("Groups");
                 });
 
+            modelBuilder.Entity("MTACodersLicence.Models.ResultModels.ResultModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("BatteryId");
+
+                    b.Property<int>("SolutionId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BatteryId");
+
+                    b.HasIndex("SolutionId");
+
+                    b.ToTable("Results");
+                });
+
+            modelBuilder.Entity("MTACodersLicence.Models.ResultModels.TestResultModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<float>("PointsGiven");
+
+                    b.Property<int>("ResultId");
+
+                    b.Property<string>("ResultedOutput");
+
+                    b.Property<int>("TestId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ResultId");
+
+                    b.HasIndex("TestId");
+
+                    b.ToTable("TestResults");
+                });
+
             modelBuilder.Entity("MTACodersLicence.Models.SolutionModel", b =>
                 {
                     b.Property<int>("Id")
@@ -276,11 +322,13 @@ namespace WebApplication5.Data.Migrations
 
                     b.Property<DateTime>("Duration");
 
+                    b.Property<float>("Grade");
+
                     b.Property<string>("Language");
 
                     b.Property<DateTime>("ReceiveDateTime");
 
-                    b.Property<int>("Score");
+                    b.Property<float>("Score");
 
                     b.Property<bool>("Verified");
 
@@ -385,6 +433,32 @@ namespace WebApplication5.Data.Migrations
                     b.HasOne("MTACodersLicence.Models.ApplicationUser", "ApplicationUser")
                         .WithMany("Groups")
                         .HasForeignKey("ApplicationUserId");
+                });
+
+            modelBuilder.Entity("MTACodersLicence.Models.ResultModels.ResultModel", b =>
+                {
+                    b.HasOne("MTACodersLicence.Models.ChallengeModels.BatteryModel", "Battery")
+                        .WithMany()
+                        .HasForeignKey("BatteryId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("MTACodersLicence.Models.SolutionModel", "Solution")
+                        .WithMany("Results")
+                        .HasForeignKey("SolutionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("MTACodersLicence.Models.ResultModels.TestResultModel", b =>
+                {
+                    b.HasOne("MTACodersLicence.Models.ResultModels.ResultModel", "Result")
+                        .WithMany("TestResults")
+                        .HasForeignKey("ResultId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("MTACodersLicence.Models.TestModel", "Test")
+                        .WithMany()
+                        .HasForeignKey("TestId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("MTACodersLicence.Models.SolutionModel", b =>

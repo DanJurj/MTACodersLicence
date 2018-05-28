@@ -2,18 +2,31 @@
 
 @{
     ViewData["Title"] = "Solutions";
-    var challengeId = Model.FirstOrDefault().ChallengeId;
+    var challengeId = ViewData["challengeId"];
+    var challengeName = ViewData["challengeName"];
 }
 <div class="row">
-    <h2>Solution for Challenge: @Model.FirstOrDefault().Challenge.Name</h2>
-    <a asp-controller="Challenge" asp-action="Index" class="btn btn-success">Verify all</a>
+    <h2>Solutions for Challenge: @challengeName</h2>
+    <a asp-action="VerifyAll" asp-route-challengeId=@challengeId class="btn btn-success" onclick="showLoading();">Verify all</a>
     <a asp-controller="Challenge" asp-action="Index" class="btn btn-danger">Run anti-theft checker</a>
+    <a asp-action="PrintIndex" asp-route-challengeId=@challengeId class="btn btn-warning">Create PDF with results</a>
+</div>
+<div id="loading" style="display: none;">
+    <div id="loadingmsg">Running Battery Tests, please wait...</div>
+    <div id="loadingover"></div>
+    <div class="loader"></div>
 </div>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Verified)
+                Sent by
+                <a asp-action="Index" asp-route-order="ownerAsc" asp-route-challengeId="@challengeId">
+                    <span class="glyphicon glyphicon-triangle-top"></span>
+                </a>
+                <a asp-action="Index" asp-route-order="ownerDesc" asp-route-challengeId="@challengeId">
+                    <span class="glyphicon glyphicon-triangle-bottom"></span>
+                </a>
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Score)
@@ -21,6 +34,15 @@
                     <span class="glyphicon glyphicon-triangle-top"></span>
                 </a>
                 <a asp-action="Index" asp-route-order="scoreDesc" asp-route-challengeId="@challengeId">
+                    <span class="glyphicon glyphicon-triangle-bottom"></span>
+                </a>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Grade)
+                <a asp-action="Index" asp-route-order="gradeAsc" asp-route-challengeId="@challengeId">
+                    <span class="glyphicon glyphicon-triangle-top"></span>
+                </a>
+                <a asp-action="Index" asp-route-order="gradeDesc" asp-route-challengeId="@challengeId">
                     <span class="glyphicon glyphicon-triangle-bottom"></span>
                 </a>
             </th>
@@ -43,13 +65,7 @@
                 </a>
             </th>
             <th>
-                Sent by
-                <a asp-action="Index" asp-route-order="ownerAsc" asp-route-challengeId="@challengeId">
-                    <span class="glyphicon glyphicon-triangle-top"></span>
-                </a>
-                <a asp-action="Index" asp-route-order="ownerDesc" asp-route-challengeId="@challengeId">
-                    <span class="glyphicon glyphicon-triangle-bottom"></span>
-                </a>
+                @Html.DisplayNameFor(model => model.Verified)
             </th>
             <th>Actions</th>
         </tr>
@@ -59,10 +75,13 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Verified)
+                    <a asp-action="UserDetails" asp-route-userId="@item.Owner.Id">@Html.DisplayFor(modelItem => item.Owner.LastName) @Html.DisplayFor(modelItem => item.Owner.FirstName)</a>
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Score)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Grade)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.ReceiveDateTime)
@@ -71,23 +90,27 @@
                     @Html.DisplayFor(modelItem => item.Duration)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Owner.UserName)
+                    @Html.DisplayFor(modelItem => item.Verified)
                 </td>
                 <td>
                     <form asp-controller="Solution" asp-action="Delete">
                         <button type="button" class="btn btn-success" onclick="toggleVerify(@item.Id)">Verify</button>
                         <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-warning">Details</a>
-                        <input name="id" value="@item.Id" hidden/>
+                        <input name="id" value="@item.Id" hidden />
                         <button type="submit" class="btn btn-danger">Delete</button>
+                        <a asp-action="Results" class="btn btn-default" asp-route-id="@item.Id" asp-route-challengeId="@item.ChallengeId">Results</a>
                     </form>
                 </td>
             </tr>
             <tr style="display: none;" id="@item.Id">
-                @foreach (var battery in item.Challenge.Batteries)
+                @if (item.Challenge.Batteries != null)
                 {
-                    <th>@battery.Name</th>
-                    <td><a asp-action="Run" asp-route-id="@item.Id" asp-route-batteryId="@battery.Id" class="btn btn-success">Run</a></td>
-                   
+                    foreach (var battery in item.Challenge.Batteries)
+                    {
+
+                        <th><a asp-controller="Battery" asp-action="Details" asp-route-id="@battery.Id">@battery.Name</a></th>
+                        <td><a asp-action="Run" asp-route-id="@item.Id" asp-route-batteryId="@battery.Id" class="btn btn-success" onclick="showLoading();">Run</a></td>
+                    }
                 }
             </tr>
         }
@@ -99,4 +122,10 @@
         var elem = document.getElementById(id);
         $(elem).fadeToggle('fast');
     }
+
+    function showLoading() {
+        document.getElementById('loading').style.display = 'block';
+    }
 </script>
+
+

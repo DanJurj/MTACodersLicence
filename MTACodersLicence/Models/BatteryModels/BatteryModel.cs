@@ -12,6 +12,7 @@ namespace MTACodersLicence.Models.ChallengeModels
         public int Id { get; set; }
         public string Name { get; set; }
         public ICollection<TestModel> Tests { get; set; }
+
         [Display(Name = "Public")]
         public bool IsPublic { get; set; }
 

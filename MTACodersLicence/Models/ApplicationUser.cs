@@ -11,10 +11,12 @@ namespace MTACodersLicence.Models
     public class ApplicationUser : IdentityUser
     {
         [Required(ErrorMessage = "First Name is required!")]
-        public string FirstName;
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
 
         [Required(ErrorMessage = "Last Name is required!")]
-        public string LastName;
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; }
 
         public ICollection<GroupModel> Groups { get; set; }
         public ICollection<ChallengeModel> Challenges { get; set; }

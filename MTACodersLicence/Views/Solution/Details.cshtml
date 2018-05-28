@@ -4,7 +4,7 @@
     ViewData["Title"] = "Solution Details";
 }
 
-<h2>Details</h2>
+<h3>Solution Details</h3>
 <style type="text/css" media="screen">
     .ace_editor {
         position: relative !important;
@@ -20,9 +20,14 @@
         background-color: beige;
     }
 </style>
+<div id="loading" style="display: none;">
+    <div id="loadingmsg">Running Battery Tests, please wait...</div>
+    <div id="loadingover"></div>
+    <div class="loader"></div>
+</div>
 <div>
     <hr />
-    <div class="col-md-4">
+    <div class="col-md-6">
         <dl class="dl-horizontal">
             <dt>
                 @Html.DisplayNameFor(model => model.Verified)
@@ -67,8 +72,58 @@
                 @Html.DisplayFor(model => model.Owner.UserName)
             </dd>
         </dl>
+        <hr />
+        <h4>Batteries</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Challenge.Batteries.FirstOrDefault().Name)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Challenge.Batteries.FirstOrDefault().Tests)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Challenge.Batteries.FirstOrDefault().IsPublic)
+                    </th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Challenge.Batteries != null)
+                {
+                    foreach (var battery in Model.Challenge.Batteries)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-controller="Battery" asp-action="Details" asp-route-id="@battery.Id">@battery.Name</a>
+                            </td>
+                            @if (battery.Tests != null)
+                            {
+                                <td> @battery.Tests.Count</td>
+                            }
+                            else
+                            {
+                                <td>0</td>
+                            }
+
+                            @if (battery.IsPublic)
+                            {
+                                <td>Yes</td>
+                            }
+                            else
+                            {
+                                <td>No</td>
+                            }
+                            <td>
+                                <a asp-action="Run" asp-route-id=@Model.Id asp-route-batteryId=@battery.Id class="btn btn-success" onclick="showLoading();">Run tests</a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
     </div>
-    <div class="col-md-2"></div>
     <div class="col-md-6 table-bordered">
         <h4>Code:</h4>
         <pre id="editor" name="editor">@Model.Code</pre>
@@ -79,3 +134,17 @@
 </div>
 <script src="~/lib/Ace/src/ace.js"></script>
 <script src="~/js/coding.js"></script>
+<script>
+    var code = editor.getSession().getValue();
+    var code2 = code.split('\\\"').join('"');
+    editor.setValue(code2);
+    editor.setOptions({
+        readOnly: true,
+        highlightActiveLine: false,
+        highlightGutterLine: false
+    });
+    editor.renderer.$cursorLayer.element.style.opacity = 0;
+    function showLoading() {
+        document.getElementById('loading').style.display = 'block';
+    }
+</script>
