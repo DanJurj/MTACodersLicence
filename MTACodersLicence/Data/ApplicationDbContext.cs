@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MTACodersLicence.Models;
 using MTACodersLicence.Models.ChallengeModels;
+using MTACodersLicence.Models.GroupModels;
+using MTACodersLicence.Models.ResultModels;
+using MTACodersLicence.Models.SolutionModels;
 
 namespace MTACodersLicence.Data
 {
@@ -16,8 +19,6 @@ namespace MTACodersLicence.Data
         {
         }
 
-        public DbSet<GroupModel> Groups { get; set; }
-
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -26,21 +27,25 @@ namespace MTACodersLicence.Data
             // Add your customizations after calling base.OnModelCreating(builder);
         }
 
-        public DbSet<MTACodersLicence.Models.GroupItem> GroupItems { get; set; }
+        public DbSet<GroupModel> Groups { get; set; }
 
-        public DbSet<MTACodersLicence.Models.ChallengeModel> Challenges { get; set; }
+        public DbSet<GroupMemberModel> GroupMembers { get; set; }
 
-        public DbSet<MTACodersLicence.Models.TestModel> Tests { get; set; }
+        public DbSet<ChallengeModel> Challenges { get; set; }
 
-        public DbSet<MTACodersLicence.Models.ChallengeModels.BatteryModel> Batteries { get; set; }
+        public DbSet<TestModel> Tests { get; set; }
 
-        public DbSet<MTACodersLicence.Models.SolutionModel> Solutions { get; set; }
+        public DbSet<BatteryModel> Batteries { get; set; }
 
-        public DbSet<MTACodersLicence.Models.ApplicationUser> ApplicationUser { get; set; }
+        public DbSet<SolutionModel> Solutions { get; set; }
 
-        public DbSet<MTACodersLicence.Models.ResultModels.ResultModel> Results { get; set; }
+        public DbSet<ApplicationUser> ApplicationUser { get; set; }
 
-        public DbSet<MTACodersLicence.Models.ResultModels.TestResultModel> TestResults { get; set; }
+        public DbSet<ResultModel> Results { get; set; }
+
+        public DbSet<TestResultModel> TestResults { get; set; }
+
+        public DbSet<CodingSessionModel> CodingSessions { get; set; }
 
     }
 }

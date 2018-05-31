@@ -5,13 +5,18 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MTACodersLicence.Data;
 using MTACodersLicence.Models;
+using MTACodersLicence.Models.ChallengeModels;
+using MTACodersLicence.Models.SolutionModels;
+using Newtonsoft.Json.Linq;
 
 namespace MTACodersLicence.Controllers
 {
+    [Authorize]
     public class CodingController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -22,6 +27,7 @@ namespace MTACodersLicence.Controllers
             _context = context;
             _userManager = userManager;
         }
+
         public IActionResult Index(int? id)
         {
             if (id == null)
@@ -29,7 +35,36 @@ namespace MTACodersLicence.Controllers
                 return NotFound();
             }
             var challenge = _context.Challenges.FirstOrDefault(m => m.Id == id);
-            return View(challenge);
+            if (challenge == null)
+            {
+                return NotFound();
+            }
+            var userId = _userManager.GetUserId(User);
+            var codingSession = _context.CodingSessions
+                                        .FirstOrDefault(s => s.ChallengeId == id && s.ApplicationUserId == userId);
+            
+            var challengeViewModel = new ChallengeViewModel
+            {
+                Challenge = challenge,
+                CodingSession = codingSession,
+                HasPreviousSave = codingSession != null
+            };
+            if (codingSession != null)
+            {
+                challengeViewModel.RemainingTime = DateTime.Now - challengeViewModel.CodingSession.StartTime;
+            }
+            else
+            {
+                var newCodingSession = new CodingSessionModel
+                {
+                    ChallengeId = challenge.Id,
+                    StartTime = DateTime.Now,
+                    ApplicationUserId = userId
+                };
+                _context.CodingSessions.Add(newCodingSession);
+                _context.SaveChanges();
+            }
+            return View(challengeViewModel);
         }
 
 
@@ -114,6 +149,13 @@ namespace MTACodersLicence.Controllers
             ViewData["stderr"] = stderr;
             ViewData["error"] = error;
             return View();
+        }
+
+        [HttpPost]
+        public JsonResult SaveCode(string code)
+        {
+            ApplicationUser user = _context.ApplicationUser.FirstOrDefault(s => s.Id == _userManager.GetUserId(User));
+            return Json(user);
         }
     }
 }

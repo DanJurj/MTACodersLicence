@@ -3,16 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
-using MTACodersLicence.Models.ChallengeModels;
 
-namespace MTACodersLicence.Models.SolutionModels
+namespace MTACodersLicence.Models.ChallengeModels
 {
-    public class SolutionViewModel
+    public class CodingSessionModel
     {
         public int Id { get; set; }
-        public string Code { get; set; }
-        public bool Verified { get; set; }
-        public int Score { get; set; }
+        public DateTime StartTime { get; set; }
 
         public int ChallengeId { get; set; }
         [ForeignKey(nameof(ChallengeId))]
@@ -21,5 +18,8 @@ namespace MTACodersLicence.Models.SolutionModels
         public string ApplicationUserId { get; set; }
         [ForeignKey(nameof(ApplicationUserId))]
         public virtual ApplicationUser Owner { get; set; }
+
+        public string Code { get; set; }
+        public bool HasPreviousSave { get; set; }
     }
 }

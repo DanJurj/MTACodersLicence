@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using MTACodersLicence.Models.ChallengeModels;
+using MTACodersLicence.Models.GroupModels;
 
 namespace MTACodersLicence.Models
 {
@@ -18,7 +20,9 @@ namespace MTACodersLicence.Models
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
-        public ICollection<GroupModel> Groups { get; set; }
+        public string FullName => LastName + " " + FirstName;
+
+        public ICollection<GroupMemberModel> Groups { get; set; }
         public ICollection<ChallengeModel> Challenges { get; set; }
     }
 }

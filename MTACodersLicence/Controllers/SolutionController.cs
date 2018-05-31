@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,10 +13,12 @@ using MTACodersLicence.Data;
 using MTACodersLicence.Models;
 using MTACodersLicence.Models.ChallengeModels;
 using MTACodersLicence.Models.ResultModels;
+using MTACodersLicence.Models.SolutionModels;
 using Rotativa.AspNetCore;
 
 namespace MTACodersLicence.Controllers
 {
+    [Authorize(Roles = "Administrator,Profesor")]
     public class SolutionController : Controller
     {
         private readonly ApplicationDbContext _context;

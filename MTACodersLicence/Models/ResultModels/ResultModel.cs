@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using MTACodersLicence.Models.ChallengeModels;
+using MTACodersLicence.Models.SolutionModels;
 
 namespace MTACodersLicence.Models.ResultModels
 {

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MTACodersLicence.Data;
 using MTACodersLicence.Models;
 using MTACodersLicence.Models.AccountViewModels;
 using MTACodersLicence.Services;
@@ -20,21 +21,27 @@ namespace MTACodersLicence.Controllers
     [Route("[controller]/[action]")]
     public class AccountController : Controller
     {
+        private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
-            ILogger<AccountController> logger)
+            ILogger<AccountController> logger,
+            ApplicationDbContext context,
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _logger = logger;
+            _context = context;
+            _roleManager = roleManager;
         }
 
         [TempData]
@@ -61,7 +68,7 @@ namespace MTACodersLicence.Controllers
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, lockoutOnFailure: false);
+                var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, lockoutOnFailure: true);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
@@ -150,6 +157,7 @@ namespace MTACodersLicence.Controllers
         public IActionResult Register(string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
+            ViewData["Roles"] = new SelectList(_roleManager.Roles, "Name", "Name").OrderByDescending(s => s.Value);
             return View();
         }
 
@@ -161,11 +169,45 @@ namespace MTACodersLicence.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Username, Email = model.Email };
+                var user = new ApplicationUser { UserName = model.Username, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName};
+                if (model.Role.Equals("Administrator"))
+                {
+                    if (!model.PasswordForAdminOrProfessor.Equals("@dmin"))
+                    {
+                        ViewData["error"] = "Parola pentru crearea unui cont de administrator este INCORECTA!";
+                        ViewData["Roles"] = new SelectList(_roleManager.Roles, "Name", "Name").OrderByDescending(s => s.Value);
+                        return View(model);
+                    }
+                }
+                else
+                {
+                    if (model.Role.Equals("Profesor"))
+                    {
+                        if (!model.PasswordForAdminOrProfessor.Equals("pr0fes0r"))
+                        {
+                            ViewData["error"] = "Parola pentru crearea unui cont de profesor este INCORECTA!";
+                            ViewData["Roles"] = new SelectList(_roleManager.Roles, "Name", "Name").OrderByDescending(s => s.Value);
+                            return View(model);
+                        }
+                    }
+                }
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
+
+                    if (model.Role.Equals("Administrator"))
+                    {
+                        await _userManager.AddToRoleAsync(user, "Administrator");
+                    }
+                    else if (model.Role.Equals("Profesor"))
+                    {
+                        await _userManager.AddToRoleAsync(user, "Profesor");
+                    }
+                    else
+                    {
+                        await _userManager.AddToRoleAsync(user, "Student");
+                    }
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);

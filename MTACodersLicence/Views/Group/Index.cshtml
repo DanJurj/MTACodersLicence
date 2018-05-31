@@ -1,0 +1,70 @@
+﻿@model IEnumerable<MTACodersLicence.Models.GroupModels.GroupModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+@if (User.IsInRole("Administrator") || User.IsInRole("Profesor"))
+{
+    <a asp-action="Create" class="btn btn-success" style="float: right; margin: 25px">Create New Group</a>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Owner)
+            </th>
+            <th>
+                Members
+            </th>
+            <th>
+                Challenges
+            </th>
+            <th>
+                Actions
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Owner.FullName)
+                </td>
+                @if (item.Members == null)
+                {
+                    <td>0</td>
+                }
+                else
+                {
+                    <td>@item.Members.Count</td>
+                }
+                @if (item.Challenges == null)
+                {
+                    <td>0</td>
+                }
+                else
+                {
+                    <td>@item.Challenges.Count</td>
+                }
+                <td>
+                    @if (User.IsInRole("Administrator") || User.IsInRole("Profesor"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning action">Edit</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-default action">Details</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger action">Delete</a>
+                        <a asp-action="Members" asp-route-id="@item.Id" class="btn btn-danger action">Members</a>
+                    }
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger action">Challenges</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

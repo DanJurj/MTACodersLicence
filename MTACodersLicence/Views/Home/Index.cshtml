@@ -1,8 +1,8 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="6000">
+<div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="6000" style="margin-top: 5px;">
     <ol class="carousel-indicators">
         <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
         <li data-target="#myCarousel" data-slide-to="1"></li>
@@ -11,34 +11,34 @@
     </ol>
     <div class="carousel-inner" role="listbox">
         <div class="item active">
-            <img src="~/images/1.jpg" alt="Coding Life" class="img-responsive" style="height: 500px; width: 1200px; object-fit: fill"/>
+            <img src="~/images/1.jpg" alt="Coding Life" class="img-responsive" style="height: 500px; width: 1200px; object-fit: fill" />
             <div class="carousel-caption" role="option">
                 <p>
-                   
+
                 </p>
             </div>
         </div>
         <div class="item">
-            <img src="~/images/2.jpg" alt="Coding Life" class="img-responsive" style="height: 500px; width: 1200px; object-fit: fill"/>
+            <img src="~/images/2.jpg" alt="Coding Life" class="img-responsive" style="height: 500px; width: 1200px; object-fit: fill" />
             <div class="carousel-caption" role="option">
                 <p>
-                    
+
                 </p>
             </div>
         </div>
         <div class="item">
-            <img src="~/images/3.jpg" alt="Coding Life" class="img-responsive" style="height: 500px; width: 1200px; object-fit: fill"/>
+            <img src="~/images/3.jpg" alt="Coding Life" class="img-responsive" style="height: 500px; width: 1200px; object-fit: fill" />
             <div class="carousel-caption" role="option">
                 <p>
-                   
+
                 </p>
             </div>
         </div>
         <div class="item">
-            <img src="~/images/4.jpg" alt="Coding Life" class="img-responsive" style="height: 500px; width: 1200px; object-fit: fill"/>
+            <img src="~/images/4.jpg" alt="Coding Life" class="img-responsive" style="height: 500px; width: 1200px; object-fit: fill" />
             <div class="carousel-caption" role="option">
                 <p>
-                   
+
                 </p>
             </div>
         </div>
@@ -54,14 +54,14 @@
 </div>
 
 <div class="row">
-    <div class="col-md-3">
+    <div class="col-md-4 table-bordered footerDetails">
         <h2>Descriere</h2>
         <ul>
             <li>Va aflati pe o platforma proiectata pentru concursuri de programare.</li>
             <li>Sper ca gasiti ceea ce cautati la o astfel de platforma, daca aveti vreo sugestie va rugam sa trimiteti un mail din pagina de contact.</li>
         </ul>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-4 table-bordered footerDetails">
         <h2>Detalii de contact</h2>
         <ul>
             <li><address>Street George Cosbuc &amp; 39, Bucharest, Sector 5</address></li>
@@ -69,7 +69,7 @@
             <li><i class="fa fa-envelope-o"></i> info@mtacoders.ro</li>
         </ul>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-3 table-bordered footerDetails">
         <h2>Links</h2>
         <ul>
             <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
@@ -80,8 +80,11 @@
             <li><a asp-area="" asp-controller="Manage" asp-action="Index">Account</a></li>
         </ul>
     </div>
-    <div class="col-md-3">
-        <h4>Property of Military Technical Academy</h4>
-        <img src="~/images/footer.png" />
+</div>
+<div class="row">
+    <div class=""></div>
+    <div class="col-lg-offset-4 col-md-4">
+        <h5 style="color: red">Property of Military Technical Academy</h5>
+        <img src="~/images/footer.png"/>
     </div>
 </div>

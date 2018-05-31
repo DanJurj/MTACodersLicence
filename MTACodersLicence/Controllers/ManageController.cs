@@ -66,9 +66,12 @@ namespace MTACodersLicence.Controllers
             {
                 Username = user.UserName,
                 Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
                 PhoneNumber = user.PhoneNumber,
                 IsEmailConfirmed = user.EmailConfirmed,
-                StatusMessage = StatusMessage
+                StatusMessage = StatusMessage,
+                Roles = await _userManager.GetRolesAsync(user)
             };
 
             return View(model);

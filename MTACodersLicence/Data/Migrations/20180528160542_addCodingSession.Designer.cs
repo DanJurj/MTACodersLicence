@@ -11,9 +11,10 @@ using System;
 namespace WebApplication5.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180528160542_addCodingSession")]
+    partial class addCodingSession
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -185,25 +186,7 @@ namespace WebApplication5.Data.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("MTACodersLicence.Models.ChallengeModels.BatteryModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int?>("ChallengeId");
-
-                    b.Property<bool>("IsPublic");
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ChallengeId");
-
-                    b.ToTable("Batteries");
-                });
-
-            modelBuilder.Entity("MTACodersLicence.Models.ChallengeModels.ChallengeModel", b =>
+            modelBuilder.Entity("MTACodersLicence.Models.ChallengeModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -229,7 +212,25 @@ namespace WebApplication5.Data.Migrations
                     b.ToTable("Challenges");
                 });
 
-            modelBuilder.Entity("MTACodersLicence.Models.ChallengeModels.CodingSessionModel", b =>
+            modelBuilder.Entity("MTACodersLicence.Models.ChallengeModels.BatteryModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("ChallengeId");
+
+                    b.Property<bool>("IsPublic");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChallengeId");
+
+                    b.ToTable("Batteries");
+                });
+
+            modelBuilder.Entity("MTACodersLicence.Models.CodingSessionModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -253,45 +254,31 @@ namespace WebApplication5.Data.Migrations
                     b.ToTable("CodingSessions");
                 });
 
-            modelBuilder.Entity("MTACodersLicence.Models.GroupModels.GroupChallengeModel", b =>
+            modelBuilder.Entity("MTACodersLicence.Models.GroupItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("ChallengeId");
+                    b.Property<DateTime>("AddeDateTime");
+
+                    b.Property<string>("EMail");
+
+                    b.Property<string>("FirstName");
 
                     b.Property<int>("GroupId");
 
-                    b.HasKey("Id");
+                    b.Property<string>("LastName");
 
-                    b.HasIndex("ChallengeId");
-
-                    b.HasIndex("GroupId");
-
-                    b.ToTable("GroupChallengeModel");
-                });
-
-            modelBuilder.Entity("MTACodersLicence.Models.GroupModels.GroupMemberModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("ApplicationUserId");
-
-                    b.Property<int>("GroupId");
-
-                    b.Property<DateTime>("JoinDate");
+                    b.Property<string>("UserName");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId");
-
                     b.HasIndex("GroupId");
 
-                    b.ToTable("GroupMembers");
+                    b.ToTable("GroupItems");
                 });
 
-            modelBuilder.Entity("MTACodersLicence.Models.GroupModels.GroupModel", b =>
+            modelBuilder.Entity("MTACodersLicence.Models.GroupModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -347,7 +334,7 @@ namespace WebApplication5.Data.Migrations
                     b.ToTable("TestResults");
                 });
 
-            modelBuilder.Entity("MTACodersLicence.Models.SolutionModels.SolutionModel", b =>
+            modelBuilder.Entity("MTACodersLicence.Models.SolutionModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -444,61 +431,44 @@ namespace WebApplication5.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("MTACodersLicence.Models.ChallengeModel", b =>
+                {
+                    b.HasOne("MTACodersLicence.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany("Challenges")
+                        .HasForeignKey("ApplicationUserId");
+                });
+
             modelBuilder.Entity("MTACodersLicence.Models.ChallengeModels.BatteryModel", b =>
                 {
-                    b.HasOne("MTACodersLicence.Models.ChallengeModels.ChallengeModel", "Challenge")
+                    b.HasOne("MTACodersLicence.Models.ChallengeModel", "Challenge")
                         .WithMany("Batteries")
                         .HasForeignKey("ChallengeId");
                 });
 
-            modelBuilder.Entity("MTACodersLicence.Models.ChallengeModels.ChallengeModel", b =>
-                {
-                    b.HasOne("MTACodersLicence.Models.ApplicationUser", "Owner")
-                        .WithMany("Challenges")
-                        .HasForeignKey("ApplicationUserId");
-                });
-
-            modelBuilder.Entity("MTACodersLicence.Models.ChallengeModels.CodingSessionModel", b =>
+            modelBuilder.Entity("MTACodersLicence.Models.CodingSessionModel", b =>
                 {
                     b.HasOne("MTACodersLicence.Models.ApplicationUser", "Owner")
                         .WithMany()
                         .HasForeignKey("ApplicationUserId");
 
-                    b.HasOne("MTACodersLicence.Models.ChallengeModels.ChallengeModel", "Challenge")
+                    b.HasOne("MTACodersLicence.Models.ChallengeModel", "Challenge")
                         .WithMany()
                         .HasForeignKey("ChallengeId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("MTACodersLicence.Models.GroupModels.GroupChallengeModel", b =>
+            modelBuilder.Entity("MTACodersLicence.Models.GroupItem", b =>
                 {
-                    b.HasOne("MTACodersLicence.Models.ChallengeModels.ChallengeModel", "Challenge")
-                        .WithMany("ChallengeGroups")
-                        .HasForeignKey("ChallengeId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("MTACodersLicence.Models.GroupModels.GroupModel", "Group")
-                        .WithMany("Challenges")
+                    b.HasOne("MTACodersLicence.Models.GroupModel", "Group")
+                        .WithMany("Items")
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("MTACodersLicence.Models.GroupModels.GroupMemberModel", b =>
+            modelBuilder.Entity("MTACodersLicence.Models.GroupModel", b =>
                 {
-                    b.HasOne("MTACodersLicence.Models.ApplicationUser", "User")
+                    b.HasOne("MTACodersLicence.Models.ApplicationUser", "ApplicationUser")
                         .WithMany("Groups")
-                        .HasForeignKey("ApplicationUserId");
-
-                    b.HasOne("MTACodersLicence.Models.GroupModels.GroupModel", "Group")
-                        .WithMany("Members")
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("MTACodersLicence.Models.GroupModels.GroupModel", b =>
-                {
-                    b.HasOne("MTACodersLicence.Models.ApplicationUser", "Owner")
-                        .WithMany()
                         .HasForeignKey("ApplicationUserId");
                 });
 
@@ -509,7 +479,7 @@ namespace WebApplication5.Data.Migrations
                         .HasForeignKey("BatteryId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("MTACodersLicence.Models.SolutionModels.SolutionModel", "Solution")
+                    b.HasOne("MTACodersLicence.Models.SolutionModel", "Solution")
                         .WithMany("Results")
                         .HasForeignKey("SolutionId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -528,13 +498,13 @@ namespace WebApplication5.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("MTACodersLicence.Models.SolutionModels.SolutionModel", b =>
+            modelBuilder.Entity("MTACodersLicence.Models.SolutionModel", b =>
                 {
                     b.HasOne("MTACodersLicence.Models.ApplicationUser", "Owner")
                         .WithMany()
                         .HasForeignKey("ApplicationUserId");
 
-                    b.HasOne("MTACodersLicence.Models.ChallengeModels.ChallengeModel", "Challenge")
+                    b.HasOne("MTACodersLicence.Models.ChallengeModel", "Challenge")
                         .WithMany("Solutions")
                         .HasForeignKey("ChallengeId")
                         .OnDelete(DeleteBehavior.Cascade);

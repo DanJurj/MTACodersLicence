@@ -4,9 +4,10 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using MTACodersLicence.Models.ChallengeModels;
 using MTACodersLicence.Models.ResultModels;
 
-namespace MTACodersLicence.Models
+namespace MTACodersLicence.Models.SolutionModels
 {
     public class SolutionModel
     {

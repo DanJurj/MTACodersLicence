@@ -11,9 +11,10 @@ using System;
 namespace WebApplication5.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180529205328_groups2")]
+    partial class groups2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -453,7 +454,7 @@ namespace WebApplication5.Data.Migrations
 
             modelBuilder.Entity("MTACodersLicence.Models.ChallengeModels.ChallengeModel", b =>
                 {
-                    b.HasOne("MTACodersLicence.Models.ApplicationUser", "Owner")
+                    b.HasOne("MTACodersLicence.Models.ApplicationUser", "ApplicationUser")
                         .WithMany("Challenges")
                         .HasForeignKey("ApplicationUserId");
                 });
@@ -473,7 +474,7 @@ namespace WebApplication5.Data.Migrations
             modelBuilder.Entity("MTACodersLicence.Models.GroupModels.GroupChallengeModel", b =>
                 {
                     b.HasOne("MTACodersLicence.Models.ChallengeModels.ChallengeModel", "Challenge")
-                        .WithMany("ChallengeGroups")
+                        .WithMany("Groups")
                         .HasForeignKey("ChallengeId")
                         .OnDelete(DeleteBehavior.Cascade);
 

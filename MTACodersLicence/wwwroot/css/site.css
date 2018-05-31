@@ -35,160 +35,26 @@
     }
 }
 
-
-
-/*Navigation bar effects*/
-small {
-    font-size: 12px;
-    color: rgba(0, 0, 0, 0.4);
+/* logo */
+#logo {
+    width: 100px; 
+    height: 85px;
+    margin: -30px;
 }
 
-
-
-/* NAVIGATION */
-nav {
-    margin: 0 auto;
-    background: #fff;
-    box-shadow: 0px 1px 0px black;
+/* action button*/
+.action {
+    width: 120px;
+    height: 32px;
+    margin-right: 5px;
+    margin-bottom: 5px;
 }
 
-    nav ul {
-        list-style: none;
-        text-align: center;
-    }
-
-        nav ul li {
-            display: inline-block;
-        }
-
-            nav ul li a {
-                display: block;
-                padding: 15px;
-                text-decoration: none;
-                color: black;
-                font-weight: 600;
-                margin: 0 10px;
-            }
-
-                nav ul li a,
-                nav ul li a:after,
-                nav ul li a:before {
-                    transition: all .5s;
-                }
-
-                    nav ul li a:hover {
-                        color: #555;
-                    }
-
-    /* Circle */
-    nav.circle ul li a {
-        position: relative;
-        overflow: hidden;
-        z-index: 1;
-    }
-
-        nav.circle ul li a:after {
-            display: block;
-            position: absolute;
-            margin: 0;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            content: '.';
-            color: transparent;
-            width: 1px;
-            height: 1px;
-            border-radius: 50%;
-            background: transparent;
-        }
-
-        nav.circle ul li a:hover:after {
-            -webkit-animation: circle 1.5s ease-in forwards;
-        }
-
-/* Keyframes */
-@-webkit-keyframes circle {
-    0% {
-        width: 1px;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        margin: auto;
-        height: 1px;
-        z-index: -1;
-        background: #eee;
-        border-radius: 100%;
-    }
-
-    100% {
-        background: #aaa;
-        height: 5000%;
-        width: 5000%;
-        z-index: -1;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        margin: auto;
-        border-radius: 0;
-    }
+/* footer details*/
+.footerDetails {
+    border-radius: 20px;
+    margin: 10px;
 }
-
-/* Style The Dropdown Button */
-.dropbtn {
-    background-color: dodgerblue;
-    font-weight: bold;
-    padding: 14px;
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
-    margin-left: 6px;
-    margin-right: 6px;
-    margin-bottom: 4px;
-}
-
-/* The container <div> - needed to position the dropdown content */
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-/* Dropdown Content (Hidden by Default) */
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-}
-
-    /* Links inside the dropdown */
-    .dropdown-content a {
-        color: black;
-        padding: 12px 16px;
-        text-decoration: none;
-        display: block;
-    }
-
-        /* Change color of dropdown links on hover */
-        .dropdown-content a:hover {
-            background-color: #f1f1f1
-        }
-
-/* Show the dropdown menu on hover */
-.dropdown:hover .dropdown-content {
-    display: block;
-}
-
-/* Change the background color of the dropdown button when the dropdown content is shown */
-.dropdown:hover .dropbtn {
-    background-color: white;
-}
-
-
 /* loader  */
 #loadingmsg {
     color: black;
@@ -242,4 +108,20 @@ nav {
     100% {
         transform: rotate(360deg);
     }
+}
+
+
+/* editor design */
+.ace_editor {
+    position: relative !important;
+    border: 1px solid lightgray;
+    margin: auto;
+    height: 800px;
+}
+
+.cerintaBox {
+    border-radius: 20px;
+    padding: 12px;
+    margin-bottom: 15px;
+    background-color: beige;
 }

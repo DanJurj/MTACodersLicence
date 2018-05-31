@@ -10,6 +10,8 @@ namespace MTACodersLicence.Models.ManageViewModels
     {
         public string Username { get; set; }
 
+        public IList<string> Roles { get; set; }
+
         [Display(Name = "First Name")]
         public string FirstName { get; set; }
 

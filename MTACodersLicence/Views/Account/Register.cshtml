@@ -6,11 +6,21 @@
 <h2>@ViewData["Title"]</h2>
 
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-4 col-md-offset-3">
         <form asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
             <h4>Create a new account.</h4>
+            <h5 style="color: red">@ViewData["error"]</h5>
             <hr />
             <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Role" class="control-label"></label>
+                <select asp-for="Role" class="form-control" asp-items="ViewBag.Roles" onchange="verifica()" id="roleSelect"></select>
+            </div>
+            <div class="form-group" id="form-verificare" style="display: none">
+                <label asp-for="PasswordForAdminOrProfessor"></label>
+                <input asp-for="PasswordForAdminOrProfessor" class="form-control" type="password"/>
+                <span asp-validation-for="PasswordForAdminOrProfessor" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="Username"></label>
                 <input asp-for="Username" class="form-control" />
@@ -49,3 +59,14 @@
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
 }
+
+<script>
+    function verifica() {
+        var role = $("#roleSelect :selected").text();
+        if (role === "Profesor" || role === "Administrator") {
+            $("#form-verificare").show();
+        } else {
+            $("#form-verificare").hide();
+        }
+    }
+</script>

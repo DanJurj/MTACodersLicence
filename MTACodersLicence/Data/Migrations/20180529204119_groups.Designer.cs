@@ -11,9 +11,10 @@ using System;
 namespace WebApplication5.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180529204119_groups")]
+    partial class groups
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -253,24 +254,6 @@ namespace WebApplication5.Data.Migrations
                     b.ToTable("CodingSessions");
                 });
 
-            modelBuilder.Entity("MTACodersLicence.Models.GroupModels.GroupChallengeModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("ChallengeId");
-
-                    b.Property<int>("GroupId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ChallengeId");
-
-                    b.HasIndex("GroupId");
-
-                    b.ToTable("GroupChallengeModel");
-                });
-
             modelBuilder.Entity("MTACodersLicence.Models.GroupModels.GroupMemberModel", b =>
                 {
                     b.Property<int>("Id")
@@ -453,7 +436,7 @@ namespace WebApplication5.Data.Migrations
 
             modelBuilder.Entity("MTACodersLicence.Models.ChallengeModels.ChallengeModel", b =>
                 {
-                    b.HasOne("MTACodersLicence.Models.ApplicationUser", "Owner")
+                    b.HasOne("MTACodersLicence.Models.ApplicationUser", "ApplicationUser")
                         .WithMany("Challenges")
                         .HasForeignKey("ApplicationUserId");
                 });
@@ -467,19 +450,6 @@ namespace WebApplication5.Data.Migrations
                     b.HasOne("MTACodersLicence.Models.ChallengeModels.ChallengeModel", "Challenge")
                         .WithMany()
                         .HasForeignKey("ChallengeId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("MTACodersLicence.Models.GroupModels.GroupChallengeModel", b =>
-                {
-                    b.HasOne("MTACodersLicence.Models.ChallengeModels.ChallengeModel", "Challenge")
-                        .WithMany("ChallengeGroups")
-                        .HasForeignKey("ChallengeId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("MTACodersLicence.Models.GroupModels.GroupModel", "Group")
-                        .WithMany("Challenges")
-                        .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

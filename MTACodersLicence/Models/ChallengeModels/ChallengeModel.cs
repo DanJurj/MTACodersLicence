@@ -5,9 +5,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
-using MTACodersLicence.Models.ChallengeModels;
+using MTACodersLicence.Models.GroupModels;
+using MTACodersLicence.Models.SolutionModels;
 
-namespace MTACodersLicence.Models
+namespace MTACodersLicence.Models.ChallengeModels
 {
     public class ChallengeModel
     {
@@ -24,9 +25,10 @@ namespace MTACodersLicence.Models
         public string Hint { get; set; }
         public ICollection<BatteryModel> Batteries { get; set; }
         public ICollection<SolutionModel> Solutions { get; set; }
+        public ICollection<GroupChallengeModel> ChallengeGroups { get; set; }
 
         public string ApplicationUserId { get; set; }
         [ForeignKey(nameof(ApplicationUserId))]
-        public virtual ApplicationUser ApplicationUser { get; set; }
+        public virtual ApplicationUser Owner { get; set; }
     }
 }

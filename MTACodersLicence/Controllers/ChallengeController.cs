@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MTACodersLicence.Data;
 using MTACodersLicence.Models;
+using MTACodersLicence.Models.ChallengeModels;
+using MTACodersLicence.Models.GroupModels;
 using Newtonsoft.Json;
 
 namespace MTACodersLicence.Controllers
@@ -28,50 +30,53 @@ namespace MTACodersLicence.Controllers
         }
 
         // GET: Challenge
-        public async Task<IActionResult> Index(string searchString, string type, string sortOrder)
+        public IActionResult Index(string searchString, string order)
         {
-            var challenges = _context.Challenges.Where(c => c.ApplicationUserId == _userManager.GetUserId(User));
-            if (!String.IsNullOrEmpty(type))
+            var challenges = _context.Challenges.Include(s => s.ChallengeGroups).ToList();
+            if (User.IsInRole("Profesor"))
             {
-                if (type.Equals("my"))
-                {
-                    challenges =
-                        _context.Challenges.Where(c => c.ApplicationUserId == _userManager.GetUserId(User));
-                }
-                else if (type.Equals("all"))
-                {
-                    challenges =
-                        _context.Challenges.Where(c => c.ApplicationUserId == _userManager.GetUserId(User));
-                }
+                challenges = challenges.Where(c => c.ApplicationUserId == _userManager.GetUserId(User)).ToList();
             }
+            else if (User.IsInRole("Student"))
+            {
+                // var groups = _context.Groups.Where(s => s.Members.Contains(s.));
+                // selectem toate grupurile in care este inscris utilizatorul curent
+                var groups = _context.GroupMembers.Include(s => s.Group)
+                     .Where(s => s.ApplicationUserId == _userManager.GetUserId(User))
+                     .Select(s => s.Group);
+
+                 //challenges = groups.Select(s => s.Challenges);
+            }
+
             //search
             if (!String.IsNullOrEmpty(searchString))
             {
-                challenges = challenges.Where(s => s.Name.Contains(searchString));
+                challenges = challenges.Where(s => s.Name.Contains(searchString)).ToList();
             }
             //ordonare
-            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewData["TimeSortParm"] = sortOrder == "Time" ? "time_desc" : "Time";
-            switch (sortOrder)
+            switch (order)
             {
-                case "name_desc":
-                    challenges = challenges.OrderByDescending(s => s.Name);
+                case "nameAsc":
+                    challenges = challenges.OrderBy(s => s.Name).ToList();
                     break;
-                case "Time":
-                    challenges = challenges.OrderBy(s => s.Time);
+                case "nameDesc":
+                    challenges = challenges.OrderByDescending(s => s.Name).ToList();
                     break;
-                case "time_desc":
-                    challenges = challenges.OrderByDescending(s => s.Time);
+                case "timeAsc":
+                    challenges = challenges.OrderBy(s => s.Time).ToList();
+                    break;
+                case "timeDesc":
+                    challenges = challenges.OrderByDescending(s => s.Time).ToList();
                     break;
                 default:
-                    challenges = challenges.OrderBy(s => s.Name);
                     break;
             }
 
-            return View(await challenges.AsNoTracking().ToListAsync());
+            return View(challenges);
         }
 
         // GET: Challenge/Details/5
+        [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -80,7 +85,7 @@ namespace MTACodersLicence.Controllers
             }
 
             var challengeModel = await _context.Challenges
-                .Include(c => c.ApplicationUser)
+                .Include(c => c.Owner)
                 .Include(c => c.Batteries)
                     .ThenInclude(c => c.Tests)
                 .SingleOrDefaultAsync(m => m.Id == id);
@@ -93,6 +98,7 @@ namespace MTACodersLicence.Controllers
         }
 
         // GET: Challenge/Create
+        [Authorize(Roles = "Administrator,Profesor")]
         public IActionResult Create()
         {
             return View();
@@ -101,6 +107,7 @@ namespace MTACodersLicence.Controllers
         // POST: Challenge/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> Create([Bind("Name,ShortDescription,Desciption,Tasks,Time,Hint")] ChallengeModel challengeModel)
         {
             try
@@ -123,6 +130,7 @@ namespace MTACodersLicence.Controllers
         }
 
         // GET: Challenge/Edit/5
+        [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -143,6 +151,7 @@ namespace MTACodersLicence.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> Edit([Bind("Id,Name,ShortDescription,Desciption,Tasks,Time,Hint,ApplicationUserId")] ChallengeModel challengeModel)
         {
             challengeModel.ApplicationUserId = _userManager.GetUserId(User);
@@ -170,6 +179,7 @@ namespace MTACodersLicence.Controllers
         }
 
         // GET: Challenge/Delete/5
+        [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -178,7 +188,7 @@ namespace MTACodersLicence.Controllers
             }
 
             var challengeModel = await _context.Challenges
-                .Include(c => c.ApplicationUser)
+                .Include(c => c.Owner)
                 .Include(c => c.Batteries)
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (challengeModel == null)
@@ -192,6 +202,7 @@ namespace MTACodersLicence.Controllers
         // POST: Challenge/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var challengeModel = await _context.Challenges
