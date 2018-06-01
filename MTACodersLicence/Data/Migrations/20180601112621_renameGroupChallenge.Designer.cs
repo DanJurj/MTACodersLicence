@@ -11,9 +11,10 @@ using System;
 namespace WebApplication5.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180601112621_renameGroupChallenge")]
+    partial class renameGroupChallenge
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -220,7 +221,7 @@ namespace WebApplication5.Data.Migrations
 
                     b.Property<string>("Tasks");
 
-                    b.Property<int>("Time");
+                    b.Property<DateTime>("Time");
 
                     b.HasKey("Id");
 
@@ -257,8 +258,6 @@ namespace WebApplication5.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("AssignDate");
 
                     b.Property<int>("ChallengeId");
 

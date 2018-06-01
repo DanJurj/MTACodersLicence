@@ -32,6 +32,7 @@ namespace MTACodersLicence.Controllers
             var groups = await _context.Groups
                                         .Include(s => s.Owner)
                                         .Include(s => s.Members)
+                                        .Include(s => s.Challenges)
                                         .ToListAsync();
             if (User.IsInRole("Profesor"))
             {
@@ -47,26 +48,6 @@ namespace MTACodersLicence.Controllers
                     .ToListAsync();
             }
             return View(groups);
-        }
-
-        // GET: Group/Details/5
-        [Authorize(Roles = "Administrator,Profesor")]
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var groupModel = await _context.Groups
-                .Include(g => g.Owner)
-                .SingleOrDefaultAsync(m => m.Id == id);
-            if (groupModel == null)
-            {
-                return NotFound();
-            }
-
-            return View(groupModel);
         }
 
         // GET: Group/Create
@@ -89,7 +70,6 @@ namespace MTACodersLicence.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ApplicationUserId"] = new SelectList(_context.ApplicationUser, "Id", "Id", groupModel.ApplicationUserId);
             return View(groupModel);
         }
 
@@ -149,7 +129,6 @@ namespace MTACodersLicence.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ApplicationUserId"] = new SelectList(_context.ApplicationUser, "Id", "Id", groupModel.ApplicationUserId);
             return View(groupModel);
         }
 
@@ -164,7 +143,16 @@ namespace MTACodersLicence.Controllers
 
             var groupModel = await _context.Groups
                 .Include(g => g.Owner)
+                .Include(g => g.Challenges)
+                    .ThenInclude(s => s.Challenge)
+                .Include(g => g.Members)
+                    .ThenInclude(s => s.User)
                 .SingleOrDefaultAsync(m => m.Id == id);
+            // verificare daca este administrator sau daca este profesor si este grupul sau
+            if (!User.IsInRole("Administrator") && groupModel.ApplicationUserId!=_userManager.GetUserId(User))
+            {
+                return NotFound();
+            }
             if (groupModel == null)
             {
                 return NotFound();
@@ -179,7 +167,10 @@ namespace MTACodersLicence.Controllers
         [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var groupModel = await _context.Groups.SingleOrDefaultAsync(m => m.Id == id);
+            var groupModel = await _context.Groups
+                                            .Include(s => s.Challenges)
+                                            .Include(s => s.Members)
+                                            .SingleOrDefaultAsync(m => m.Id == id);
             _context.Groups.Remove(groupModel);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

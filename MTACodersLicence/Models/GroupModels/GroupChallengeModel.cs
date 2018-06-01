@@ -13,5 +13,6 @@ namespace MTACodersLicence.Models.GroupModels
         public GroupModel Group { get; set; }
         public int ChallengeId { get; set; }
         public ChallengeModel Challenge { get; set; }
+        public DateTime AssignDate { get; set; }
     }
 }

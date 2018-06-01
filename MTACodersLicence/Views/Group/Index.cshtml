@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<MTACodersLicence.Models.GroupModels.GroupModel>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Groups";
 }
 <h3>Groups</h3>
 @if (User.IsInRole("Administrator") || User.IsInRole("Profesor"))
@@ -55,17 +55,23 @@
                 {
                     <td>@item.Challenges.Count</td>
                 }
-                <td style="width: 500px;">
+                <td style="width: 400px;">
                     @if (User.IsInRole("Administrator") || User.IsInRole("Profesor"))
                     {
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning action">Edit</a>
-                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-default action">Details</a>
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger action">Delete</a>
-                        <a asp-controller="GroupMember" asp-action="Index" asp-route-groupId="@item.Id" class="btn btn-success" style="width: 190px;">Assign Members</a>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning acionGroup">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger acionGroup">Delete</a>
+                        <a asp-controller="GroupMember" asp-action="Index" asp-route-groupId="@item.Id" class="btn btn-success acionGroup">Assign Members</a>
+                        <a asp-controller="GroupChallenge" asp-action="Index" asp-route-groupId="@item.Id" class="btn btn-success acionGroup">Assign Challenges</a>
                     }
-                    <a asp-controller="GroupChallenge" asp-action="Index" asp-route-groupId="@item.Id" class="btn btn-success" style="width: 190px;">Assign Challenges</a>
+                    <a asp-controller="GroupChallenge" asp-action="AssignedChallenges" asp-route-groupId="@item.Id" class="btn btn-success" style="width: 344px">View Assigned Challenges</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+<style>
+    .acionGroup {
+        width: 170px;
+        margin-bottom: 8px;
+    }
+</style>

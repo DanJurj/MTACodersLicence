@@ -11,9 +11,10 @@ using System;
 namespace WebApplication5.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180601123641_updateTimeToint2")]
+    partial class updateTimeToint2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -220,7 +221,7 @@ namespace WebApplication5.Data.Migrations
 
                     b.Property<string>("Tasks");
 
-                    b.Property<int>("Time");
+                    b.Property<string>("Time");
 
                     b.HasKey("Id");
 

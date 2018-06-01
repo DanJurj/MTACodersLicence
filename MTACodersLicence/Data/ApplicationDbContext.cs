@@ -31,6 +31,8 @@ namespace MTACodersLicence.Data
 
         public DbSet<GroupMemberModel> GroupMembers { get; set; }
 
+        public DbSet<GroupChallengeModel> GroupChallenges { get; set; }
+
         public DbSet<ChallengeModel> Challenges { get; set; }
 
         public DbSet<TestModel> Tests { get; set; }
@@ -47,7 +49,6 @@ namespace MTACodersLicence.Data
 
         public DbSet<CodingSessionModel> CodingSessions { get; set; }
 
-        public DbSet<MTACodersLicence.Models.GroupModels.GroupChallengeModel> GroupChallengeModel { get; set; }
 
     }
 }

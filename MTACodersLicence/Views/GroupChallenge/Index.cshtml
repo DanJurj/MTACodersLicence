@@ -1,4 +1,4 @@
-﻿@model IEnumerable<MTACodersLicence.Models.GroupModels.GroupChallengeModel>
+﻿@model MTACodersLicence.ViewModels.GroupViewModels.GroupChallengeViewModel
 
 @{
     ViewData["Title"] = "Index";
@@ -10,16 +10,16 @@
 <hr />
 <div class="row">
     <div class="col-md-6">
-        <h4>Available Users</h4>
+        <h4>Available Challenges</h4>
         <hr />
         <table class="table">
             <thead>
                 <tr>
                     <th>
-                        Last Name
+                        Challenge Name
                     </th>
                     <th>
-                        First Name
+                        Duration (minutes)
                     </th>
                     <th>
                         Actions
@@ -27,12 +27,12 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var user in Model.Users)
+                @foreach (var challenge in Model.AvailableChallenges)
                 {
                     <tr>
-                        <td>@user.LastName</td>
-                        <td>@user.FirstName</td>
-                        <td><a asp-action="AddMember" asp-route-userId="@user.Id" asp-route-groupId="@ViewBag.GroupId" class="btn btn-success">Add</a></td>
+                        <td>@challenge.Name</td>
+                        <td>@challenge.Time</td>
+                        <td><a asp-action="AddChallenge" asp-route-challengeId="@challenge.Id" asp-route-groupId="@ViewBag.GroupId" class="btn btn-success">Add</a></td>
                     </tr>
                 }
             </tbody>
@@ -40,19 +40,19 @@
 
     </div>
     <div class="col-md-6">
-        <h4>Members</h4>
+        <h4>Assigned Challenges</h4>
         <hr />
         <table class="table">
             <thead>
                 <tr>
                     <th>
-                        Last Name
+                        Challenge Name
                     </th>
                     <th>
-                        First Name
+                        Duration
                     </th>
                     <th>
-                        Join Date
+                        Assign Date
                     </th>
                     <th>
                         Actions
@@ -60,13 +60,13 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var user in Model.Members)
+                @foreach (var challenge in Model.AssignedChallenges)
                 {
                     <tr>
-                        <td>@user.User.LastName</td>
-                        <td>@user.User.FirstName</td>
-                        <td>@user.JoinDate</td>
-                        <td><a asp-action="RemoveMember" asp-route-userId="@user.ApplicationUserId" asp-route-groupId="@ViewBag.GroupId" class="btn btn-danger">Remove</a></td>
+                        <td>@challenge.Challenge.Name</td>
+                        <td>@challenge.Challenge.Time</td>
+                        <td>@challenge.AssignDate</td>
+                        <td><a asp-action="RemoveChallenge" asp-route-challengeId="@challenge.ChallengeId" asp-route-groupId="@challenge.GroupId" class="btn btn-danger">Remove</a></td>
                     </tr>
                 }
             </tbody>

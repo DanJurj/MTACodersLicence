@@ -32,7 +32,10 @@ namespace MTACodersLicence.Controllers
         // GET: Challenge
         public IActionResult Index(string searchString, string order)
         {
-            var challenges = _context.Challenges.Include(s => s.ChallengeGroups).ToList();
+            var challenges = _context.Challenges
+                                    .Include(s => s.ChallengeGroups)
+                                    .Include(s => s.Owner)
+                                    .ToList();
             if (User.IsInRole("Profesor"))
             {
                 challenges = challenges.Where(c => c.ApplicationUserId == _userManager.GetUserId(User)).ToList();

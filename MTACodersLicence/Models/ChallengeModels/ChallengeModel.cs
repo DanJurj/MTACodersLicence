@@ -20,8 +20,7 @@ namespace MTACodersLicence.Models.ChallengeModels
         public string ShortDescription { get; set; }
         public string Desciption { get; set; }
         public string Tasks { get; set; }
-        [DataType(DataType.Time)]
-        public DateTime Time { get; set; }  
+        public int Time { get; set; }  //minutes
         public string Hint { get; set; }
         public ICollection<BatteryModel> Batteries { get; set; }
         public ICollection<SolutionModel> Solutions { get; set; }
