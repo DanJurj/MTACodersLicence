@@ -30,8 +30,9 @@ namespace MTACodersLicence.Controllers
         {
             // administrator
             var groups = await _context.Groups
-                                                    .Include(s => s.Owner)
-                                                    .ToListAsync();
+                                        .Include(s => s.Owner)
+                                        .Include(s => s.Members)
+                                        .ToListAsync();
             if (User.IsInRole("Profesor"))
             {
                 groups = await _context.Groups
@@ -106,28 +107,33 @@ namespace MTACodersLicence.Controllers
             {
                 return NotFound();
             }
-            ViewData["ApplicationUserId"] = new SelectList(_context.ApplicationUser, "Id", "Id", groupModel.ApplicationUserId);
             return View(groupModel);
         }
 
         // POST: Group/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator,Profesor")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,ApplicationUserId")] GroupModel groupModel)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] GroupModel groupModel)
         {
             if (id != groupModel.Id)
             {
                 return NotFound();
             }
-
+            //security measure
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(groupModel);
+                    var group = await _context.Groups.SingleOrDefaultAsync(s => s.Id == groupModel.Id);
+                    var user = await _context.ApplicationUser
+                                            .SingleOrDefaultAsync(s => s.Id == _userManager.GetUserId(User));
+                    bool isAdmin = await _userManager.IsInRoleAsync(user, "Administrator");
+                    if (group.ApplicationUserId != user.Id && !isAdmin)
+                    {
+                        return NotFound();
+                    }
+                    group.Name = groupModel.Name;
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -183,7 +189,5 @@ namespace MTACodersLicence.Controllers
         {
             return _context.Groups.Any(e => e.Id == id);
         }
-
-        
     }
 }

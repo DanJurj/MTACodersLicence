@@ -47,5 +47,7 @@ namespace MTACodersLicence.Data
 
         public DbSet<CodingSessionModel> CodingSessions { get; set; }
 
+        public DbSet<MTACodersLicence.Models.GroupModels.GroupChallengeModel> GroupChallengeModel { get; set; }
+
     }
 }

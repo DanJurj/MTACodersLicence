@@ -3,9 +3,10 @@
 @{
     ViewData["Title"] = "Index";
 }
+<h3>Groups</h3>
 @if (User.IsInRole("Administrator") || User.IsInRole("Profesor"))
 {
-    <a asp-action="Create" class="btn btn-success" style="float: right; margin: 25px">Create New Group</a>
+    <a asp-action="Create" class="btn btn-success" style="float: right; margin-top: -20px; margin-bottom: 10px">Create New Group</a>
 }
 
 <table class="table">
@@ -54,15 +55,15 @@
                 {
                     <td>@item.Challenges.Count</td>
                 }
-                <td>
+                <td style="width: 500px;">
                     @if (User.IsInRole("Administrator") || User.IsInRole("Profesor"))
                     {
                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning action">Edit</a>
                         <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-default action">Details</a>
                         <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger action">Delete</a>
-                        <a asp-action="Members" asp-route-id="@item.Id" class="btn btn-danger action">Members</a>
+                        <a asp-controller="GroupMember" asp-action="Index" asp-route-groupId="@item.Id" class="btn btn-success" style="width: 190px;">Assign Members</a>
                     }
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger action">Challenges</a>
+                    <a asp-controller="GroupChallenge" asp-action="Index" asp-route-groupId="@item.Id" class="btn btn-success" style="width: 190px;">Assign Challenges</a>
                 </td>
             </tr>
         }

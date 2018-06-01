@@ -40,17 +40,18 @@
                 <td style="width: 120px">
                     @Html.DisplayFor(modelItem => item.ShortDescription)
                 </td>
-                <td>
+                <td style="width: 500px">
                     <div class="row">
                         <a asp-controller="Coding" asp-action="Index" asp-route-id="@item.Id" class="btn btn-success action">Start</a>
                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning action">Ranking</a>
                         @if (User.IsInRole("Administrator") || User.IsInRole("Profesor"))
                         {
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning action">Edit</a>
-                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-default action">Details</a>
-                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger action">Delete</a>
                             <a asp-controller="Battery" asp-action="Index" asp-route-challengeId="@item.Id" class="btn btn-default action">Test Batteries</a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-default action">Details</a>
                             <a asp-controller="Solution" asp-action="Index" asp-route-challengeId="@item.Id" class="btn btn-success action">Solutions</a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning action">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger action">Delete</a>
+
                         }
                     </div>
                 </td>

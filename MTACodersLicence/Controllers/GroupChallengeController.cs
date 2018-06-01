@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,23 +11,27 @@ using MTACodersLicence.Models.GroupModels;
 
 namespace MTACodersLicence.Controllers
 {
-    public class GroupMemberModelsController : Controller
+    [Authorize]
+    public class GroupChallengeController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public GroupMemberModelsController(ApplicationDbContext context)
+        public GroupChallengeController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: GroupMemberModels
-        public async Task<IActionResult> Index()
+        // GET: GroupChallenge
+        public async Task<IActionResult> Index(int? groupId)
         {
-            var applicationDbContext = _context.GroupMembers.Include(g => g.Group).Include(g => g.User);
+            var applicationDbContext = _context.GroupChallengeModel
+                                                .Include(g => g.Challenge)
+                                                .Include(g => g.Group)
+                                                .Where(s => s.GroupId == groupId);
             return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: GroupMemberModels/Details/5
+        // GET: GroupChallenge/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -34,45 +39,45 @@ namespace MTACodersLicence.Controllers
                 return NotFound();
             }
 
-            var groupMemberModel = await _context.GroupMembers
+            var groupChallengeModel = await _context.GroupChallengeModel
+                .Include(g => g.Challenge)
                 .Include(g => g.Group)
-                .Include(g => g.User)
                 .SingleOrDefaultAsync(m => m.Id == id);
-            if (groupMemberModel == null)
+            if (groupChallengeModel == null)
             {
                 return NotFound();
             }
 
-            return View(groupMemberModel);
+            return View(groupChallengeModel);
         }
 
-        // GET: GroupMemberModels/Create
+        // GET: GroupChallenge/Create
         public IActionResult Create()
         {
+            ViewData["ChallengeId"] = new SelectList(_context.Challenges, "Id", "Id");
             ViewData["GroupId"] = new SelectList(_context.Groups, "Id", "Id");
-            ViewData["ApplicationUserId"] = new SelectList(_context.ApplicationUser, "Id", "Id");
             return View();
         }
 
-        // POST: GroupMemberModels/Create
+        // POST: GroupChallenge/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,GroupId,ApplicationUserId,JoinDate")] GroupMemberModel groupMemberModel)
+        public async Task<IActionResult> Create([Bind("Id,GroupId,ChallengeId")] GroupChallengeModel groupChallengeModel)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(groupMemberModel);
+                _context.Add(groupChallengeModel);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["GroupId"] = new SelectList(_context.Groups, "Id", "Id", groupMemberModel.GroupId);
-            ViewData["ApplicationUserId"] = new SelectList(_context.ApplicationUser, "Id", "Id", groupMemberModel.ApplicationUserId);
-            return View(groupMemberModel);
+            ViewData["ChallengeId"] = new SelectList(_context.Challenges, "Id", "Id", groupChallengeModel.ChallengeId);
+            ViewData["GroupId"] = new SelectList(_context.Groups, "Id", "Id", groupChallengeModel.GroupId);
+            return View(groupChallengeModel);
         }
 
-        // GET: GroupMemberModels/Edit/5
+        // GET: GroupChallenge/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -80,24 +85,24 @@ namespace MTACodersLicence.Controllers
                 return NotFound();
             }
 
-            var groupMemberModel = await _context.GroupMembers.SingleOrDefaultAsync(m => m.Id == id);
-            if (groupMemberModel == null)
+            var groupChallengeModel = await _context.GroupChallengeModel.SingleOrDefaultAsync(m => m.Id == id);
+            if (groupChallengeModel == null)
             {
                 return NotFound();
             }
-            ViewData["GroupId"] = new SelectList(_context.Groups, "Id", "Id", groupMemberModel.GroupId);
-            ViewData["ApplicationUserId"] = new SelectList(_context.ApplicationUser, "Id", "Id", groupMemberModel.ApplicationUserId);
-            return View(groupMemberModel);
+            ViewData["ChallengeId"] = new SelectList(_context.Challenges, "Id", "Id", groupChallengeModel.ChallengeId);
+            ViewData["GroupId"] = new SelectList(_context.Groups, "Id", "Id", groupChallengeModel.GroupId);
+            return View(groupChallengeModel);
         }
 
-        // POST: GroupMemberModels/Edit/5
+        // POST: GroupChallenge/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,GroupId,ApplicationUserId,JoinDate")] GroupMemberModel groupMemberModel)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,GroupId,ChallengeId")] GroupChallengeModel groupChallengeModel)
         {
-            if (id != groupMemberModel.Id)
+            if (id != groupChallengeModel.Id)
             {
                 return NotFound();
             }
@@ -106,12 +111,12 @@ namespace MTACodersLicence.Controllers
             {
                 try
                 {
-                    _context.Update(groupMemberModel);
+                    _context.Update(groupChallengeModel);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!GroupMemberModelExists(groupMemberModel.Id))
+                    if (!GroupChallengeModelExists(groupChallengeModel.Id))
                     {
                         return NotFound();
                     }
@@ -122,12 +127,12 @@ namespace MTACodersLicence.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["GroupId"] = new SelectList(_context.Groups, "Id", "Id", groupMemberModel.GroupId);
-            ViewData["ApplicationUserId"] = new SelectList(_context.ApplicationUser, "Id", "Id", groupMemberModel.ApplicationUserId);
-            return View(groupMemberModel);
+            ViewData["ChallengeId"] = new SelectList(_context.Challenges, "Id", "Id", groupChallengeModel.ChallengeId);
+            ViewData["GroupId"] = new SelectList(_context.Groups, "Id", "Id", groupChallengeModel.GroupId);
+            return View(groupChallengeModel);
         }
 
-        // GET: GroupMemberModels/Delete/5
+        // GET: GroupChallenge/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -135,32 +140,32 @@ namespace MTACodersLicence.Controllers
                 return NotFound();
             }
 
-            var groupMemberModel = await _context.GroupMembers
+            var groupChallengeModel = await _context.GroupChallengeModel
+                .Include(g => g.Challenge)
                 .Include(g => g.Group)
-                .Include(g => g.User)
                 .SingleOrDefaultAsync(m => m.Id == id);
-            if (groupMemberModel == null)
+            if (groupChallengeModel == null)
             {
                 return NotFound();
             }
 
-            return View(groupMemberModel);
+            return View(groupChallengeModel);
         }
 
-        // POST: GroupMemberModels/Delete/5
+        // POST: GroupChallenge/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var groupMemberModel = await _context.GroupMembers.SingleOrDefaultAsync(m => m.Id == id);
-            _context.GroupMembers.Remove(groupMemberModel);
+            var groupChallengeModel = await _context.GroupChallengeModel.SingleOrDefaultAsync(m => m.Id == id);
+            _context.GroupChallengeModel.Remove(groupChallengeModel);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool GroupMemberModelExists(int id)
+        private bool GroupChallengeModelExists(int id)
         {
-            return _context.GroupMembers.Any(e => e.Id == id);
+            return _context.GroupChallengeModel.Any(e => e.Id == id);
         }
     }
 }

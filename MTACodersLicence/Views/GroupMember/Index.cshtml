@@ -1,0 +1,48 @@
+﻿@model IEnumerable<MTACodersLicence.Models.GroupModels.GroupMemberModel>
+
+@{
+    ViewData["Title"] = "Group Members";
+}
+<h3>Members of Group: </h3>
+@if (User.IsInRole("Administrator") || User.IsInRole("Profesor"))
+{
+    <a asp-action="Create" class="btn btn-success" style="float: right; margin-top: -25px; margin-bottom: 10px;" asp-route-groupId="@ViewBag.GroupId">Add new Members to this group</a>
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.User)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.JoinDate)
+            </th>
+            <th>
+                Actions
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.FullName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.JoinDate)
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id" asp-route-groupId="@ViewBag.GroupId" class="btn btn-default action">Details</a>
+                    <a asp-action="RemoveMemberPrim" asp-route-userId="@item.ApplicationUserId" asp-route-groupId="@ViewBag.GroupId" class="btn btn-danger">Remove</a>
+                </td>
+            </tr>
+        }
+        <tr>
+            <td></td>
+            <td></td>
+            <td>Members Count: @Model.Count()</td>
+        </tr>
+    </tbody>
+</table>
+<a asp-controller="Group" asp-action="Index" class="btn btn-default">Back to groups</a>

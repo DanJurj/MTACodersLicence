@@ -1,0 +1,77 @@
+﻿@model IEnumerable<MTACodersLicence.Models.GroupModels.GroupChallengeModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Assign Challenges to Group @ViewBag.GroupName</h2>
+
+
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <h4>Available Users</h4>
+        <hr />
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Last Name
+                    </th>
+                    <th>
+                        First Name
+                    </th>
+                    <th>
+                        Actions
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model.Users)
+                {
+                    <tr>
+                        <td>@user.LastName</td>
+                        <td>@user.FirstName</td>
+                        <td><a asp-action="AddMember" asp-route-userId="@user.Id" asp-route-groupId="@ViewBag.GroupId" class="btn btn-success">Add</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+    <div class="col-md-6">
+        <h4>Members</h4>
+        <hr />
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Last Name
+                    </th>
+                    <th>
+                        First Name
+                    </th>
+                    <th>
+                        Join Date
+                    </th>
+                    <th>
+                        Actions
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model.Members)
+                {
+                    <tr>
+                        <td>@user.User.LastName</td>
+                        <td>@user.User.FirstName</td>
+                        <td>@user.JoinDate</td>
+                        <td><a asp-action="RemoveMember" asp-route-userId="@user.ApplicationUserId" asp-route-groupId="@ViewBag.GroupId" class="btn btn-danger">Remove</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<a asp-controller="Group" asp-action="Index" class="btn btn-default">Back to Groups</a>
