@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
-using MTACodersLicence.Models.ChallengeModels;
+using MTACodersLicence.Models.BatteryModels;
 
-namespace MTACodersLicence.Models
+namespace MTACodersLicence.Models.TestModels
 {
     public class TestModel
     {

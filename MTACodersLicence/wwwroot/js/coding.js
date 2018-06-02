@@ -21,7 +21,7 @@ var editor = ace.edit("editor");
 editor.setTheme("ace/theme/ambiance");
 editor.session.setMode("ace/mode/c_cpp");
 $runBtn = $('#runBtn');
-changeLanguage();
+
 function run() {
     var editor = ace.edit("editor");
     var code = editor.getSession().getValue();

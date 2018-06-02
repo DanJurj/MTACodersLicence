@@ -9,7 +9,7 @@
 
 <hr />
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-4">
         <h4>Available Challenges</h4>
         <hr />
         <table class="table">
@@ -39,7 +39,7 @@
         </table>
 
     </div>
-    <div class="col-md-6">
+    <div class="col-md-7 col-md-offset-1">
         <h4>Assigned Challenges</h4>
         <hr />
         <table class="table">
@@ -66,7 +66,17 @@
                         <td>@challenge.Challenge.Name</td>
                         <td>@challenge.Challenge.Time</td>
                         <td>@challenge.AssignDate</td>
-                        <td><a asp-action="RemoveChallenge" asp-route-challengeId="@challenge.ChallengeId" asp-route-groupId="@challenge.GroupId" class="btn btn-danger">Remove</a></td>
+                        <td>
+                            @if (challenge.Challenge.Active)
+                            {
+                                <a asp-action="ToogleActivation" asp-route-challengeId="@challenge.ChallengeId" asp-route-groupId="@challenge.GroupId" asp-route-active="0" class="btn btn-warning">Deactivate</a>
+                            }
+                            else
+                            {
+                                <a asp-action="ToogleActivation" asp-route-challengeId="@challenge.ChallengeId" asp-route-groupId="@challenge.GroupId" asp-route-active="1" class="btn btn-success">Activate</a>
+                            }
+                            <a asp-action="RemoveChallenge" asp-route-challengeId="@challenge.ChallengeId" asp-route-groupId="@challenge.GroupId"  class="btn btn-danger">Remove</a>
+                        </td>
                     </tr>
                 }
             </tbody>

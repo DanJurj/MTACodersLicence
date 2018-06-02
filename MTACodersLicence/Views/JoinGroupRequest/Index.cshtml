@@ -1,0 +1,40 @@
+﻿@model IEnumerable<MTACodersLicence.Models.GroupModels.JoinGroupRequestModel>
+
+@{
+    ViewData["Title"] = "Join Requests";
+}
+
+<h2>Join Requests for Group @ViewBag.GroupName</h2>
+<a asp-action="AcceptAll" class="btn btn-success" style="margin-top: -25px; float: right" asp-route-groupId="@ViewBag.GroupId">Accept All</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Solicitator)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SentAt)
+            </th>
+            <th>
+                Actions
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Solicitator.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SentAt)
+            </td>
+            <td style="width: 300px">
+                <a asp-action="AcceptJoinRequest" asp-route-id="@item.Id" class="btn btn-success">Accept</a>
+                <a asp-action="DeleteJoinRequest" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+<a asp-controller="Group" asp-action="Index" asp-route-groupId="@ViewBag.GroupId" class="btn btn-default">Back To Groups</a>

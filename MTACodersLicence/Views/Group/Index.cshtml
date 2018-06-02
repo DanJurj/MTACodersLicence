@@ -25,6 +25,9 @@
                 Challenges
             </th>
             <th>
+                Requests
+            </th>
+            <th>
                 Actions
             </th>
         </tr>
@@ -55,6 +58,14 @@
                 {
                     <td>@item.Challenges.Count</td>
                 }
+                @if (item.JoinRequests == null)
+                {
+                    <td>0</td>
+                }
+                else
+                {
+                    <td>@item.JoinRequests.Count</td>
+                }
                 <td style="width: 400px;">
                     @if (User.IsInRole("Administrator") || User.IsInRole("Profesor"))
                     {
@@ -62,8 +73,13 @@
                         <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger acionGroup">Delete</a>
                         <a asp-controller="GroupMember" asp-action="Index" asp-route-groupId="@item.Id" class="btn btn-success acionGroup">Assign Members</a>
                         <a asp-controller="GroupChallenge" asp-action="Index" asp-route-groupId="@item.Id" class="btn btn-success acionGroup">Assign Challenges</a>
+                        <a asp-controller="JoinGroupRequest" asp-action="Index" asp-route-groupId="@item.Id" class="btn btn-default acionGroup">Join Requests</a>
                     }
-                    <a asp-controller="GroupChallenge" asp-action="AssignedChallenges" asp-route-groupId="@item.Id" class="btn btn-success" style="width: 344px">View Assigned Challenges</a>
+                    <a asp-controller="GroupChallenge" asp-action="AssignedChallenges" asp-route-groupId="@item.Id" class="btn btn-default acionGroup">View Challenges</a>
+                    @if (User.IsInRole("Student"))
+                    {
+                        <a asp-controller="GroupMember" asp-action="LeaveGroup" asp-route-groupId="@item.Id" class="btn btn-danger acionGroup">Leave Group</a>
+                    }
                 </td>
             </tr>
         }

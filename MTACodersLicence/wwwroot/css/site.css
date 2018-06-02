@@ -125,3 +125,9 @@
     margin-bottom: 15px;
     background-color: beige;
 }
+
+.codeButton {
+    margin-right: 7px;
+    width: 120px;
+    margin-bottom: 15px;
+}

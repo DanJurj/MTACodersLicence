@@ -1,0 +1,71 @@
+﻿@model IEnumerable<MTACodersLicence.ViewModels.AdminManageAccountViewModel>
+
+@{
+    ViewData["Title"] = "Accounts";
+}
+
+<h2>Accounts</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Account.FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Account.LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Account.UserName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Account.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Account.EmailConfirmed)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Account.PhoneNumber)
+            </th>
+            <th>
+                Role
+            </th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Account.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Account.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Account.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Account.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Account.EmailConfirmed)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Account.PhoneNumber)
+                </td>
+                <td>
+                    @foreach (var role in item.Roles)
+                    {
+                        <p>@role</p>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Account.Id" class="btn btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@item.Account.Id" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,4 +1,4 @@
-﻿@model MTACodersLicence.Models.TestModel
+﻿@model MTACodersLicence.Models.TestModels.TestModel
 
 @{
     ViewData["Title"] = "Create Test";
@@ -11,6 +11,7 @@
     <form asp-action="Create">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="col-md-6">
+            <input asp-for="BatteryId" class="form-control" value="@ViewData["batteryId"]" type="hidden" />
             <div class="form-group">
                 <label asp-for="Input" class="control-label"></label>
                 <textarea asp-for="Input" class="form-control" rows="5"></textarea>
@@ -18,15 +19,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="Points" class="control-label"></label>
-                <input asp-for="Points" class="form-control" type="number"/>
+                <input asp-for="Points" class="form-control" type="number" />
                 <span asp-validation-for="Points" class="text-danger"></span>
             </div>
-            <div class="form-group" hidden>
-                <label asp-for="BatteryId" class="control-label"></label>
-                <input asp-for="BatteryId" class="form-control" value="@ViewData["batteryId"]"/>
-            </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <a asp-action="Index" class="btn btn-default">Back to List</a>
+                <input type="submit" value="Create" class="btn btn-success"/>
             </div>
         </div>
         <div class="col-md-6">
@@ -37,10 +35,5 @@
             </div>
         </div>
     </form>
-</div>
-
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 

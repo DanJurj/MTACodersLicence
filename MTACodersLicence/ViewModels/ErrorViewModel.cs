@@ -1,6 +1,4 @@
-using System;
-
-namespace MTACodersLicence.Models
+namespace MTACodersLicence.ViewModels
 {
     public class ErrorViewModel
     {

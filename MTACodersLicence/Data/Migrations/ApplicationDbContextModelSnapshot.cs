@@ -208,7 +208,11 @@ namespace WebApplication5.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<bool>("Active");
+
                     b.Property<string>("ApplicationUserId");
+
+                    b.Property<string>("CodeTemplate");
 
                     b.Property<string>("Desciption");
 
@@ -307,6 +311,26 @@ namespace WebApplication5.Data.Migrations
                     b.HasIndex("ApplicationUserId");
 
                     b.ToTable("Groups");
+                });
+
+            modelBuilder.Entity("MTACodersLicence.Models.GroupModels.JoinGroupRequestModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ApplicationUserId");
+
+                    b.Property<int>("GroupId");
+
+                    b.Property<DateTime>("SentAt");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("GroupId");
+
+                    b.ToTable("JoinGroupRequestModel");
                 });
 
             modelBuilder.Entity("MTACodersLicence.Models.ResultModels.ResultModel", b =>
@@ -502,6 +526,18 @@ namespace WebApplication5.Data.Migrations
                     b.HasOne("MTACodersLicence.Models.ApplicationUser", "Owner")
                         .WithMany()
                         .HasForeignKey("ApplicationUserId");
+                });
+
+            modelBuilder.Entity("MTACodersLicence.Models.GroupModels.JoinGroupRequestModel", b =>
+                {
+                    b.HasOne("MTACodersLicence.Models.ApplicationUser", "Solicitator")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("MTACodersLicence.Models.GroupModels.GroupModel", "Group")
+                        .WithMany("JoinRequests")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("MTACodersLicence.Models.ResultModels.ResultModel", b =>

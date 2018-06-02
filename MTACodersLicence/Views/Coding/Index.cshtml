@@ -1,5 +1,8 @@
 ﻿@model MTACodersLicence.Models.ChallengeModels.ChallengeViewModel
 @using Newtonsoft.Json
+@{
+    ViewData["Title"] = "Coding";
+}
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,17 +11,21 @@
     <title>Coding</title>
     <link href="~/lib/bootstrap/dist/css/bootstrap-grid.css" rel="stylesheet" />
     <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
-    <link href="~/css/codemirror.css" rel="stylesheet" />
     <link href="~/css/ide.css" rel="stylesheet" />
 </head>
 <body>
+    <div id="loading" style="display: none;">
+        <div id="loadingmsg">Running Input, please wait...</div>
+        <div id="loadingover"></div>
+        <div class="loader"></div>
+    </div>
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
             <h3 style="color: rebeccapurple">
                 @Html.DisplayFor(m => m.Challenge.Name)
             </h3>
         </div>
-        <div class="col-md-2">
+        <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
             <div class="row" style="margin-top: 10px">
                 <button type="button" class="btn btn-default btn-sm" onclick="toggleTime()">
                     <span class="glyphicon glyphicon-time" style="font-size: 1.2em;">
@@ -27,13 +34,13 @@
                 </button>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="col-md-6">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                 <h3 style="color: rebeccapurple">
                     Solution:
                 </h3>
             </div>
-            <div class="col-md-6">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                 <p style="margin-top: 15px; margin-bottom: -2px;">Upload Source from PC:</p>
                 <input type="file" class="btn btn-warning" id="fileinput" style="margin-bottom: 5px">
             </div>
@@ -63,9 +70,13 @@
                 <button id="showBtn" type="button" class="btn btn-default btn-sm" onclick="showCerinte()" style="display: none">
                     <span class="glyphicon glyphicon-eye-open"></span>
                 </button>
-                <button type="button" class="btn btn-default btn-sm" style="margin-top: 20px" onclick="saveCode()">
-                    <span class="glyphicon glyphicon-floppy-disk"></span>
-                </button>
+                <form action="/Coding/SaveCode" method="post" id="form">
+                    <input type="hidden" value="@Model.Challenge.Id" name="challengeId" />
+                    <textarea id="savedCode" name="savedCode" rows="1" style="display: none"></textarea>
+                    <button type="submit" class="btn btn-default btn-sm" style="margin-top: 20px" onclick="saveCode()" id="saveCodeBtn">
+                        <span class="glyphicon glyphicon-floppy-disk"></span>
+                    </button>
+                </form>
             </div>
 
             <!-- Coding Part -->
@@ -91,7 +102,7 @@
                     <div class="col-md-3">
                         <form class="form">
                             <div class="form-group">
-                                <select id="theme" class="form-control" style="background-color:cornsilk; float: right" onchange="changeTheme()">
+                                <select id="theme" class="form-control" style="background-color: cornsilk; float: right" onchange="changeTheme()">
                                     <option>Ambiance</option>
                                     <option>Chaos</option>
                                     <option>Chrome</option>
@@ -112,15 +123,43 @@
 
                 <form action="/Coding/Code" method="post" id="form">
                     <input hidden value="@Model.Challenge.Id" name="challengeId" />
-                    <pre id="editor" name="editor">
+                    <pre id="editor" name="editor">@Model.CodingSession.Code
                     </pre>
                     <textarea id="code" name="code" style="display: none"></textarea>
                     <input type="hidden" name="language" id="language" value="0" />
-                    <button type="button" value="Run Input" data-loading-text="Running..." onclick="run2();" class="btn btn-success" style="width: 120px; margin-bottom: 5px" id="runBtn">
+                    <!-- input output containers -->
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <h4>
+                                    <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Input <small>optional</small>
+                                </h4>
+                            </div>
+                            <div class="col-md-5 col-md-offset-2">
+                                <h4>
+                                    <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Output <small id="emptyIndicator">
+                                    </small>
+                                    <small class="pull-right" id="statusLine"></small>
+                                </h4>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <textarea class="col-md-5" rows="4" style="margin-bottom: 10px;" name="input"></textarea>
+                            @if (Model.HasError)
+                            {
+                                <textarea class="col-md-5 col-md-offset-2" rows="4" style="margin-bottom: 10px;" disabled>@Model.Error  @Model.Stderr</textarea>
+                            }
+                            else
+                            {
+                                <textarea class="col-md-5 col-md-offset-2" rows="4" style="margin-bottom: 10px;white-space: pre-wrap" disabled>@Model.Stdout</textarea>
+                            }
+                        </div>
+                    </div>
+                    <button type="submit" value="Run Input" onclick="showLoading();run();" class="btn btn-success codeButton" name="codeButton">
                         <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Run
                     </button>
-                    <input type="submit" value="Run Tests" onclick="run();" class="btn btn-danger" style="width: 120px; margin-bottom: 5px" name="codeButton" />
-                    <input type="submit" value="Submit Code" onclick="run();" class="btn btn-warning" style="margin-right: 20px; width: 120px; margin-bottom: 5px" id="submitBtn" name="codeButton" />
+                    <input type="submit" value="Run Tests" onclick="run();" class="btn btn-danger codeButton" name="codeButton" />
+                    <input type="submit" value="Submit Code" onclick="run();" class="btn btn-warning codeButton" id="submitBtn" name="codeButton" />
                 </form>
             </div>
         </div>
@@ -132,13 +171,15 @@
     <script src="~/lib/jquery/dist/jquery.js"></script>
     <script src="~/js/coding.js"></script>
     <script type="text/javascript">
-        document.getElementById('fileinput').addEventListener('change', readSingleFile, false);
+    document.getElementById('fileinput').addEventListener('change', readSingleFile, false);
 
-        //
-        var hours = @Html.Raw(JsonConvert.SerializeObject(this.Model.Challenge.Time.Hour));
-        var minutes = @Html.Raw(JsonConvert.SerializeObject(this.Model.Challenge.Time.Minute));
-        var seconds = @Html.Raw(JsonConvert.SerializeObject(this.Model.Challenge.Time.Second));
-        var x = setInterval(function () {
+    //
+    var minutes = @Html.Raw(JsonConvert.SerializeObject(this.Model.RemainingTime));
+    var hours = Math.floor(minutes / 60);
+    if (hours !== 0)
+        minutes = minutes % (hours * 60);
+    var seconds = 0;
+    var x = setInterval(function() {
 
             // Output the result in an element with id="demo"
             document.getElementById("time").innerHTML = hours + "h " + minutes + "m " + seconds + "s ";
@@ -160,32 +201,27 @@
             else {
                 seconds--;
             }
-        }, 1000);
+        },
+        1000);
 
-        $(function() {
-            $('#submitBtn').click(function() {
-                return window.confirm("Sunteti sigur ca doriti sa trimiteti rezolvarea?");
-            });
+    $(function() {
+        $('#submitBtn').click(function() {
+            return window.confirm("Sunteti sigur ca doriti sa trimiteti rezolvarea?");
         });
+    });
 
-        function saveCode() {
-            //JSON data
-            var dataType = 'application/json; charset=utf-8';
-            var code = editor.getValue();
+    function saveCode() {
+        var code = editor.getValue();
+        document.getElementById("savedCode").value = code;
+    }
 
-            console.log('Submitting form...');
-            $.ajax({
-                type: 'POST',
-                url: '/Coding/SaveCode',
-                dataType: 'json',
-                contentType: dataType,
-                data: JSON.stringify(code),
-                success: function(result) {
-                    console.log('Data received: ');
-                    console.log(result);
-                }
-            });
-        }
+    $(window).keypress(function(event) {
+        if (!(event.which == 115 && event.ctrlKey) && !(event.which == 19)) return true;
+        alert("Progress Saved!");
+        event.preventDefault();
+        document.getElementById("saveCodeBtn").click();
+        return false;
+    });
     </script>
 </body>
 </html>

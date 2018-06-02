@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MTACodersLicence.Data;
+using MTACodersLicence.Models.BatteryModels;
 using MTACodersLicence.Models.ChallengeModels;
 
 namespace MTACodersLicence.Controllers
@@ -70,11 +71,9 @@ namespace MTACodersLicence.Controllers
         }
 
         // POST: Battery/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,IsPublic,ChallengeId")] BatteryModel batteryModel)
+        public async Task<IActionResult> Create([Bind("Name,IsPublic,ChallengeId")] BatteryModel batteryModel)
         {
             if (ModelState.IsValid)
             {

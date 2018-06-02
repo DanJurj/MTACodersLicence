@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using MTACodersLicence.Data;
 using MTACodersLicence.Models;
 using System.Security.Claims;
+using MTACodersLicence.ViewModels;
 
 namespace MTACodersLicence.Controllers
 {

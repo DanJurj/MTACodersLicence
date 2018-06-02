@@ -5,10 +5,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MTACodersLicence.Models;
+using MTACodersLicence.Models.BatteryModels;
 using MTACodersLicence.Models.ChallengeModels;
 using MTACodersLicence.Models.GroupModels;
 using MTACodersLicence.Models.ResultModels;
 using MTACodersLicence.Models.SolutionModels;
+using MTACodersLicence.Models.TestModels;
 
 namespace MTACodersLicence.Data
 {
@@ -48,6 +50,8 @@ namespace MTACodersLicence.Data
         public DbSet<TestResultModel> TestResults { get; set; }
 
         public DbSet<CodingSessionModel> CodingSessions { get; set; }
+
+        public DbSet<MTACodersLicence.Models.GroupModels.JoinGroupRequestModel> JoinGroupRequestModel { get; set; }
 
 
     }

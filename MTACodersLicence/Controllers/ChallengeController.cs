@@ -23,59 +23,78 @@ namespace MTACodersLicence.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+
         public ChallengeController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;
         }
 
-        // GET: Challenge
-        public IActionResult Index(string searchString, string order)
+        private List<ChallengeModel> OrderAndSearch(string searchString, string order, IEnumerable<ChallengeModel> challenges)
         {
-            var challenges = _context.Challenges
-                                    .Include(s => s.ChallengeGroups)
-                                    .Include(s => s.Owner)
-                                    .ToList();
-            if (User.IsInRole("Profesor"))
-            {
-                challenges = challenges.Where(c => c.ApplicationUserId == _userManager.GetUserId(User)).ToList();
-            }
-            else if (User.IsInRole("Student"))
-            {
-                // var groups = _context.Groups.Where(s => s.Members.Contains(s.));
-                // selectem toate grupurile in care este inscris utilizatorul curent
-                var groups = _context.GroupMembers.Include(s => s.Group)
-                     .Where(s => s.ApplicationUserId == _userManager.GetUserId(User))
-                     .Select(s => s.Group);
-
-                 //challenges = groups.Select(s => s.Challenges);
-            }
-
             //search
-            if (!String.IsNullOrEmpty(searchString))
+            if (!string.IsNullOrEmpty(searchString))
             {
-                challenges = challenges.Where(s => s.Name.Contains(searchString)).ToList();
+                return challenges.Where(s => s.Name.Contains(searchString)).ToList();
             }
             //ordonare
             switch (order)
             {
-                case "nameAsc":
-                    challenges = challenges.OrderBy(s => s.Name).ToList();
-                    break;
-                case "nameDesc":
-                    challenges = challenges.OrderByDescending(s => s.Name).ToList();
-                    break;
-                case "timeAsc":
-                    challenges = challenges.OrderBy(s => s.Time).ToList();
-                    break;
-                case "timeDesc":
-                    challenges = challenges.OrderByDescending(s => s.Time).ToList();
-                    break;
-                default:
-                    break;
+                case "nameAsc": return challenges.OrderBy(s => s.Name).ToList();
+                case "nameDesc": return challenges.OrderByDescending(s => s.Name).ToList();
+                case "timeAsc": return challenges.OrderBy(s => s.Time).ToList();
+                case "timeDesc": return challenges.OrderByDescending(s => s.Time).ToList();
+                default: return challenges.ToList();
             }
+        }
 
-            return View(challenges);
+        // GET: Challenge
+        public IActionResult Index(string searchString, string order)
+        {
+            if (User.IsInRole("Administrator"))
+            {
+                // daca e administrator poate sa vada toate concursurile din baza de date
+                var allChallenges = _context.Challenges
+                    .Include(s => s.Owner)
+                    .ToList();
+                allChallenges = OrderAndSearch(searchString, order, allChallenges);
+                return View(allChallenges);
+            }
+            else if (User.IsInRole("Profesor"))
+            {
+                // daca e profesor poate sa vada toate concursurile create de el
+                var challengesProfessor = _context.Challenges
+                                        .Include(s => s.Owner)
+                                        .Where(c => c.ApplicationUserId == _userManager.GetUserId(User))
+                                        .ToList();
+                challengesProfessor = OrderAndSearch(searchString, order, challengesProfessor);
+                return View(challengesProfessor);
+            }
+            else
+            {
+                if (User.IsInRole("Student"))
+                {
+                    // selectam toate grupurile in care este inscris utilizatorul curent
+                    var groups = _context.GroupMembers.Include(s => s.Group)
+                        .Where(s => s.ApplicationUserId == _userManager.GetUserId(User))
+                        .Select(s => s.Group)
+                        .Select(s => s.Challenges)
+                        .ToList();
+
+                    var challengesStudent = new List<ChallengeModel>();
+                    foreach (var groupMember in groups)
+                    {
+                        foreach (var challengeModel in groupMember)
+                        {
+                            var challenge = _context.Challenges.FirstOrDefault(s => s.Id == challengeModel.ChallengeId);
+                            challengesStudent.Add(challenge);
+                        }
+                    }
+                    challengesStudent = OrderAndSearch(searchString, order, challengesStudent);
+                    return View(challengesStudent);
+                }
+                return NotFound();
+            }
         }
 
         // GET: Challenge/Details/5
@@ -111,7 +130,7 @@ namespace MTACodersLicence.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator,Profesor")]
-        public async Task<IActionResult> Create([Bind("Name,ShortDescription,Desciption,Tasks,Time,Hint")] ChallengeModel challengeModel)
+        public async Task<IActionResult> Create([Bind("Name,ShortDescription,Desciption,Tasks,Time,Hint,CodeTemplate")] ChallengeModel challengeModel)
         {
             try
             {
@@ -150,12 +169,10 @@ namespace MTACodersLicence.Controllers
         }
 
         // POST: Challenge/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator,Profesor")]
-        public async Task<IActionResult> Edit([Bind("Id,Name,ShortDescription,Desciption,Tasks,Time,Hint,ApplicationUserId")] ChallengeModel challengeModel)
+        public async Task<IActionResult> Edit([Bind("Id,Name,ShortDescription,Desciption,Tasks,Time,Hint,ApplicationUserId,Active")] ChallengeModel challengeModel)
         {
             challengeModel.ApplicationUserId = _userManager.GetUserId(User);
             if (ModelState.IsValid)

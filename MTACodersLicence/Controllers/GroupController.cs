@@ -33,6 +33,7 @@ namespace MTACodersLicence.Controllers
                                         .Include(s => s.Owner)
                                         .Include(s => s.Members)
                                         .Include(s => s.Challenges)
+                                        .Include(s => s.JoinRequests)
                                         .ToListAsync();
             if (User.IsInRole("Profesor"))
             {
@@ -49,6 +50,8 @@ namespace MTACodersLicence.Controllers
             }
             return View(groups);
         }
+
+      
 
         // GET: Group/Create
         [Authorize(Roles = "Administrator,Profesor")]
@@ -179,6 +182,59 @@ namespace MTACodersLicence.Controllers
         private bool GroupModelExists(int id)
         {
             return _context.Groups.Any(e => e.Id == id);
+        }
+
+        public async Task<IActionResult> AllGroups()
+        {
+            var allGroups = await _context.Groups
+                .Include(s => s.Owner)
+                .Include(s => s.Members)
+                .Include(s => s.Challenges)
+                .ToListAsync();
+            var userId = _userManager.GetUserId(User);
+            // the groups i am member in
+            var memberGroups = await  _context.GroupMembers
+                                            .Where(s => s.ApplicationUserId == userId)
+                                            .Select(s => s.Group)
+                                            .ToListAsync();
+            // the groups i already sent requests to
+            var requestGroups = await _context.JoinGroupRequestModel
+                                            .Where(s => s.ApplicationUserId == userId)
+                                            .Select(s => s.Group)
+                                            .ToListAsync();
+            // eliminam grupurile in care suntem deja membrii sau catre care am trimis deja cereri de inregistrare
+            foreach (var group in memberGroups)
+            {
+                if (allGroups.Contains(group))
+                {
+                    allGroups.Remove(group);
+                }
+            }
+            foreach (var group in requestGroups)
+            {
+                if (allGroups.Contains(group))
+                {
+                    allGroups.Remove(group);
+                }
+            }
+            return View(allGroups);
+        }
+
+        public async Task<IActionResult> AddJoinRequest(int? groupId)
+        {
+            if (groupId == null)
+            {
+                return NotFound();
+            }
+            var joinGroupRequest = new JoinGroupRequestModel
+            {
+                ApplicationUserId = _userManager.GetUserId(User),
+                GroupId = (int)groupId,
+                SentAt = DateTime.Now
+            };
+            _context.JoinGroupRequestModel.Add(joinGroupRequest);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(AllGroups));
         }
     }
 }

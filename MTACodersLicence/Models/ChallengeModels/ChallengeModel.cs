@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Xml;
+using MTACodersLicence.Models.BatteryModels;
 using MTACodersLicence.Models.GroupModels;
 using MTACodersLicence.Models.SolutionModels;
 
@@ -22,6 +19,10 @@ namespace MTACodersLicence.Models.ChallengeModels
         public string Tasks { get; set; }
         public int Time { get; set; }  //minutes
         public string Hint { get; set; }
+        [Display(Name = "Code Template")]
+        public string CodeTemplate { get; set; }
+        public bool Active { get; set; }
+
         public ICollection<BatteryModel> Batteries { get; set; }
         public ICollection<SolutionModel> Solutions { get; set; }
         public ICollection<GroupChallengeModel> ChallengeGroups { get; set; }

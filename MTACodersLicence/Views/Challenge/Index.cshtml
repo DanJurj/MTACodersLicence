@@ -1,5 +1,7 @@
 ﻿@model IEnumerable<MTACodersLicence.Models.ChallengeModels.ChallengeModel>
-
+@{
+    ViewData["Title"] = "Challenges";
+}
 @if (User.IsInRole("Administrator") || User.IsInRole("Profesor"))
 {
     <p>
@@ -17,9 +19,21 @@
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.Name)
+                <a asp-action="Index" asp-route-order="nameAsc">
+                    <span class="glyphicon glyphicon-triangle-top"></span>
+                </a>
+                <a asp-action="Index" asp-route-order="nameDesc">
+                    <span class="glyphicon glyphicon-triangle-bottom"></span>
+                </a>
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Time) (minutes)
+                <a asp-action="Index" asp-route-order="timeAsc">
+                    <span class="glyphicon glyphicon-triangle-top"></span>
+                </a>
+                <a asp-action="Index" asp-route-order="timeDesc">
+                    <span class="glyphicon glyphicon-triangle-bottom"></span>
+                </a>
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.ShortDescription)
@@ -54,7 +68,10 @@
                 }
                 <td style="width: 500px">
                     <div class="row">
-                        <a asp-controller="Coding" asp-action="Index" asp-route-id="@item.Id" class="btn btn-success action">Start</a>
+                        @if (@item.Active)
+                        {
+                            <a asp-controller="Coding" asp-action="Index" asp-route-id="@item.Id" class="btn btn-success action">Start</a>
+                        }
                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning action">Ranking</a>
                         @if (User.IsInRole("Administrator") || User.IsInRole("Profesor"))
                         {

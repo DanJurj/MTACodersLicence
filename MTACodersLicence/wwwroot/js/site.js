@@ -1,1 +1,3 @@
-﻿// Write your JavaScript code.
+﻿function showLoading() {
+    document.getElementById('loading').style.display = 'block';
+}

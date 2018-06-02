@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using MTACodersLicence.Models;
+using MTACodersLicence.Models.GroupModels;
 
-namespace MTACodersLicence.Models.GroupModels
+namespace MTACodersLicence.ViewModels.GroupViewModels
 {
     public class GroupMemberViewModel
     {

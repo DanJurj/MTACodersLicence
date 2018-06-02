@@ -96,5 +96,23 @@ namespace MTACodersLicence.Controllers
                 .ToListAsync();
             return View(assignedChallenges);
         }
+
+        [Authorize(Roles = "Administrator,Profesor")]
+        public async Task<IActionResult> ToogleActivation(int? challengeId, int? groupId, int? active)
+        {
+            if (challengeId == null || groupId == null || active == null)
+            {
+                return NotFound();
+            }
+            var challenge = await _context.Challenges
+                                    .FirstOrDefaultAsync(s => s.Id == challengeId);
+            if (active == 0)
+                challenge.Active = false;
+            else
+                challenge.Active = true;
+            _context.Challenges.Update(challenge);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index", new { groupId });
+        }
     }
 }

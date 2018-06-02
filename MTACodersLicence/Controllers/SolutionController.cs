@@ -11,9 +11,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MTACodersLicence.Data;
 using MTACodersLicence.Models;
+using MTACodersLicence.Models.BatteryModels;
 using MTACodersLicence.Models.ChallengeModels;
 using MTACodersLicence.Models.ResultModels;
 using MTACodersLicence.Models.SolutionModels;
+using MTACodersLicence.Models.TestModels;
 using Rotativa.AspNetCore;
 
 namespace MTACodersLicence.Controllers
@@ -29,6 +31,7 @@ namespace MTACodersLicence.Controllers
         }
 
         // GET: Solution
+        [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> Index(int? challengeId, string order)
         {
             var solutions = _context.Solutions
@@ -84,6 +87,7 @@ namespace MTACodersLicence.Controllers
         }
 
         // GET: Solution/Details/5
+        [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -106,6 +110,7 @@ namespace MTACodersLicence.Controllers
         }
 
         // GET: Solution/Create
+        [Authorize(Roles = "Administrator,Profesor")]
         public IActionResult Create()
         {
             ViewData["ChallengeId"] = new SelectList(_context.Challenges, "Id", "Id");
@@ -116,6 +121,7 @@ namespace MTACodersLicence.Controllers
         // POST: Solution/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> Create([Bind("Id,Code,Verified,Score,ReceiveDateTime,TimeSpent,ChallengeId,ApplicationUserId")] SolutionModel solutionModel)
         {
             if (ModelState.IsValid)
@@ -130,6 +136,7 @@ namespace MTACodersLicence.Controllers
         }
 
         // GET: Solution/Edit/5
+        [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -150,6 +157,7 @@ namespace MTACodersLicence.Controllers
         // POST: Solution/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Code,Verified,Score,ReceiveDateTime,TimeSpent,ChallengeId,ApplicationUserId")] SolutionModel solutionModel)
         {
             if (id != solutionModel.Id)
@@ -185,6 +193,7 @@ namespace MTACodersLicence.Controllers
         // GET: Solution/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -200,11 +209,13 @@ namespace MTACodersLicence.Controllers
             return RedirectToAction(nameof(Index), new { challengeId });
         }
 
+        [Authorize(Roles = "Administrator,Profesor")]
         private bool SolutionModelExists(int id)
         {
             return _context.Solutions.Any(e => e.Id == id);
         }
 
+        [Authorize(Roles = "Administrator,Profesor")]
         private async Task RunTest(TestModel test, SolutionModel solution, ResultModel result)
         {
             TestResultModel testResult = new TestResultModel
@@ -243,6 +254,7 @@ namespace MTACodersLicence.Controllers
             await _context.SaveChangesAsync();
         }
 
+        [Authorize(Roles = "Administrator,Profesor")]
         private async Task VerifyIfResultExists(int? solutionId, int? batteryId)
         {
             var resultExistent = _context.Results
@@ -255,6 +267,7 @@ namespace MTACodersLicence.Controllers
             await _context.SaveChangesAsync();
         }
 
+        [Authorize(Roles = "Administrator,Profesor")]
         private async Task UpdateScoreAndGrade(SolutionModel solution)
         {
             float totalPointsGiven = 0;
@@ -279,6 +292,7 @@ namespace MTACodersLicence.Controllers
             await _context.SaveChangesAsync();
         }
 
+        [Authorize(Roles = "Administrator,Profesor")]
         private async Task RunBattery(SolutionModel solution, BatteryModel battery)
         {
             // Verificam daca exista deja rezultate pentru bateria si solutia data si daca exista le suprascriem
@@ -296,6 +310,7 @@ namespace MTACodersLicence.Controllers
             }
         }
 
+        [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> Run(int? id, int? batteryId)
         {
             if (id == null || batteryId == null)
@@ -313,12 +328,14 @@ namespace MTACodersLicence.Controllers
 
         }
 
+        [Authorize(Roles = "Administrator,Profesor")]
         public IActionResult UserDetails(string userId)
         {
             var user = _context.ApplicationUser.FirstOrDefault(s => s.Id == userId);
             return View(user);
         }
 
+        [Authorize(Roles = "Administrator,Profesor")]
         public IActionResult Results(int? id, int? challengeId)
         {
             if (id == null)
@@ -335,11 +352,13 @@ namespace MTACodersLicence.Controllers
             return View(results);
         }
 
+        [Authorize(Roles = "Administrator,Profesor")]
         public IActionResult PrintIndex(int? challengeId)
         {
             return new ViewAsPdf("Create");
         }
 
+        [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> DeleteResult(int? resultId)
         {
             var result = _context.Results
@@ -364,7 +383,7 @@ namespace MTACodersLicence.Controllers
             return RedirectToAction(nameof(Results), new { id = solutionId, challengeId });
         }
 
-
+        [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> VerifyAll(int? challengeId)
         {
             IList<SolutionModel> solutions = _context.Solutions
@@ -384,5 +403,7 @@ namespace MTACodersLicence.Controllers
             }
             return RedirectToAction(nameof(Index), new { challengeId });
         }
+
+
     }
 }
