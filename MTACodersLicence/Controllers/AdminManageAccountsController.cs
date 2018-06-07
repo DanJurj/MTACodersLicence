@@ -39,6 +39,8 @@ namespace MTACodersLicence.Controllers
                     Roles = roles
                 });
             }
+            var codingSessionsCount = _context.CodingSessions.Count();
+            ViewData["codingSessions"] = codingSessionsCount;
             return View(adminManageViewModelList);
         }
 
@@ -132,6 +134,17 @@ namespace MTACodersLicence.Controllers
         private bool ApplicationUserExists(string id)
         {
             return _context.ApplicationUser.Any(e => e.Id == id);
+        }
+
+        public async Task<IActionResult> ClearCodingSessions()
+        {
+            var codingSessions = await _context.CodingSessions.ToListAsync();
+            foreach (var codingSession in codingSessions)
+            {
+                _context.CodingSessions.Remove(codingSession);
+            }
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index");
         }
     }
 }

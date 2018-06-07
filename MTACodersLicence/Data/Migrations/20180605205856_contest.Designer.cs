@@ -11,9 +11,10 @@ using System;
 namespace WebApplication5.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180605205856_contest")]
+    partial class contest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -282,7 +283,7 @@ namespace WebApplication5.Data.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("Contests");
+                    b.ToTable("ContestModel");
                 });
 
             modelBuilder.Entity("MTACodersLicence.Models.GroupModels.GroupChallengeModel", b =>
@@ -490,7 +491,7 @@ namespace WebApplication5.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Rankings");
+                    b.ToTable("RankingViewModel");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

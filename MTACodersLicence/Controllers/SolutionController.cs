@@ -16,6 +16,7 @@ using MTACodersLicence.Models.ChallengeModels;
 using MTACodersLicence.Models.ResultModels;
 using MTACodersLicence.Models.SolutionModels;
 using MTACodersLicence.Models.TestModels;
+using MTACodersLicence.Services;
 using Rotativa.AspNetCore;
 
 namespace MTACodersLicence.Controllers
@@ -38,6 +39,7 @@ namespace MTACodersLicence.Controllers
                                     .Include(s => s.Challenge)
                                         .ThenInclude(s => s.Batteries)
                                     .Include(s => s.Owner)
+                                    .Include(s => s.ProgrammingLanguage)
                                     .Where(s => s.ChallengeId == challengeId)
                                     .OrderByDescending(s => s.Score);
             if (order != null)
@@ -100,6 +102,7 @@ namespace MTACodersLicence.Controllers
                     .ThenInclude(s => s.Batteries)
                         .ThenInclude(s => s.Tests)
                 .Include(s => s.Owner)
+                .Include(s => s.ProgrammingLanguage)
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (solutionModel == null)
             {
@@ -109,147 +112,19 @@ namespace MTACodersLicence.Controllers
             return View(solutionModel);
         }
 
-        // GET: Solution/Create
-        [Authorize(Roles = "Administrator,Profesor")]
-        public IActionResult Create()
-        {
-            ViewData["ChallengeId"] = new SelectList(_context.Challenges, "Id", "Id");
-            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id");
-            return View();
-        }
-
-        // POST: Solution/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator,Profesor")]
-        public async Task<IActionResult> Create([Bind("Id,Code,Verified,Score,ReceiveDateTime,TimeSpent,ChallengeId,ApplicationUserId")] SolutionModel solutionModel)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(solutionModel);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["ChallengeId"] = new SelectList(_context.Challenges, "Id", "Id", solutionModel.ChallengeId);
-            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", solutionModel.ApplicationUserId);
-            return View(solutionModel);
-        }
-
-        // GET: Solution/Edit/5
-        [Authorize(Roles = "Administrator,Profesor")]
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var solutionModel = await _context.Solutions.SingleOrDefaultAsync(m => m.Id == id);
-            if (solutionModel == null)
-            {
-                return NotFound();
-            }
-            ViewData["ChallengeId"] = new SelectList(_context.Challenges, "Id", "Id", solutionModel.ChallengeId);
-            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", solutionModel.ApplicationUserId);
-            return View(solutionModel);
-        }
-
-        // POST: Solution/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator,Profesor")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Code,Verified,Score,ReceiveDateTime,TimeSpent,ChallengeId,ApplicationUserId")] SolutionModel solutionModel)
-        {
-            if (id != solutionModel.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(solutionModel);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!SolutionModelExists(solutionModel.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["ChallengeId"] = new SelectList(_context.Challenges, "Id", "Id", solutionModel.ChallengeId);
-            ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", solutionModel.ApplicationUserId);
-            return View(solutionModel);
-        }
-
-        // GET: Solution/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator,Profesor")]
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var solutionModel = await _context.Solutions.SingleOrDefaultAsync(m => m.Id == id);
-            var challengeId = solutionModel.ChallengeId;
-            _context.Solutions.Remove(solutionModel);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction(nameof(Index), new { challengeId });
-        }
-
-        [Authorize(Roles = "Administrator,Profesor")]
-        private bool SolutionModelExists(int id)
-        {
-            return _context.Solutions.Any(e => e.Id == id);
-        }
-
         [Authorize(Roles = "Administrator,Profesor")]
         private async Task RunTest(TestModel test, SolutionModel solution, ResultModel result)
         {
-            TestResultModel testResult = new TestResultModel
+            var testResult = new TestResultModel
             {
                 TestId = test.Id,
                 ResultId = result.Id
             };
 
-            var type = "cpp";
-            var filename = "source.cpp";
-            string url = "https://run.glot.io/languages/" + type + "/latest";
-            string data = "{\"stdin\": \"" + test.Input + "\" , \"files\": [{\"name\": \"" + filename + "\", \"content\": \"" + solution.Code + "\"}]}";
+            var codeResult = CodeRunner.RunCode(solution.Code, test.Input, solution.ProgrammingLanguage);
 
-
-            WebRequest myReq = WebRequest.Create(url);
-            myReq.Method = "POST";
-            myReq.ContentLength = data.Length;
-            myReq.ContentType = "application/json; charset=UTF-8";
-            UTF8Encoding enc = new UTF8Encoding();
-            myReq.Headers.Add("Authorization: Token 17a385d3-6c5e-4b76-8821-8e83b83352ff");
-
-            using (Stream ds = myReq.GetRequestStream())
-            {
-                ds.Write(enc.GetBytes(data), 0, data.Length);
-            }
-
-            WebResponse wr = myReq.GetResponse();
-            Stream receiveStream = wr.GetResponseStream();
-            StreamReader reader = new StreamReader(receiveStream, Encoding.UTF8);
-            string content = reader.ReadToEnd();
-            string stdout = content.Split("stdout\":\"")[1].Split("\"")[0];
-
-            testResult.ResultedOutput = stdout;
-            testResult.PointsGiven = stdout.Equals(test.ExpectedOutput) ? test.Points : 0;
+            testResult.ResultedOutput = codeResult.Stdout;
+            testResult.PointsGiven = codeResult.Stdout.Equals(test.ExpectedOutput) ? test.Points : 0;
             _context.TestResults.Add(testResult);
             await _context.SaveChangesAsync();
         }
@@ -318,7 +193,9 @@ namespace MTACodersLicence.Controllers
                 return NotFound();
             }
 
-            var solution = await _context.Solutions.FirstOrDefaultAsync(m => m.Id == id);
+            var solution = await _context.Solutions
+                .Include(s => s.ProgrammingLanguage)
+                .FirstOrDefaultAsync(m => m.Id == id);
             var battery = await _context.Batteries
                                         .Include(t => t.Tests)
                                         .FirstOrDefaultAsync(m => m.Id == batteryId);
@@ -379,7 +256,7 @@ namespace MTACodersLicence.Controllers
             }
             _context.Results.Remove(result);
             await _context.SaveChangesAsync();
-            UpdateScoreAndGrade(solution);
+            await UpdateScoreAndGrade(solution);
             return RedirectToAction(nameof(Results), new { id = solutionId, challengeId });
         }
 

@@ -1,4 +1,34 @@
-﻿function hideCerinte() {
+﻿var editor = ace.edit("editor");
+editor.setTheme("ace/theme/ambiance");
+initEditorMode();
+
+function initEditorMode() {
+    var language = $("#language option:first-child").text();
+    switch (language) {
+    case "C": editor.session.setMode("ace/mode/c_cpp");
+        break;
+    case "C++": editor.session.setMode("ace/mode/c_cpp");
+        break;
+    case "Java": editor.session.setMode("ace/mode/java");
+        break;
+    case "Python": editor.session.setMode("ace/mode/python");
+        break;
+    default: editor.session.setMode("ace/mode/c_cpp");
+        break;
+    }
+}
+
+
+function run() {
+    var editor = ace.edit("editor");
+    var code = editor.getSession().getValue();
+    var code2 = code.split('"').join("\\\"");
+    document.getElementById("code").value = code2;
+    var language = $("#language option:selected").text();
+    document.getElementById("languageName").value = language;
+}
+
+function hideCerinte() {
     document.getElementById("cerinte").style.display = 'none';
     document.getElementById("hideBtn").style.display = 'none';
     document.getElementById("showBtn").style.display = 'block';
@@ -17,54 +47,27 @@ function showHint() {
     document.getElementById("hintBtn").style.display = 'none';
 }
 
-var editor = ace.edit("editor");
-editor.setTheme("ace/theme/ambiance");
-editor.session.setMode("ace/mode/c_cpp");
-$runBtn = $('#runBtn');
-
-function run() {
-    var editor = ace.edit("editor");
-    var code = editor.getSession().getValue();
-    var code2 = code.split('"').join("\\\"");
-    document.getElementById("code").value = code2;
-}
-
-//functie schimbare limbaj de programare
+// functie schimbare limbaj de programare
 function changeLanguage() {
-    var pos = document.getElementById("mode").options.selectedIndex;
-    document.getElementById("language").value = pos;  //trimit la server varianta aleasa impreuna cu codul
-    switch (pos) {
-        case 0: editor.session.setMode("ace/mode/c_cpp");
-            editor.setValue("#include<stdio.h>\n\
-int main(void) \n\
-{\n\
-    int d; \n\
-    scanf(\"%d\",&d); \n\
-    printf(\"%d\",d); \n\
-    return 0; \n\
-}");
-            break;
-
-        case 1: editor.session.setMode("ace/mode/java");
-            editor.setValue("\
-public class Solution {\n\
-\
-    public static void main(String[] args) {\n\
-    // Prints \"Hello, World\" to the terminal window.\n\
-    System.out.println(\"Hello, World\");\n\
-    }\n\
-\
-}");
-            break;
-        case 2: editor.session.setMode("ace/mode/python");
-            editor.setValue("print(\"Hello World!\")");
-            break;
-        default:
-            break;
+    var code = $('select[id=language]').val();
+    editor.setValue(code);
+    // change editor mode
+    var language = $("#language option:selected").text();
+    switch (language) {
+    case "C": editor.session.setMode("ace/mode/c_cpp");
+        break;
+    case "C++": editor.session.setMode("ace/mode/c_cpp");
+        break;
+    case "Java": editor.session.setMode("ace/mode/java");
+        break;
+    case "Python": editor.session.setMode("ace/mode/python");
+        break;
+    default: editor.session.setMode("ace/mode/c_cpp");
+        break;
     }
 }
 
-//functie schimbare tema
+// functie schimbare tema
 function changeTheme() {
     var pos = document.getElementById("theme").options.selectedIndex;
     switch (pos) {
@@ -97,6 +100,7 @@ function changeTheme() {
     }
 }
 
+// functie citire fisier si incarcare in editor
 function readSingleFile(evt) {
     var f = evt.target.files[0];
     if (f) {
@@ -111,8 +115,16 @@ function readSingleFile(evt) {
     }
 }
 
+// functie ascundere timp
 function toggleTime() {
     $('#time').fadeToggle('fast');
 }
 
+// functie salvare cod
+function saveCode() {
+    var code = editor.getValue();
+    document.getElementById("savedCode").value = code;
+    var language = $("#language option:selected").text();
+    document.getElementById("languageNameSave").value = language;
+}
 

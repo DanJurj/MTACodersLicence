@@ -198,7 +198,7 @@ namespace MTACodersLicence.Controllers
                                             .Select(s => s.Group)
                                             .ToListAsync();
             // the groups i already sent requests to
-            var requestGroups = await _context.JoinGroupRequestModel
+            var requestGroups = await _context.JoinGroupRequests
                                             .Where(s => s.ApplicationUserId == userId)
                                             .Select(s => s.Group)
                                             .ToListAsync();
@@ -232,7 +232,7 @@ namespace MTACodersLicence.Controllers
                 GroupId = (int)groupId,
                 SentAt = DateTime.Now
             };
-            _context.JoinGroupRequestModel.Add(joinGroupRequest);
+            _context.JoinGroupRequests.Add(joinGroupRequest);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(AllGroups));
         }

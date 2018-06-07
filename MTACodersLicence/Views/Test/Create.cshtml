@@ -23,7 +23,7 @@
                 <span asp-validation-for="Points" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <a asp-action="Index" class="btn btn-default">Back to List</a>
+                <a asp-action="Index" class="btn btn-default" asp-route-batteryId="@ViewData["batteryId"]">Back to Tests</a>
                 <input type="submit" value="Create" class="btn btn-success"/>
             </div>
         </div>

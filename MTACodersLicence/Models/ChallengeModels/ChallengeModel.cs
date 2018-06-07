@@ -30,5 +30,8 @@ namespace MTACodersLicence.Models.ChallengeModels
         public string ApplicationUserId { get; set; }
         [ForeignKey(nameof(ApplicationUserId))]
         public virtual ApplicationUser Owner { get; set; }
+
+        public int ContestId { get; set; }
+        public ContestModel Contest { get; set; }
     }
 }

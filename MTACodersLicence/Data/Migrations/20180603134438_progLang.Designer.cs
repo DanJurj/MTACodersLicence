@@ -11,9 +11,10 @@ using System;
 namespace WebApplication5.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180603134438_progLang")]
+    partial class progLang
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -214,8 +215,6 @@ namespace WebApplication5.Data.Migrations
 
                     b.Property<string>("CodeTemplate");
 
-                    b.Property<int>("ContestId");
-
                     b.Property<string>("Desciption");
 
                     b.Property<string>("Hint");
@@ -231,8 +230,6 @@ namespace WebApplication5.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserId");
-
-                    b.HasIndex("ContestId");
 
                     b.ToTable("Challenges");
                 });
@@ -250,8 +247,6 @@ namespace WebApplication5.Data.Migrations
 
                     b.Property<bool>("HasPreviousSave");
 
-                    b.Property<int>("ProgrammingLanguageId");
-
                     b.Property<DateTime>("StartTime");
 
                     b.HasKey("Id");
@@ -260,29 +255,7 @@ namespace WebApplication5.Data.Migrations
 
                     b.HasIndex("ChallengeId");
 
-                    b.HasIndex("ProgrammingLanguageId");
-
                     b.ToTable("CodingSessions");
-                });
-
-            modelBuilder.Entity("MTACodersLicence.Models.ContestModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<bool>("Active");
-
-                    b.Property<string>("ApplicationUserId");
-
-                    b.Property<string>("Name");
-
-                    b.Property<int>("Time");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
-
-                    b.ToTable("Contests");
                 });
 
             modelBuilder.Entity("MTACodersLicence.Models.GroupModels.GroupChallengeModel", b =>
@@ -361,14 +334,12 @@ namespace WebApplication5.Data.Migrations
                     b.ToTable("JoinGroupRequests");
                 });
 
-            modelBuilder.Entity("MTACodersLicence.Models.ProgrammingLanguageModel", b =>
+            modelBuilder.Entity("MTACodersLicence.Models.ProgramingLanguageModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<bool>("Available");
-
-                    b.Property<string>("CodeTemplate");
 
                     b.Property<string>("Filename");
 
@@ -378,7 +349,7 @@ namespace WebApplication5.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProgrammingLanguages");
+                    b.ToTable("ProgramingLanguages");
                 });
 
             modelBuilder.Entity("MTACodersLicence.Models.ResultModels.ResultModel", b =>
@@ -432,13 +403,11 @@ namespace WebApplication5.Data.Migrations
 
                     b.Property<string>("Code");
 
-                    b.Property<TimeSpan>("Duration");
+                    b.Property<DateTime>("Duration");
 
                     b.Property<float>("Grade");
 
                     b.Property<string>("Language");
-
-                    b.Property<int>("ProgrammingLanguageId");
 
                     b.Property<DateTime>("ReceiveDateTime");
 
@@ -451,8 +420,6 @@ namespace WebApplication5.Data.Migrations
                     b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("ChallengeId");
-
-                    b.HasIndex("ProgrammingLanguageId");
 
                     b.ToTable("Solutions");
                 });
@@ -475,22 +442,6 @@ namespace WebApplication5.Data.Migrations
                     b.HasIndex("BatteryId");
 
                     b.ToTable("Tests");
-                });
-
-            modelBuilder.Entity("MTACodersLicence.ViewModels.RankingViewModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<float>("Grade");
-
-                    b.Property<float>("Score");
-
-                    b.Property<string>("SentBy");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Rankings");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -550,11 +501,6 @@ namespace WebApplication5.Data.Migrations
                     b.HasOne("MTACodersLicence.Models.ApplicationUser", "Owner")
                         .WithMany("Challenges")
                         .HasForeignKey("ApplicationUserId");
-
-                    b.HasOne("MTACodersLicence.Models.ContestModel", "Contest")
-                        .WithMany("Challenges")
-                        .HasForeignKey("ContestId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("MTACodersLicence.Models.ChallengeModels.CodingSessionModel", b =>
@@ -567,18 +513,6 @@ namespace WebApplication5.Data.Migrations
                         .WithMany()
                         .HasForeignKey("ChallengeId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("MTACodersLicence.Models.ProgrammingLanguageModel", "ProgrammingLanguage")
-                        .WithMany()
-                        .HasForeignKey("ProgrammingLanguageId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("MTACodersLicence.Models.ContestModel", b =>
-                {
-                    b.HasOne("MTACodersLicence.Models.ApplicationUser", "Owner")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserId");
                 });
 
             modelBuilder.Entity("MTACodersLicence.Models.GroupModels.GroupChallengeModel", b =>
@@ -660,11 +594,6 @@ namespace WebApplication5.Data.Migrations
                     b.HasOne("MTACodersLicence.Models.ChallengeModels.ChallengeModel", "Challenge")
                         .WithMany("Solutions")
                         .HasForeignKey("ChallengeId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("MTACodersLicence.Models.ProgrammingLanguageModel", "ProgrammingLanguage")
-                        .WithMany()
-                        .HasForeignKey("ProgrammingLanguageId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

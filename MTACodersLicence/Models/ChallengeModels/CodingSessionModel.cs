@@ -18,5 +18,8 @@ namespace MTACodersLicence.Models.ChallengeModels
 
         public string Code { get; set; }
         public bool HasPreviousSave { get; set; }
+
+        public int ProgrammingLanguageId { get; set; }
+        public ProgrammingLanguageModel ProgrammingLanguage { get; set; }
     }
 }

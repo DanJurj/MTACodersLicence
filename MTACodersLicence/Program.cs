@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MTACodersLicence.Data;
 using MTACodersLicence.Models;
 using MTACodersLicence.Services;
 
@@ -25,7 +26,9 @@ namespace MTACodersLicence
                 try
                 {
                     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                    var context = services.GetRequiredService<ApplicationDbContext>();
                     DbRolesInitializer.Initialize(roleManager).Wait();
+                    DbLanguagesInitializer.Initialize(context).Wait();
                 }
                 catch (Exception ex)
                 {

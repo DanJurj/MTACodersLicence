@@ -14,6 +14,7 @@ using MTACodersLicence.Data;
 using MTACodersLicence.Models;
 using MTACodersLicence.Models.ChallengeModels;
 using MTACodersLicence.Models.GroupModels;
+using MTACodersLicence.ViewModels;
 using Newtonsoft.Json;
 
 namespace MTACodersLicence.Controllers
@@ -49,8 +50,16 @@ namespace MTACodersLicence.Controllers
         }
 
         // GET: Challenge
-        public IActionResult Index(string searchString, string order)
+        public IActionResult Index(int? contestId, string searchString, string order)
         {
+            if (contestId == null)
+            {
+                return NotFound();
+            }
+            var challenges = _context.Challenges.Where(s => s.ContestId == contestId);
+            ViewData["ContestId"] = contestId;
+            return View(challenges.ToList());
+
             if (User.IsInRole("Administrator"))
             {
                 // daca e administrator poate sa vada toate concursurile din baza de date
@@ -121,8 +130,13 @@ namespace MTACodersLicence.Controllers
 
         // GET: Challenge/Create
         [Authorize(Roles = "Administrator,Profesor")]
-        public IActionResult Create()
+        public IActionResult Create(int? contestId) 
         {
+            if (contestId == null)
+            {
+                return NotFound();
+            }
+            ViewData["ContestId"] = contestId;
             return View();
         }
 
@@ -247,6 +261,21 @@ namespace MTACodersLicence.Controllers
         private bool ChallengeModelExists(int id)
         {
             return _context.Challenges.Any(e => e.Id == id);
+        }
+
+
+        public async Task<IActionResult> Ranking(int id)
+        {
+            var solutions = await _context.Solutions.Include(s => s.Owner)
+                .Where(s => s.ChallengeId == id).ToListAsync();
+            var rankingList = solutions.Select(solution => new RankingViewModel()
+                {
+                    Grade = solution.Grade,
+                    Score = solution.Score,
+                    SentBy = solution.Owner.FullName
+                })
+                .ToList();
+            return View(rankingList);
         }
     }
 }

@@ -11,6 +11,7 @@ using MTACodersLicence.Models.GroupModels;
 using MTACodersLicence.Models.ResultModels;
 using MTACodersLicence.Models.SolutionModels;
 using MTACodersLicence.Models.TestModels;
+using MTACodersLicence.ViewModels;
 
 namespace MTACodersLicence.Data
 {
@@ -35,6 +36,8 @@ namespace MTACodersLicence.Data
 
         public DbSet<GroupChallengeModel> GroupChallenges { get; set; }
 
+        public DbSet<ContestModel> Contests { get; set; }
+
         public DbSet<ChallengeModel> Challenges { get; set; }
 
         public DbSet<TestModel> Tests { get; set; }
@@ -51,8 +54,11 @@ namespace MTACodersLicence.Data
 
         public DbSet<CodingSessionModel> CodingSessions { get; set; }
 
-        public DbSet<MTACodersLicence.Models.GroupModels.JoinGroupRequestModel> JoinGroupRequestModel { get; set; }
+        public DbSet<JoinGroupRequestModel> JoinGroupRequests{ get; set; }
 
+        public DbSet<ProgrammingLanguageModel> ProgrammingLanguages { get; set; }
+
+        public DbSet<RankingViewModel> Rankings { get; set; }
 
     }
 }

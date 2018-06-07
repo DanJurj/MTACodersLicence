@@ -3,29 +3,21 @@
 @{
     ViewData["Title"] = "Create new Challenge";
 }
-<style>
-    .ace_editor {
-        position: relative !important;
-        border: 1px solid lightgray;
-        margin: auto;
-        height: 300px;
-    }
-</style>
 <h2>Create new Challenge</h2>
 <hr />
 <div class="row">
     <form asp-action="Create">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="col-md-4">
+            <input asp-for="ContestId" class="form-control" hidden value="@ViewBag.ContestId"/>   
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
+                <input asp-for="Name" class="form-control"/>
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-
             <div class="form-group">
                 <label asp-for="Time" class="control-label"></label>
-                <input asp-for="Time" class="form-control" placeholder="minutes" />
+                <input asp-for="Time" class="form-control" placeholder="minutes"/>
                 <span asp-validation-for="Time" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -35,7 +27,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Tasks" class="control-label"></label>
-                <textarea asp-for="Tasks" class="form-control" rows="10" cols="50"></textarea>
+                <textarea asp-for="Tasks" class="form-control" rows="8" cols="50"></textarea>
                 <span asp-validation-for="Tasks" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -49,12 +41,6 @@
                 <label asp-for="Desciption" class="control-label"></label>
                 <textarea asp-for="Desciption" class="form-control" rows="20" cols="50"></textarea>
                 <span asp-validation-for="Desciption" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CodeTemplate" class="control-label"></label>
-                <textarea asp-for="CodeTemplate"  class="form-control" rows="1" cols="50" id="editorSend" style="display: none"></textarea>
-                <textarea class="form-control" rows="7" cols="50" id="editor" name="editor"></textarea>
-                <span asp-validation-for="CodeTemplate" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group btn btn-success" style="float: right">
@@ -70,14 +56,3 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
-<script src="~/lib/Ace/src/ace.js"></script>
-<script src="~/js/coding.js"></script>
-<script>
-    var code = editor.getSession().getValue();
-    var code2 = code.split('\\\"').join('"');
-    editor.setValue(code2);
-
-    function saveCodeTemplate() {
-       document.getElementById("editorSend").value = editor.getSession().getValue();
-    }
-</script>

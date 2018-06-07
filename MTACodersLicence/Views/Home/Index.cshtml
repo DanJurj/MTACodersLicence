@@ -1,7 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Home";
 }
-
+@inject SignInManager<ApplicationUser> SignInManager
 <div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="6000" style="margin-top: 5px;">
     <ol class="carousel-indicators">
         <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
@@ -75,9 +75,15 @@
             <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
             <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
             <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
-            <li><a asp-area="" asp-controller="Account" asp-action="Login">Login</a></li>
-            <li><a asp-area="" asp-controller="Account" asp-action="Register">Register</a></li>
-            <li><a asp-area="" asp-controller="Manage" asp-action="Index">Account</a></li>
+            @if (SignInManager.IsSignedIn(User))
+            {
+                <li><a asp-area="" asp-controller="Manage" asp-action="Index">Account</a></li>
+            }
+            else
+            {
+                <li><a asp-area="" asp-controller="Account" asp-action="Login">Login</a></li>
+                <li><a asp-area="" asp-controller="Account" asp-action="Register">Register</a></li>
+            }
         </ul>
     </div>
 </div>
@@ -85,6 +91,6 @@
     <div class=""></div>
     <div class="col-lg-offset-4 col-md-4">
         <h5 style="color: red">Property of Military Technical Academy</h5>
-        <img src="~/images/footer.png"/>
+        <img src="~/images/footer.png" />
     </div>
 </div>

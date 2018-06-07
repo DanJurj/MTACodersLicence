@@ -47,6 +47,9 @@
                 </a>
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.ProgrammingLanguage)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.ReceiveDateTime)
                 <a asp-action="Index" asp-route-order="dateAsc" asp-route-challengeId="@challengeId">
                     <span class="glyphicon glyphicon-triangle-top"></span>
@@ -82,6 +85,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Grade)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProgrammingLanguage.Name)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.ReceiveDateTime)

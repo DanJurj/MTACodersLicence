@@ -6,6 +6,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - MTACoders</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
 
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
@@ -37,26 +39,23 @@
                     {
                         if (User.IsInRole("Profesor") || User.IsInRole("Student"))
                         {
+                            <li><a asp-controller="Contest" asp-action="Index">My Contests</a></li>
                             <li><a asp-controller="Challenge" asp-action="Index">My Challenges</a></li>
                         }
                         else if (User.IsInRole("Administrator"))
                         {
+                            <li><a asp-controller="Contest" asp-action="Index">Contests</a></li>
                             <li><a asp-controller="Challenge" asp-action="Index">Challenges</a></li>
                         }
-                        <li>
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Groups<b class="caret"></b></a>
-                            <ul class="dropdown-menu">
-                                <li><a asp-controller="Group" asp-action="Index">My Groups</a></li>
-                                <li><a asp-controller="Group" asp-action="AllGroups">All Groups</a></li>
-                            </ul>
-                        </li>
+                        <li><a asp-controller="Group" asp-action="Index">My Groups</a></li>
+                        <li><a asp-controller="Group" asp-action="AllGroups">All Groups</a></li>
                     }
                     <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
                     <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
                     @if (User.IsInRole("Administrator"))
                     {
                         <li><a asp-controller="AdminManageAccounts" asp-action="Index">Accounts</a></li>
-                        <li><a asp-controller="AdminManageAccounts" asp-action="Index">Programming Languages</a></li>
+                        <li><a asp-controller="ProgramingLanguage" asp-action="Index">Programming Languages</a></li>
                     }
                 </ul>
                 @await Html.PartialAsync("_LoginPartial")
@@ -70,6 +69,12 @@
             <p>MTACoders &copy; @DateTime.Now.Year </p>
         </footer>
     </div>
+
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
 
     <environment include="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>

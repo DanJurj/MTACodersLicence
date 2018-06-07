@@ -1,0 +1,76 @@
+﻿@model IEnumerable<MTACodersLicence.Models.ContestModel>
+
+@{
+    ViewData["Title"] = "Contests";
+}
+
+<h2>Contests</h2>
+
+@if (User.IsInRole("Administrator") || User.IsInRole("Profesor"))
+{
+    <p>
+        <a asp-action="Create" class="btn btn-success" style="float: right; margin-top: -25px">Create New Contest</a>
+    </p>
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+                <a asp-action="Index" asp-route-order="nameAsc">
+                    <span class="glyphicon glyphicon-triangle-top"></span>
+                </a>
+                <a asp-action="Index" asp-route-order="nameDesc">
+                    <span class="glyphicon glyphicon-triangle-bottom"></span>
+                </a>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Time) (minutes)
+                <a asp-action="Index" asp-route-order="timeAsc">
+                    <span class="glyphicon glyphicon-triangle-top"></span>
+                </a>
+                <a asp-action="Index" asp-route-order="timeDesc">
+                    <span class="glyphicon glyphicon-triangle-bottom"></span>
+                </a>
+            </th>
+            @if (User.IsInRole("Administrator"))
+            {
+                <th>
+                    @Html.DisplayNameFor(model => model.Owner)
+                </th>
+            }
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Time)
+                </td>
+                @if (User.IsInRole("Administrator"))
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Owner.UserName)
+                    </td>
+                }
+                <td>
+                    @if (@item.Active)
+                    {
+                        <a asp-controller="Challenge" asp-action="Index" asp-route-contestId="@item.Id" class="btn btn-success">Start</a>
+                    }
+                    <a asp-action="Ranking" asp-route-id="@item.Id" class="btn btn-success">Ranking</a>
+                    @if (User.IsInRole("Administrator") || User.IsInRole("Profesor"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
