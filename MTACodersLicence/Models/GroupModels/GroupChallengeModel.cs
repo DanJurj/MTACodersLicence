@@ -8,8 +8,8 @@ namespace MTACodersLicence.Models.GroupModels
         public int Id { get; set; }
         public int GroupId { get; set; }
         public GroupModel Group { get; set; }
-        public int ChallengeId { get; set; }
-        public ChallengeModel Challenge { get; set; }
+        public int ContestId { get; set; }
+        public ContestModel Contest { get; set; }
         public DateTime AssignDate { get; set; }
     }
 }

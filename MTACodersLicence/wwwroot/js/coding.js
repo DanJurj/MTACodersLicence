@@ -22,10 +22,68 @@ function initEditorMode() {
 function run() {
     var editor = ace.edit("editor");
     var code = editor.getSession().getValue();
-    var code2 = code.split('"').join("\\\"");
+    var code2 = btoa(unescape(encodeURIComponent(code)));
+    //var code2 = code.split('"').join("\\\"");
     document.getElementById("code").value = code2;
+    var input = document.getElementById("input").value;
+    document.getElementById("input").value = btoa(unescape(encodeURIComponent(input)));
     var language = $("#language option:selected").text();
     document.getElementById("languageName").value = language;
+}
+
+function run2() {
+    var editor = ace.edit("editor");
+    var code = editor.getSession().getValue();
+    var codeBase64 = btoa(unescape(encodeURIComponent(code)));
+    var input = document.getElementById("input").value;
+    var inputBase64 = btoa(unescape(encodeURIComponent(input)));
+    var languageId = 5;
+    var data = {
+        source_code: codeBase64,
+        language_id: languageId,
+        stdin: inputBase64
+    };
+    $.ajax({
+        url: "https://api.judge0.com/submissions?base64_encoded=true&wait=true",
+        type: "POST",
+        async: true,
+        contentType: "application/json",
+        data: JSON.stringify(data),
+        success: function(result) {
+            console.log(`Your submission token is: ${result.token}`);
+            handleResult(result);
+        },
+        error: function (xhr, status, error) {
+           alert("fail");
+        }
+});
+}
+
+function handleResult(result) {
+    var status = result.status;
+    var stdout = decodeURIComponent(escape(atob(result.stdout || "")));
+    var stderr = decodeURIComponent(escape(atob(result.stderr || "")));
+    var compileOutput = decodeURIComponent(escape(atob(result.compile_output || "")));
+    var message = decodeURIComponent(escape(atob(result.message || "")));
+    var time = (result.time === null ? "-" : result.time + "s");
+    var memory = (result.memory === null ? "-" : result.memory + "KB");
+
+    if (status.id === 6) {
+        document.getElementById("outputTag").textContent = "Compilation Error";
+        document.getElementById("output").value = compileOutput;
+    } else if (status.id === 13) {
+        document.getElementById("outputTag").textContent = "Internal Error";
+        document.getElementById("output").value = message;
+    } else if (status.id !== 3 && stderr !== "") {
+        stdout += (stdout === "" ? "" : "\n") + stderr;
+        document.getElementById("output").value = stdout;
+    } else {
+        stdout += (stdout === "" ? "" : "\n") + stderr;
+        document.getElementById("output").value = stdout;
+        document.getElementById("performanceTab").style.display = "block";
+        document.getElementById("timeConsumed").innerHTML = time;
+        document.getElementById("memory").innerHTML = memory;
+    }
 }
 
 function hideCerinte() {

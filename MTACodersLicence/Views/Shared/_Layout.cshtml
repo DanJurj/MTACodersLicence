@@ -1,5 +1,4 @@
 ﻿@inject SignInManager<ApplicationUser> SignInManager
-@inject UserManager<ApplicationUser> UserManager
 <!DOCTYPE html>
 <html>
 <head>
@@ -37,15 +36,17 @@
                     <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
                     @if (SignInManager.IsSignedIn(User))
                     {
-                        if (User.IsInRole("Profesor") || User.IsInRole("Student"))
+                        if (User.IsInRole("Student"))
+                        {
+                            <li><a asp-controller="Contest" asp-action="Compete">Compete</a></li>
+                        }
+                        else if (User.IsInRole("Profesor"))
                         {
                             <li><a asp-controller="Contest" asp-action="Index">My Contests</a></li>
-                            <li><a asp-controller="Challenge" asp-action="Index">My Challenges</a></li>
                         }
                         else if (User.IsInRole("Administrator"))
                         {
                             <li><a asp-controller="Contest" asp-action="Index">Contests</a></li>
-                            <li><a asp-controller="Challenge" asp-action="Index">Challenges</a></li>
                         }
                         <li><a asp-controller="Group" asp-action="Index">My Groups</a></li>
                         <li><a asp-controller="Group" asp-action="AllGroups">All Groups</a></li>

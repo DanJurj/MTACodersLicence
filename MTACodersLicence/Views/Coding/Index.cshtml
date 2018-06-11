@@ -69,12 +69,12 @@
             <span class="glyphicon glyphicon-eye-open"></span>
         </button>
         <form asp-controller="Coding" asp-action="SaveCode" method="post">
-            <input type="hidden" value="@Model.Challenge.Id" name="challengeId"/>
+            <input type="hidden" value="@Model.Challenge.Id" name="challengeId" />
             <textarea id="savedCode" name="savedCode" rows="1" style="display: none"></textarea>
             <button type="submit" class="btn btn-default btn-sm" style="margin-top: 20px" onclick="saveCode()" id="saveCodeBtn">
                 <span class="glyphicon glyphicon-floppy-disk"></span>
             </button>
-            <input type="hidden" name="language" id="languageNameSave"/>
+            <input type="hidden" name="language" id="languageNameSave" />
         </form>
     </div>
     <!-- Coding Part -->
@@ -112,10 +112,10 @@
         </div>
 
         <form asp-controller="Coding" asp-action="Code" method="post">
-            <input hidden value="@Model.Challenge.Id" name="challengeId"/>
+            <input hidden value="@Model.Challenge.Id" name="challengeId" />
             <pre id="editor" name="editor">@Model.CodingSession.Code</pre>
             <textarea id="code" name="code" style="display: none"></textarea>
-            <input type="hidden" name="language" id="languageName"/>
+            <input type="hidden" name="language" id="languageName" />
             <!-- input output containers -->
             <div class="container-fluid">
                 <div class="row">
@@ -126,32 +126,27 @@
                     </div>
                     <div class="col-md-5 col-md-offset-2">
                         <h4>
-                            <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Output <small id="emptyIndicator">
-                            </small>
-                            <small class="pull-right" id="statusLine"></small>
+                            <span class="glyphicon glyphicon-log-out" aria-hidden="true" id="outputTag">Output</span>
                         </h4>
                     </div>
                 </div>
                 <div class="row">
-                    <textarea class="col-md-5" rows="4" style="margin-bottom: 10px;" name="input"></textarea>
-                    @if (Model.CodeResult != null)
-                    {
-                        if (Model.CodeResult.HasError)
-                        {
-                            <textarea class="col-md-5 col-md-offset-2" rows="4" style="margin-bottom: 10px;" disabled>@Model.CodeResult.Error  @Model.CodeResult.Stderr</textarea>
-                        }
-                        else
-                        {
-                            <textarea class="col-md-5 col-md-offset-2" rows="4" style="margin-bottom: 10px; white-space: pre-wrap" disabled>@Model.CodeResult.Stdout</textarea>
-                        }
-                    }
+                    <textarea class="col-md-5" rows="4" style="margin-bottom: 10px;" name="input" id="input"></textarea>
+                    <textarea class="col-md-5 col-md-offset-2" rows="4" style="margin-bottom: 10px;" disabled id="output"></textarea>
+                </div>
+                <div class="row" id="performanceTab" style="display: none">
+                    <h4>
+                        <span class="glyphicon glyphicon-log-out" aria-hidden="true">Performance</span>
+                    </h4>
+                    <p id="timeConsumed"></p>
+                    <p id="memory"> </p>
                 </div>
             </div>
-            <button type="submit" value="Run Input" onclick="showLoading();run();" class="btn btn-success codeButton" name="codeButton">
+            <button type="button" value="Run Input" onclick="run2();" class="btn btn-success codeButton" name="codeButton">
                 <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Run
             </button>
-            <input type="submit" value="Run Tests" onclick="showLoading();run();" class="btn btn-danger codeButton" name="codeButton"/>
-            <input type="submit" value="Submit Code" onclick="showSubmitLoading();run();" class="btn btn-warning codeButton" id="submitBtn" name="codeButton"/>
+            <input type="submit" value="Run Tests" onclick="showLoading();run();" class="btn btn-danger codeButton" name="codeButton" />
+            <input type="submit" value="Submit Code" onclick="showSubmitLoading();run();" class="btn btn-warning codeButton" id="submitBtn" name="codeButton" />
         </form>
     </div>
 </div>

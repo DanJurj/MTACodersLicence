@@ -9,7 +9,7 @@
 @if (User.IsInRole("Administrator") || User.IsInRole("Profesor"))
 {
     <p>
-        <a asp-action="Create" class="btn btn-success" style="float: right; margin-top: -25px">Create New Contest</a>
+      
     </p>
 }
 <table class="table">
@@ -61,13 +61,14 @@
                 <td>
                     @if (@item.Active)
                     {
-                        <a asp-controller="Challenge" asp-action="Index" asp-route-contestId="@item.Id" class="btn btn-success">Start</a>
+                        <a asp-controller="Challenge" asp-action="Start" asp-route-contestId="@item.Id" class="btn btn-success">Start</a>
                     }
                     <a asp-action="Ranking" asp-route-id="@item.Id" class="btn btn-success">Ranking</a>
                     @if (User.IsInRole("Administrator") || User.IsInRole("Profesor"))
                     {
                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
                         <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                        <a asp-controller="Challenge" asp-action="Index" asp-route-contestId="@item.Id" asp- class="btn btn-success">Edit Challenges</a>
                     }
                 </td>
             </tr>

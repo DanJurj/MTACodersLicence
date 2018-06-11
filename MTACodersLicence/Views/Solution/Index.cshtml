@@ -9,7 +9,6 @@
     <h2>Solutions for Challenge: @challengeName</h2>
     <a asp-action="VerifyAll" asp-route-challengeId=@challengeId class="btn btn-success" onclick="showLoading();">Verify all</a>
     <a asp-controller="Challenge" asp-action="Index" class="btn btn-danger">Run anti-theft checker</a>
-    <a asp-action="PrintIndex" asp-route-challengeId=@challengeId class="btn btn-warning">Create PDF with results</a>
 </div>
 <div id="loading" style="display: none;">
     <div id="loadingmsg">Running Battery Tests, please wait...</div>
@@ -122,7 +121,7 @@
         }
     </tbody>
 </table>
-<a asp-controller="Challenge" asp-action="Index" class="btn btn-default">Back to Challenges</a>
+<a asp-controller="Challenge" asp-action="Index" asp-route-contestId="@ViewBag.ContestId" class="btn btn-default">Back to Challenges</a>
 <script>
     function toggleVerify(id) {
         var elem = document.getElementById(id);

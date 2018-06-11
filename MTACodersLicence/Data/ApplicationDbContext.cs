@@ -34,7 +34,7 @@ namespace MTACodersLicence.Data
 
         public DbSet<GroupMemberModel> GroupMembers { get; set; }
 
-        public DbSet<GroupChallengeModel> GroupChallenges { get; set; }
+        public DbSet<GroupChallengeModel> GroupContests { get; set; }
 
         public DbSet<ContestModel> Contests { get; set; }
 

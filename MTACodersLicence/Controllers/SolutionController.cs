@@ -17,7 +17,6 @@ using MTACodersLicence.Models.ResultModels;
 using MTACodersLicence.Models.SolutionModels;
 using MTACodersLicence.Models.TestModels;
 using MTACodersLicence.Services;
-using Rotativa.AspNetCore;
 
 namespace MTACodersLicence.Controllers
 {
@@ -79,12 +78,10 @@ namespace MTACodersLicence.Controllers
                     default: break;
                 }
             }
-            var solution = solutions.FirstOrDefault();
+            var challenge = _context.Challenges.Single(s => s.Id == challengeId);
             ViewData["challengeId"] = challengeId;
-            if (solution != null)
-            {
-                ViewData["challengeName"] = solution.Challenge.Name;
-            }
+            ViewData["challengeName"] = challenge.Name;
+            ViewData["ContestId"] = challenge.ContestId;
             return View(await solutions.ToListAsync());
         }
 
@@ -108,7 +105,6 @@ namespace MTACodersLicence.Controllers
             {
                 return NotFound();
             }
-
             return View(solutionModel);
         }
 
@@ -227,12 +223,6 @@ namespace MTACodersLicence.Controllers
 
             ViewData["challengeId"] = challengeId;
             return View(results);
-        }
-
-        [Authorize(Roles = "Administrator,Profesor")]
-        public IActionResult PrintIndex(int? challengeId)
-        {
-            return new ViewAsPdf("Create");
         }
 
         [Authorize(Roles = "Administrator,Profesor")]

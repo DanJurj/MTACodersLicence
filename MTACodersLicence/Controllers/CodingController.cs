@@ -166,13 +166,7 @@ namespace MTACodersLicence.Controllers
                     return RedirectToAction(nameof(Index), new { id = solution.ChallengeId });
                 }
             }
-            else if (codeButton.Equals("Run Input"))
-            {
-                await SaveCodeFunc(code, challengeId, programmingLanguage.Id);
-                var codeRunnerResult = CodeRunner.RunCode(code, input, programmingLanguage);
-                return RedirectToAction(nameof(Index), new { id = solution.ChallengeId, codeRunnerResult.Stdout, codeRunnerResult.Stderr, codeRunnerResult.Error });
-            }
-            else if (codeButton.Equals("Run Tests"))
+            if (codeButton.Equals("Run Tests"))
             {
                 await SaveCodeFunc(code, challengeId, programmingLanguage.Id);
                 var publicBatteries = _context.Batteries

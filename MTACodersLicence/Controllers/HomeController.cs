@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using MTACodersLicence.Data;
 using MTACodersLicence.Models;
 using System.Security.Claims;
+using MTACodersLicence.Services;
 using MTACodersLicence.ViewModels;
 
 namespace MTACodersLicence.Controllers
@@ -31,6 +32,13 @@ namespace MTACodersLicence.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
+           /* var prog = _ctx.ProgrammingLanguages.FirstOrDefault();
+            string code =
+                "#include <stdio.h>\n int main(void) {\n  char name[10];\n  scanf(\"%s\", name);  return 0;\n";
+
+            CodeRunner2.RunCode(
+                "#include <stdio.h>\\n int main(void) {\\n  char name[10];\\n  scanf(\\\"%s\\\", name);  return 0;\\n",
+                "Judge0", prog);*/
             return View();
         }
 

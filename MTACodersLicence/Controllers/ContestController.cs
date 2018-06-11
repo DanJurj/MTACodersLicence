@@ -64,19 +64,13 @@ namespace MTACodersLicence.Controllers
             {
                 return NotFound();
             }
-            var challenges = _context.Challenges.Where(s => s.ContestId == id).ToList();
-            var editContestViewModel = new EditContestViewModel()
-            {
-                Contest = contestModel,
-                Challenges = challenges
-            };
-            return View(editContestViewModel);
+            return View(contestModel);
         }
 
         // POST: Contest/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Time,Active")] ContestModel contestModel)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Time,Active")] ContestModel  contestModel)
         {
             if (id != contestModel.Id)
             {

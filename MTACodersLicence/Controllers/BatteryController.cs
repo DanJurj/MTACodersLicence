@@ -33,12 +33,12 @@ namespace MTACodersLicence.Controllers
                                     Include(b => b.Challenge).
                                     Include(b => b.Tests).
                                     Where(c => c.ChallengeId == challengeId);
-            var challenge = _context.Challenges.FirstOrDefaultAsync(c => c.Id == challengeId);
+            var challenge = _context.Challenges.FirstOrDefault(c => c.Id == challengeId);
             if (challenge != null)
             {
-                string challengeName = challenge.Result.Name;
-                ViewData["challengeName"] = challengeName;
+                ViewData["challengeName"] = challenge.Name;
                 ViewData["challengeId"] = challengeId;
+                ViewData["ContestId"] = challenge.ContestId;
             }
             return View(await batteries.ToListAsync());
         }

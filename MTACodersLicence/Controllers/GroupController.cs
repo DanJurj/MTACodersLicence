@@ -147,7 +147,7 @@ namespace MTACodersLicence.Controllers
             var groupModel = await _context.Groups
                 .Include(g => g.Owner)
                 .Include(g => g.Challenges)
-                    .ThenInclude(s => s.Challenge)
+                    .ThenInclude(s => s.Contest)
                 .Include(g => g.Members)
                     .ThenInclude(s => s.User)
                 .SingleOrDefaultAsync(m => m.Id == id);

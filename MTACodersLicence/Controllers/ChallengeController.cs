@@ -50,6 +50,7 @@ namespace MTACodersLicence.Controllers
         }
 
         // GET: Challenge
+        [Authorize(Roles = "Administrator, Profesor")]
         public IActionResult Index(int? contestId, string searchString, string order)
         {
             if (contestId == null)
@@ -95,7 +96,7 @@ namespace MTACodersLicence.Controllers
                     {
                         foreach (var challengeModel in groupMember)
                         {
-                            var challenge = _context.Challenges.FirstOrDefault(s => s.Id == challengeModel.ChallengeId);
+                            var challenge = _context.Challenges.FirstOrDefault(s => s.Id == challengeModel.ContestId);
                             challengesStudent.Add(challenge);
                         }
                     }
@@ -104,6 +105,21 @@ namespace MTACodersLicence.Controllers
                 }
                 return NotFound();
             }
+        }
+
+        /// <summary>
+        /// Actiune apelata de studenti in momentul in care vor sa inceapa un concurs
+        /// </summary>
+        /// <param name="contestId"></param> id-ul concursului
+        public IActionResult Start(int? contestId)
+        {
+            if (contestId == null)
+            {
+                return NotFound();
+            }
+            var challenges = _context.Challenges.Where(s => s.ContestId == contestId);
+            ViewData["ContestId"] = contestId;
+            return View(challenges.ToList());
         }
 
         // GET: Challenge/Details/5
@@ -124,13 +140,13 @@ namespace MTACodersLicence.Controllers
             {
                 return NotFound();
             }
-
+            ViewData["ContestId"] = challengeModel.ContestId;
             return View(challengeModel);
         }
 
         // GET: Challenge/Create
         [Authorize(Roles = "Administrator,Profesor")]
-        public IActionResult Create(int? contestId) 
+        public IActionResult Create(int? contestId)
         {
             if (contestId == null)
             {
@@ -144,7 +160,7 @@ namespace MTACodersLicence.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator,Profesor")]
-        public async Task<IActionResult> Create([Bind("Name,ShortDescription,Desciption,Tasks,Time,Hint,CodeTemplate")] ChallengeModel challengeModel)
+        public async Task<IActionResult> Create([Bind("Name,ShortDescription,Desciption,Tasks,Time,Hint,CodeTemplate,ContestId")] ChallengeModel challengeModel)
         {
             try
             {
@@ -153,7 +169,7 @@ namespace MTACodersLicence.Controllers
                     challengeModel.ApplicationUserId = _userManager.GetUserId(User);
                     _context.Add(challengeModel);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Index), new { contestId = challengeModel.ContestId });
                 }
             }
             catch (DbUpdateException e)
@@ -162,6 +178,7 @@ namespace MTACodersLicence.Controllers
                                              "Try again, and if the problem persists " +
                                              "see your system administrator.");
             }
+            ViewData["ContestId"] = challengeModel.ContestId;
             return View(challengeModel);
         }
 
@@ -179,6 +196,7 @@ namespace MTACodersLicence.Controllers
             {
                 return NotFound();
             }
+            ViewData["ContestId"] = challengeModel.ContestId;
             return View(challengeModel);
         }
 
@@ -186,7 +204,7 @@ namespace MTACodersLicence.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator,Profesor")]
-        public async Task<IActionResult> Edit([Bind("Id,Name,ShortDescription,Desciption,Tasks,Time,Hint,ApplicationUserId,Active")] ChallengeModel challengeModel)
+        public async Task<IActionResult> Edit([Bind("Id,Name,ShortDescription,Desciption,Tasks,Time,Hint,ApplicationUserId,Active,ContestId")] ChallengeModel challengeModel)
         {
             challengeModel.ApplicationUserId = _userManager.GetUserId(User);
             if (ModelState.IsValid)
@@ -207,7 +225,7 @@ namespace MTACodersLicence.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new { contestId = challengeModel.ContestId });
             }
             return View(challengeModel);
         }
@@ -220,29 +238,15 @@ namespace MTACodersLicence.Controllers
             {
                 return NotFound();
             }
-
             var challengeModel = await _context.Challenges
-                .Include(c => c.Owner)
                 .Include(c => c.Batteries)
+                    .ThenInclude(m => m.Tests)
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (challengeModel == null)
             {
                 return NotFound();
             }
-
-            return View(challengeModel);
-        }
-
-        // POST: Challenge/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator,Profesor")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var challengeModel = await _context.Challenges
-                                                .Include(m => m.Batteries)
-                                                    .ThenInclude(m => m.Tests)
-                                                .SingleOrDefaultAsync(m => m.Id == id);
+            var contestId = challengeModel.ContestId;
             var batteries = _context.Batteries.Where(m => m.ChallengeId == id);
             foreach (var battery in batteries)
             {
@@ -255,7 +259,7 @@ namespace MTACodersLicence.Controllers
             }
             _context.Challenges.Remove(challengeModel);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), new { contestId });
         }
 
         private bool ChallengeModelExists(int id)
@@ -269,13 +273,15 @@ namespace MTACodersLicence.Controllers
             var solutions = await _context.Solutions.Include(s => s.Owner)
                 .Where(s => s.ChallengeId == id).ToListAsync();
             var rankingList = solutions.Select(solution => new RankingViewModel()
-                {
-                    Grade = solution.Grade,
-                    Score = solution.Score,
-                    SentBy = solution.Owner.FullName
-                })
+            {
+                Grade = solution.Grade,
+                Score = solution.Score,
+                SentBy = solution.Owner.FullName
+            })
                 .ToList();
             return View(rankingList);
         }
+
+       
     }
 }

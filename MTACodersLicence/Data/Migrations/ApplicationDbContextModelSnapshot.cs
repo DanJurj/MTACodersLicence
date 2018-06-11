@@ -292,17 +292,21 @@ namespace WebApplication5.Data.Migrations
 
                     b.Property<DateTime>("AssignDate");
 
-                    b.Property<int>("ChallengeId");
+                    b.Property<int?>("ChallengeModelId");
+
+                    b.Property<int>("ContestId");
 
                     b.Property<int>("GroupId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChallengeId");
+                    b.HasIndex("ChallengeModelId");
+
+                    b.HasIndex("ContestId");
 
                     b.HasIndex("GroupId");
 
-                    b.ToTable("GroupChallenges");
+                    b.ToTable("GroupContests");
                 });
 
             modelBuilder.Entity("MTACodersLicence.Models.GroupModels.GroupMemberModel", b =>
@@ -583,9 +587,13 @@ namespace WebApplication5.Data.Migrations
 
             modelBuilder.Entity("MTACodersLicence.Models.GroupModels.GroupChallengeModel", b =>
                 {
-                    b.HasOne("MTACodersLicence.Models.ChallengeModels.ChallengeModel", "Challenge")
+                    b.HasOne("MTACodersLicence.Models.ChallengeModels.ChallengeModel")
                         .WithMany("ChallengeGroups")
-                        .HasForeignKey("ChallengeId")
+                        .HasForeignKey("ChallengeModelId");
+
+                    b.HasOne("MTACodersLicence.Models.ContestModel", "Contest")
+                        .WithMany()
+                        .HasForeignKey("ContestId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("MTACodersLicence.Models.GroupModels.GroupModel", "Group")

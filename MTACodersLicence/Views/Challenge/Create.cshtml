@@ -9,7 +9,11 @@
     <form asp-action="Create">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="col-md-4">
-            <input asp-for="ContestId" class="form-control" hidden value="@ViewBag.ContestId"/>   
+            <div class="form-group" hidden>
+                <label asp-for="ContestId" class="control-label"></label>
+                <input asp-for="ContestId" class="form-control" />
+                <span asp-validation-for="ContestId" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control"/>
@@ -50,7 +54,7 @@
 </div>
 
 <div>
-    <a asp-action="Index" class="btn btn-default">Back to List</a>
+    <a asp-action="Index" class="btn btn-default" asp-route-contestId="@ViewBag.ContestId">Back to List</a>
 </div>
 
 @section Scripts {

@@ -1,4 +1,4 @@
-﻿@model MTACodersLicence.ViewModels.EditContestViewModel
+﻿@model ContestModel
 
 @{
     ViewData["Title"] = "Edit Contest";
@@ -8,24 +8,24 @@
 
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-4 col-md-offset-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <label asp-for="Contest.Name" class="control-label"></label>
-                <input asp-for="Contest.Name" class="form-control" />
-                <span asp-validation-for="Contest.Name" class="text-danger"></span>
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Contest.Time" class="control-label"></label>
-                <input asp-for="Contest.Time" class="form-control" />
-                <span asp-validation-for="Contest.Time" class="text-danger"></span>
+                <label asp-for="Time" class="control-label"></label>
+                <input asp-for="Time" class="form-control" />
+                <span asp-validation-for="Time" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <div class="checkbox">
                     <label>
-                        <input asp-for="Contest.Active" /> @Html.DisplayNameFor(model => model.Contest.Active)
+                        <input asp-for="Active" /> @Html.DisplayNameFor(model => model.Active)
                     </label>
                 </div>
             </div>
