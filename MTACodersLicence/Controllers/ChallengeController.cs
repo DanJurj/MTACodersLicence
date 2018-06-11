@@ -57,7 +57,9 @@ namespace MTACodersLicence.Controllers
             {
                 return NotFound();
             }
-            var challenges = _context.Challenges.Where(s => s.ContestId == contestId);
+            var challenges = _context.Challenges
+                                    .Include(s => s.Owner)
+                                    .Where(s => s.ContestId == contestId);
             ViewData["ContestId"] = contestId;
             return View(challenges.ToList());
 
@@ -153,6 +155,13 @@ namespace MTACodersLicence.Controllers
                 return NotFound();
             }
             ViewData["ContestId"] = contestId;
+            var dificulties = new List<SelectListItem>
+            {
+                new SelectListItem {Text = "Easy", Value = "Easy"},
+                new SelectListItem {Text = "Medium", Value = "Medium"},
+                new SelectListItem {Text = "Hard", Value = "Hard"}
+            };
+            ViewData["Dificulties"] = dificulties;
             return View();
         }
 
@@ -160,7 +169,7 @@ namespace MTACodersLicence.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator,Profesor")]
-        public async Task<IActionResult> Create([Bind("Name,ShortDescription,Desciption,Tasks,Time,Hint,CodeTemplate,ContestId")] ChallengeModel challengeModel)
+        public async Task<IActionResult> Create([Bind("Name,ShortDescription,Desciption,Tasks,Time,Hint,CodeTemplate,ContestId,ExecutionTimeLimit,MemoryLimit")] ChallengeModel challengeModel)
         {
             try
             {
@@ -197,6 +206,19 @@ namespace MTACodersLicence.Controllers
                 return NotFound();
             }
             ViewData["ContestId"] = challengeModel.ContestId;
+            var dificulties = new List<SelectListItem>
+            {
+                new SelectListItem {Text = "Easy", Value = "Easy"},
+                new SelectListItem {Text = "Medium", Value = "Medium"},
+                new SelectListItem {Text = "Hard", Value = "Hard"}
+            };
+            var dificulty = challengeModel.Dificulty;
+            foreach (var item in dificulties)
+                if (item.Value.Equals(dificulty))
+                {
+                    item.Selected = true;
+                }
+            ViewData["Dificulties"] = dificulties;
             return View(challengeModel);
         }
 
@@ -204,7 +226,7 @@ namespace MTACodersLicence.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator,Profesor")]
-        public async Task<IActionResult> Edit([Bind("Id,Name,ShortDescription,Desciption,Tasks,Time,Hint,ApplicationUserId,Active,ContestId")] ChallengeModel challengeModel)
+        public async Task<IActionResult> Edit([Bind("Id,Name,ShortDescription,Desciption,Tasks,Time,Hint,ApplicationUserId,Active,ContestId,ExecutionTimeLimit,MemoryLimit,Dificulty,AvailableForPractice")] ChallengeModel challengeModel)
         {
             challengeModel.ApplicationUserId = _userManager.GetUserId(User);
             if (ModelState.IsValid)

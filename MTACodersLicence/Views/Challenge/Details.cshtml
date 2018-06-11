@@ -37,7 +37,19 @@
             @Html.DisplayNameFor(model => model.Time)
         </dt>
         <dd class="table-bordered">
-            @Html.DisplayFor(model => model.Time) hours
+            @Html.DisplayFor(model => model.Time) minutes
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.ExecutionTimeLimit)
+        </dt>
+        <dd class="table-bordered">
+            @Html.DisplayFor(model => model.ExecutionTimeLimit) s
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.MemoryLimit)
+        </dt>
+        <dd class="table-bordered">
+            @Html.DisplayFor(model => model.MemoryLimit) Kb
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.Hint)
@@ -90,6 +102,6 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Index" class="btn btn-default" asp-route-contestId="@ViewBag.ContestId">Back to List</a>
+    <a asp-action="Index" class="btn btn-default" asp-route-contestId="@ViewBag.ContestId">Back to Challenges</a>
     <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
 </div>

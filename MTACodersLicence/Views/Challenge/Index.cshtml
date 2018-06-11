@@ -38,6 +38,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.ShortDescription)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Dificulty)
+            </th>
             @if (User.IsInRole("Administrator"))
             {
                 <th>
@@ -60,6 +63,9 @@
                 <td style="width: 250px">
                     @Html.DisplayFor(modelItem => item.ShortDescription)
                 </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Dificulty)
+                </td>
                 @if (User.IsInRole("Administrator"))
                 {
                     <td>
@@ -79,6 +85,7 @@
                             <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-default action">Details</a>
                             <a asp-controller="Solution" asp-action="Index" asp-route-challengeId="@item.Id" class="btn btn-success action">Solutions</a>
                             <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning action">Edit</a>
+                            <a asp-controller="CodeTemplate" asp-action="Index" asp-route-challengeId="@item.Id" class="btn btn-default action">Code Templates</a>
                             <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger action">Delete</a>
                         }
                     </div>

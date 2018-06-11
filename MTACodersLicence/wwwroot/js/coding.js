@@ -1,43 +1,22 @@
-﻿var editor = ace.edit("editor");
-editor.setTheme("ace/theme/ambiance");
-initEditorMode();
-
-function initEditorMode() {
-    var language = $("#language option:first-child").text();
-    switch (language) {
-    case "C": editor.session.setMode("ace/mode/c_cpp");
-        break;
-    case "C++": editor.session.setMode("ace/mode/c_cpp");
-        break;
-    case "Java": editor.session.setMode("ace/mode/java");
-        break;
-    case "Python": editor.session.setMode("ace/mode/python");
-        break;
-    default: editor.session.setMode("ace/mode/c_cpp");
-        break;
-    }
-}
-
-
-function run() {
+﻿function run() {
     var editor = ace.edit("editor");
     var code = editor.getSession().getValue();
     var code2 = btoa(unescape(encodeURIComponent(code)));
     //var code2 = code.split('"').join("\\\"");
-    document.getElementById("code").value = code2;
-    var input = document.getElementById("input").value;
-    document.getElementById("input").value = btoa(unescape(encodeURIComponent(input)));
-    var language = $("#language option:selected").text();
-    document.getElementById("languageName").value = language;
+    document.getElementById("code").value = code;
+    //var input = document.getElementById("input").value;
+    //document.getElementById("input").value = btoa(unescape(encodeURIComponent(input)));
+    var language = $("#language option:selected").val();
+    document.getElementById("languageCode").value = language;
 }
 
 function run2() {
-    var editor = ace.edit("editor");
+    document.getElementById("performanceTab").style.display = "none";
     var code = editor.getSession().getValue();
     var codeBase64 = btoa(unescape(encodeURIComponent(code)));
     var input = document.getElementById("input").value;
     var inputBase64 = btoa(unescape(encodeURIComponent(input)));
-    var languageId = 5;
+    var languageId = $("#language option:selected").val();
     var data = {
         source_code: codeBase64,
         language_id: languageId,
@@ -103,26 +82,6 @@ function showCerinte() {
 function showHint() {
     document.getElementById("hint").style.display = 'block';
     document.getElementById("hintBtn").style.display = 'none';
-}
-
-// functie schimbare limbaj de programare
-function changeLanguage() {
-    var code = $('select[id=language]').val();
-    editor.setValue(code);
-    // change editor mode
-    var language = $("#language option:selected").text();
-    switch (language) {
-    case "C": editor.session.setMode("ace/mode/c_cpp");
-        break;
-    case "C++": editor.session.setMode("ace/mode/c_cpp");
-        break;
-    case "Java": editor.session.setMode("ace/mode/java");
-        break;
-    case "Python": editor.session.setMode("ace/mode/python");
-        break;
-    default: editor.session.setMode("ace/mode/c_cpp");
-        break;
-    }
 }
 
 // functie schimbare tema

@@ -11,9 +11,10 @@ using System;
 namespace WebApplication5.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180611184444_changeChallengeExTime4")]
+    partial class changeChallengeExTime4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -212,8 +213,6 @@ namespace WebApplication5.Data.Migrations
 
                     b.Property<string>("ApplicationUserId");
 
-                    b.Property<bool>("AvailableForPractice");
-
                     b.Property<string>("CodeTemplate");
 
                     b.Property<int>("ContestId");
@@ -273,26 +272,6 @@ namespace WebApplication5.Data.Migrations
                     b.HasIndex("ProgrammingLanguageId");
 
                     b.ToTable("CodingSessions");
-                });
-
-            modelBuilder.Entity("MTACodersLicence.Models.CodeTemplateModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("ChallengeId");
-
-                    b.Property<string>("Code");
-
-                    b.Property<int>("ProgrammingLanguageId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ChallengeId");
-
-                    b.HasIndex("ProgrammingLanguageId");
-
-                    b.ToTable("CodeTemplates");
                 });
 
             modelBuilder.Entity("MTACodersLicence.Models.ContestModel", b =>
@@ -605,19 +584,6 @@ namespace WebApplication5.Data.Migrations
                         .WithMany()
                         .HasForeignKey("ApplicationUserId");
 
-                    b.HasOne("MTACodersLicence.Models.ChallengeModels.ChallengeModel", "Challenge")
-                        .WithMany()
-                        .HasForeignKey("ChallengeId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("MTACodersLicence.Models.ProgrammingLanguageModel", "ProgrammingLanguage")
-                        .WithMany()
-                        .HasForeignKey("ProgrammingLanguageId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("MTACodersLicence.Models.CodeTemplateModel", b =>
-                {
                     b.HasOne("MTACodersLicence.Models.ChallengeModels.ChallengeModel", "Challenge")
                         .WithMany()
                         .HasForeignKey("ChallengeId")

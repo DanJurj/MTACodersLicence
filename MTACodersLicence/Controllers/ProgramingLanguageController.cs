@@ -43,7 +43,7 @@ namespace MTACodersLicence.Controllers
         // POST: ProgramingLanguage/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Filename,Type,Available,CodeTemplate")] ProgrammingLanguageModel programingLanguageModel)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,LanguageCode,EditorMode,Available,CodeTemplate")] ProgrammingLanguageModel programingLanguageModel)
         {
             if (id != programingLanguageModel.Id)
             {

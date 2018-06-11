@@ -11,9 +11,10 @@ using System;
 namespace WebApplication5.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180611200047_addeCodeTemplate2")]
+    partial class addeCodeTemplate2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -211,8 +212,6 @@ namespace WebApplication5.Data.Migrations
                     b.Property<bool>("Active");
 
                     b.Property<string>("ApplicationUserId");
-
-                    b.Property<bool>("AvailableForPractice");
 
                     b.Property<string>("CodeTemplate");
 

@@ -109,18 +109,27 @@ namespace MTACodersLicence.Controllers
         }
 
         [Authorize(Roles = "Administrator,Profesor")]
+        public IActionResult Delete(int id)
+        {
+            var solution = _context.Solutions.SingleOrDefault(m => m.Id == id);
+            if (solution == null)
+            {
+                return NotFound();
+            }
+            var challengeId = solution.ChallengeId;
+            _context.Solutions.Remove(solution);
+            _context.SaveChanges();
+            return RedirectToAction(nameof(Index), new { challengeId });
+        }
+
+        [Authorize(Roles = "Administrator,Profesor")]
         private async Task RunTest(TestModel test, SolutionModel solution, ResultModel result)
         {
-            var testResult = new TestResultModel
-            {
-                TestId = test.Id,
-                ResultId = result.Id
-            };
-
-            var codeResult = CodeRunner.RunCode(solution.Code, test.Input, solution.ProgrammingLanguage);
-
-            testResult.ResultedOutput = codeResult.Stdout;
-            testResult.PointsGiven = codeResult.Stdout.Equals(test.ExpectedOutput) ? test.Points : 0;
+            var testResult = CodeRunner.RunCode(solution.Code, test, solution.ProgrammingLanguage.LanguageCode);
+            testResult.ResultId = result.Id;
+            testResult.TestId = test.Id;
+            testResult.PointsGiven = test.ExpectedOutput.Equals(testResult.ResultedOutput) ? test.Points : 0;
+            // inserare in tabelul de rezultate ale testelor
             _context.TestResults.Add(testResult);
             await _context.SaveChangesAsync();
         }

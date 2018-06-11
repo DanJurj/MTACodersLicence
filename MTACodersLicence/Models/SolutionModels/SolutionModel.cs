@@ -14,6 +14,8 @@ namespace MTACodersLicence.Models.SolutionModels
         public bool Verified { get; set; }
         public float Score { get; set; }
         public float Grade { get; set; }
+        public float Time { get; set; }
+        public float Memory { get; set; }
         public string Language { get; set; }
         [Display(Name = "Received Time")]
         public DateTime ReceiveDateTime { get; set; }

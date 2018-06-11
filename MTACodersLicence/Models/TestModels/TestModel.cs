@@ -10,6 +10,7 @@ namespace MTACodersLicence.Models.TestModels
         public string Input { get; set; }
         [Display(Name = "Expected Output")]
         public string ExpectedOutput { get; set; }
+
         [RegularExpression("([1-9][0-9]*)", ErrorMessage = "Count must be a natural number")]
         public float Points { get; set; }
 

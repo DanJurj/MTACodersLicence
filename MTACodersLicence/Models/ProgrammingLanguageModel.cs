@@ -8,9 +8,9 @@ namespace MTACodersLicence.Models
     public class ProgrammingLanguageModel
     {
         public int Id { get; set; }
+        public int LanguageCode { get; set; }
         public string Name { get; set; }
-        public string Filename { get; set; }
-        public string Type { get; set; }
+        public string EditorMode { get; set; }
         public bool Available { get; set; }
         public string CodeTemplate { get; set; }
     }

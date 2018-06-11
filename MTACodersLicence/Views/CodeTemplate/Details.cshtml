@@ -1,0 +1,50 @@
+﻿@model MTACodersLicence.Models.CodeTemplateModel
+
+@{
+    ViewData["Title"] = "Code Template Details";
+}
+<style>
+    .ace_editor {
+        position: relative !important;
+        border: 1px solid lightgray;
+        margin: auto;
+        height: 300px;
+    }
+</style>
+<h2>Code Template Details</h2>
+
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Code)
+        </dt>
+        <dd>
+            <textarea class="form-control" rows="7" cols="50" id="editor" name="editor">@Model.Code</textarea>
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Challenge)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Challenge.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.ProgrammingLanguage)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.ProgrammingLanguage.Name)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Index" class="btn btn-default"  asp-route-challengeId="@Model.ChallengeId">Back to Code Templates</a>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+</div>
+<script src="~/lib/Ace/src/ace.js"></script>
+<script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/ambiance");
+    editor.session.setMode("ace/mode/c_cpp");
+    editor.container.style.pointerEvents = "none";
+    editor.renderer.setStyle("disabled", true);
+</script>

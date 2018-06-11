@@ -20,9 +20,9 @@ namespace MTACodersLicence.Services
             context.ProgrammingLanguages.Add(new ProgrammingLanguageModel()
             {
                 Available = true,
-                Filename = "source.c",
+                LanguageCode = 5,
                 Name = "C",
-                Type = "c",
+                EditorMode = "c_cpp",
                 CodeTemplate = "#include<stdio.h>\n" +
                                "int main(void)\n" +
                                "{\n" +
@@ -33,9 +33,9 @@ namespace MTACodersLicence.Services
             context.ProgrammingLanguages.Add(new ProgrammingLanguageModel()
             {
                 Available = true,
-                Filename = "source.cpp",
+                LanguageCode = 10,
                 Name = "C++",
-                Type = "cpp",
+                EditorMode = "c_cpp",
                 CodeTemplate = "#include<iostream>\n" +
                                "using namespace std;\n" +
                                "int main(void)\n" +
@@ -47,10 +47,10 @@ namespace MTACodersLicence.Services
             context.ProgrammingLanguages.Add(new ProgrammingLanguageModel()
             {
                 Available = true,
-                Filename = "Solution.java",
+                LanguageCode = 27,
                 Name = "Java",
-                Type = "java",
-                CodeTemplate = "public class Solution {\n" +
+                EditorMode = "java",
+                CodeTemplate = "public class Main {\n" +
                                "    public static void main(String[] args) {\n" +
                                "        System.out.println(\"Hello, World\");\n" +
                                "    }\n" +
@@ -59,9 +59,9 @@ namespace MTACodersLicence.Services
             context.ProgrammingLanguages.Add(new ProgrammingLanguageModel()
             {
                 Available = true,
-                Filename = "source.py",
+                LanguageCode = 35,
                 Name = "Python",
-                Type = "python",
+                EditorMode = "python",
                 CodeTemplate = "print(\"Hello World!\")"
             });
             await context.SaveChangesAsync();

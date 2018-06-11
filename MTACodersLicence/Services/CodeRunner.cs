@@ -1,42 +1,46 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net;
 using System.Text;
 using MTACodersLicence.Models;
+using MTACodersLicence.Models.ResultModels;
+using MTACodersLicence.Models.TestModels;
+using Newtonsoft.Json.Linq;
 
 namespace MTACodersLicence.Services
 {
-    public class CodeRunnerResult
-    {
-        public string Stdout { get; set; }
-        public string Stderr { get; set; }
-        public string Error { get; set; }
-        public bool HasError { get; set; }
-    }
-
     public class CodeRunner
     {
-        public static CodeRunnerResult RunCode(string code, string input, ProgrammingLanguageModel programmingLanguage)
+        public static string ConvertToBase64(string text)
         {
-            string url = "https://run.glot.io/languages/" + programmingLanguage.Type + "/latest";
-            string data;
-            if (input != null)
-            {
-                data = "{\"stdin\": \"" + input + "\" , \"files\": [{\"name\": \"" + programmingLanguage.Filename + "\", \"content\": \"" + code + "\"}]}";
-            }
-            else
-            {
-                data = "{\"files\": [{\"name\": \"" + programmingLanguage.Filename + "\", \"content\": \"" + code + "\"}]}";
-            }
+            var textBytes = Encoding.UTF8.GetBytes(text);
+            return Convert.ToBase64String(textBytes);
+        }
+
+        public static string ConvertFromBase64(string base64Text)
+        {
+            var textBytes = Convert.FromBase64String(base64Text);
+            return Encoding.UTF8.GetString(textBytes);
+        }
+
+        public static TestResultModel RunCode(string code, TestModel test, int languageCode)
+        {
+
+            var codeBase64 = ConvertToBase64(code);
+            var inpuBase64 = ConvertToBase64(test.Input);
+            var expectedOutputBase64 = ConvertToBase64(test.ExpectedOutput);
+            const string url = "https://api.judge0.com/submissions?base64_encoded=true&wait=true";
+            var data =
+                "{\r\n  \"source_code\": \"" + codeBase64 + "\"," +
+                "\r\n  \"language_id\": \"" + languageCode + "\"," +
+                "\r\n  \"stdin\": \"" + inpuBase64 + "\"," +
+                "\r\n  \"expected_output\": \"" + expectedOutputBase64 + "\"\r\n}";
+
             WebRequest myReq = WebRequest.Create(url);
             myReq.Method = "POST";
             myReq.ContentLength = data.Length;
             myReq.ContentType = "application/json; charset=UTF-8";
-
             UTF8Encoding enc = new UTF8Encoding();
-
-            myReq.Headers.Add("Authorization: Token 17a385d3-6c5e-4b76-8821-8e83b83352ff");
-
-
             using (Stream ds = myReq.GetRequestStream())
             {
                 ds.Write(enc.GetBytes(data), 0, data.Length);
@@ -47,19 +51,17 @@ namespace MTACodersLicence.Services
             StreamReader reader = new StreamReader(receiveStream, Encoding.UTF8);
             var content = reader.ReadToEnd();
 
-            var stdout = content.Split("stdout\":\"")[1].Split("\"")[0];
-            var stderr = content.Split("stderr\":\"")[1].Split(",\"error")[0];
-            var error = content.Split("error\":\"")[1].Split("\"}")[0];
-
-            var codeRunnerResult = new CodeRunnerResult
+            var result = JObject.Parse(content);
+            var memoryUsed = result.Value<float>("memory");
+            var executionTime = result.Value<float>("time");
+            var stdoutBase64 = result.Value<string>("stdout");
+            var stdout = ConvertFromBase64(stdoutBase64);
+            return new TestResultModel()
             {
-                Stdout = stdout,
-                Stderr = stderr,
-                Error = error,
-                HasError = error.Length > 3
+                ResultedOutput = stdout,
+                ExecutionTime = executionTime,
+                Memory = memoryUsed
             };
-
-            return codeRunnerResult;
         }
     }
 }

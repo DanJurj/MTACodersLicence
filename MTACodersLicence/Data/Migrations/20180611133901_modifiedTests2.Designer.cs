@@ -11,9 +11,10 @@ using System;
 namespace WebApplication5.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180611133901_modifiedTests2")]
+    partial class modifiedTests2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -212,27 +213,21 @@ namespace WebApplication5.Data.Migrations
 
                     b.Property<string>("ApplicationUserId");
 
-                    b.Property<bool>("AvailableForPractice");
-
                     b.Property<string>("CodeTemplate");
 
                     b.Property<int>("ContestId");
 
                     b.Property<string>("Desciption");
 
-                    b.Property<string>("Dificulty");
-
-                    b.Property<decimal>("ExecutionTimeLimit");
+                    b.Property<float>("ExecutionTimeLimit");
 
                     b.Property<string>("Hint");
 
-                    b.Property<int>("MemoryLimit");
+                    b.Property<float>("MemoryLimit");
 
                     b.Property<string>("Name");
 
                     b.Property<string>("ShortDescription");
-
-                    b.Property<DateTime>("StartDate");
 
                     b.Property<string>("Tasks");
 
@@ -273,26 +268,6 @@ namespace WebApplication5.Data.Migrations
                     b.HasIndex("ProgrammingLanguageId");
 
                     b.ToTable("CodingSessions");
-                });
-
-            modelBuilder.Entity("MTACodersLicence.Models.CodeTemplateModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("ChallengeId");
-
-                    b.Property<string>("Code");
-
-                    b.Property<int>("ProgrammingLanguageId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ChallengeId");
-
-                    b.HasIndex("ProgrammingLanguageId");
-
-                    b.ToTable("CodeTemplates");
                 });
 
             modelBuilder.Entity("MTACodersLicence.Models.ContestModel", b =>
@@ -605,19 +580,6 @@ namespace WebApplication5.Data.Migrations
                         .WithMany()
                         .HasForeignKey("ApplicationUserId");
 
-                    b.HasOne("MTACodersLicence.Models.ChallengeModels.ChallengeModel", "Challenge")
-                        .WithMany()
-                        .HasForeignKey("ChallengeId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("MTACodersLicence.Models.ProgrammingLanguageModel", "ProgrammingLanguage")
-                        .WithMany()
-                        .HasForeignKey("ProgrammingLanguageId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("MTACodersLicence.Models.CodeTemplateModel", b =>
-                {
                     b.HasOne("MTACodersLicence.Models.ChallengeModels.ChallengeModel", "Challenge")
                         .WithMany()
                         .HasForeignKey("ChallengeId")

@@ -18,6 +18,12 @@ namespace MTACodersLicence.Models.ResultModels
 
         [Display(Name = "Resulted Output")]
         public string ResultedOutput { get; set; }
+
+        [Display(Name = "Execution Time")]
+        public float ExecutionTime { get; set; }
+
+        [Display(Name = "Memory Used")]
+        public float Memory { get; set; }
         
         [Display(Name = "Points Given")]
         public float PointsGiven { get; set; }

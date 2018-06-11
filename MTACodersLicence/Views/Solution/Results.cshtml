@@ -7,59 +7,67 @@
 <h2>Results</h2>
 <table class="table table-bordered">
     <thead>
-    <tr>
-        <th rowspan="2" style="text-align: center">
-            Battery Name
-        </th>
-        <th rowspan="2" style="text-align: center">
-            Battery Tests
-        </th>
-        <th colspan="5" style="text-align: center">
-            Test Results
-        </th>
-    </tr>
-    <tr>
-        <th>
-            Input
-        </th>
-        <th>
-            Expected Output
-        </th>
-        <th>
-            Actual Output
-        </th>
-        <th>
-            Points Available
-        </th>
-        <th style="background-color: aquamarine">
-            Points Given
-        </th>
-            
-    </tr>
+        <tr>
+            <th rowspan="2" style="text-align: center">
+                Battery Name
+            </th>
+            <th rowspan="2" style="text-align: center">
+                Battery Tests
+            </th>
+            <th colspan="5" style="text-align: center">
+                Test Results
+            </th>
+        </tr>
+        <tr>
+            <th>
+                Input
+            </th>
+            <th>
+                Expected Output
+            </th>
+            <th>
+                Actual Output
+            </th>
+            <th style="color: red">
+                Execution Time
+            </th>
+            <th style="color: red">
+                Memory Usage
+            </th>
+            <th>
+                Points Available
+            </th>
+            <th style="background-color: aquamarine">
+                Points Given
+            </th>
+
+        </tr>
     </thead>
 
     @foreach (var result in Model)
     {
         <tbody>
-        <tr>
-            <td rowspan=@(result.TestResults.Count + 1)>
-                @result.Battery.Name
-                <a asp-action="DeleteResult" class="btn btn-danger" asp-route-resultId="@result.Id">Delete</a>
-            </td>
-            <td rowspan=@(result.TestResults.Count + 1)>
-                @result.TestResults.Count
-            </td>
-        </tr>
-        @foreach (var testResult in result.TestResults)
-        {
             <tr>
-                <td>@testResult.Test.Input</td>
-                <td>@testResult.Test.ExpectedOutput</td>
-                <td>@testResult.ResultedOutput</td>
-                <td>@testResult.Test.Points</td>
-                <td style="background-color: aquamarine">@testResult.PointsGiven</td>
+                <td rowspan=@(result.TestResults.Count + 1)>
+                    @result.Battery.Name
+                    <a asp-action="DeleteResult" class="btn btn-danger" asp-route-resultId="@result.Id">Delete</a>
+                </td>
+                <td rowspan=@(result.TestResults.Count + 1)>
+                    @result.TestResults.Count
+                </td>
             </tr>
-        }
+            @foreach (var testResult in result.TestResults)
+            {
+                <tr>
+                    <td>@testResult.Test.Input</td>
+                    <td>@testResult.Test.ExpectedOutput</td>
+                    <td>@testResult.ResultedOutput</td>
+                    <td>@testResult.ExecutionTime s</td>
+                    <td>@testResult.Memory Kb</td>
+                    <td>@testResult.Test.Points</td>
+                    <td style="background-color: aquamarine">@testResult.PointsGiven</td>
+                </tr>
+            }
         </tbody>
     }
 

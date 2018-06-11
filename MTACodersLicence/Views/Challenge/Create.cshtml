@@ -16,13 +16,28 @@
             </div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control"/>
+                <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="StartDate" class="control-label"></label>
+                <input asp-for="StartDate" class="form-control" type="date" placeholder="MM/DD/YYY" id="date" />
+                <span asp-validation-for="StartDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Time" class="control-label"></label>
-                <input asp-for="Time" class="form-control" placeholder="minutes"/>
+                <input asp-for="Time" class="form-control" placeholder="minutes" />
                 <span asp-validation-for="Time" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ExecutionTimeLimit" class="control-label"></label>
+                <input name="ExecutionTimeLimit" class="form-control" placeholder="seconds" />
+                <span asp-validation-for="ExecutionTimeLimit" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MemoryLimit" class="control-label"></label>
+                <input asp-for="MemoryLimit" class="form-control" placeholder="Kb" />
+                <span asp-validation-for="MemoryLimit" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="ShortDescription" class="control-label"></label>
@@ -30,14 +45,14 @@
                 <span asp-validation-for="ShortDescription" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Tasks" class="control-label"></label>
-                <textarea asp-for="Tasks" class="form-control" rows="8" cols="50"></textarea>
-                <span asp-validation-for="Tasks" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="Hint" class="control-label"></label>
                 <textarea asp-for="Hint" class="form-control" rows="4"></textarea>
                 <span asp-validation-for="Hint" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Dificulty" class="control-label"></label>
+                <select asp-for="Dificulty" class="form-control" asp-items="@ViewBag.Dificulties"></select>
+                <span asp-validation-for="Dificulty" class="text-danger"></span>
             </div>
         </div>
         <div class="col-md-8">
@@ -45,18 +60,21 @@
                 <label asp-for="Desciption" class="control-label"></label>
                 <textarea asp-for="Desciption" class="form-control" rows="20" cols="50"></textarea>
                 <span asp-validation-for="Desciption" class="text-danger"></span>
+                <div class="form-group">
+                    <label asp-for="Tasks" class="control-label"></label>
+                    <textarea asp-for="Tasks" class="form-control" rows="10" cols="50"></textarea>
+                    <span asp-validation-for="Tasks" class="text-danger"></span>
+                </div>
             </div>
         </div>
         <div class="form-group btn btn-success" style="float: right">
-            <input type="submit" value="Create" class="btn btn-success" onclick="saveCodeTemplate();"/>
+            <input type="submit" value="Create" class="btn btn-success" onclick="saveCodeTemplate();" />
         </div>
     </form>
 </div>
-
 <div>
     <a asp-action="Index" class="btn btn-default" asp-route-contestId="@ViewBag.ContestId">Back to List</a>
 </div>
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

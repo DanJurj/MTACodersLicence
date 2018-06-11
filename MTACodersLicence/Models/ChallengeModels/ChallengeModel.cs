@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using MTACodersLicence.Models.BatteryModels;
@@ -17,11 +18,21 @@ namespace MTACodersLicence.Models.ChallengeModels
         public string ShortDescription { get; set; }
         public string Desciption { get; set; }
         public string Tasks { get; set; }
+        [Display(Name = "Duration")]
         public int Time { get; set; }  //minutes
         public string Hint { get; set; }
         [Display(Name = "Code Template")]
         public string CodeTemplate { get; set; }
         public bool Active { get; set; }
+        [Display(Name = "Execution Time Limit")]
+        public decimal ExecutionTimeLimit { get; set; }
+        [Display(Name = "Memory Limit")]
+        public int MemoryLimit { get; set; }
+        public string Dificulty { get; set; }
+        [Display(Name = "Starts on:")]
+        public DateTime StartDate { get; set; }
+        [Display(Name = "Available for Practice")]
+        public bool AvailableForPractice { get; set; }
 
         public ICollection<BatteryModel> Batteries { get; set; }
         public ICollection<SolutionModel> Solutions { get; set; }

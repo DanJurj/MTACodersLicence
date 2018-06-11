@@ -40,6 +40,8 @@ namespace MTACodersLicence.Data
 
         public DbSet<ChallengeModel> Challenges { get; set; }
 
+        public DbSet<CodeTemplateModel> CodeTemplates { get; set; }
+
         public DbSet<TestModel> Tests { get; set; }
 
         public DbSet<BatteryModel> Batteries { get; set; }

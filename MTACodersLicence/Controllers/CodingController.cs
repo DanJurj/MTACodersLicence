@@ -85,7 +85,7 @@ namespace MTACodersLicence.Controllers
             codingViewModel.RemainingTime = challenge.Time - (int)passedTimeMinutes;
             codingViewModel.HasGrade = hasGrade;
             codingViewModel.Grade = grade;
-            if (stdout != null || stderr != null || error != null)
+           /* if (stdout != null || stderr != null || error != null)
             {
                 var codeResult = new CodeRunnerResult()
                 {
@@ -98,12 +98,23 @@ namespace MTACodersLicence.Controllers
                     codeResult.HasError = true;
                 }
                 codingViewModel.CodeResult = codeResult;
-            }
+            }*/
             var programmingLanguages = _context.ProgrammingLanguages.Where(s => s.Available).ToList();
             var programmingLanguage = _context.ProgrammingLanguages.FirstOrDefault(s => s.Id == codingSession.ProgrammingLanguageId);
-            programmingLanguages.Remove(programmingLanguage);
-            programmingLanguages.Insert(0, programmingLanguage);
-            ViewData["ProgrammingLanguages"] = new SelectList(programmingLanguages, "CodeTemplate", "Name");
+            var codeTemplates = _context.CodeTemplates.Where(s => s.ChallengeId == id);
+            foreach (var codeTemplate in codeTemplates)
+            {
+                foreach (var language in programmingLanguages)
+                {
+                    if (codeTemplate.ProgrammingLanguageId == language.Id)
+                    {
+                        language.CodeTemplate = codeTemplate.Code;
+                    }
+                }
+            }
+            var programmingLanguagesSelectList = new SelectList(programmingLanguages, "LanguageCode", "Name", programmingLanguage.LanguageCode);
+            codingViewModel.ProgramingLanguages = programmingLanguages;
+            ViewData["ProgrammingLanguages"] = programmingLanguagesSelectList;
             return View(codingViewModel);
         }
 
@@ -136,9 +147,9 @@ namespace MTACodersLicence.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Code([Bind("Code,ChallengeId")] SolutionModel solution, string code, string input, string language, string codeButton, int? challengeId)
+        public async Task<IActionResult> Code([Bind("Code,ChallengeId")] SolutionModel solution, string code, string input, int language, string codeButton, int? challengeId)
         {
-            var programmingLanguage = await _context.ProgrammingLanguages.FirstOrDefaultAsync(s => s.Name == language);
+            var programmingLanguage = await _context.ProgrammingLanguages.FirstOrDefaultAsync(s => s.LanguageCode == language);
             if (codeButton.Equals("Submit Code"))
             {
                 if (ModelState.IsValid)
@@ -180,8 +191,8 @@ namespace MTACodersLicence.Controllers
                     totalTestsCount += battery.Tests.Count;
                     foreach (var test in battery.Tests)
                     {
-                        var codeRunnerResult = CodeRunner.RunCode(code, test.Input, programmingLanguage);
-                        if (codeRunnerResult.Stdout.Equals(test.ExpectedOutput))
+                        var codeRunnerResult = CodeRunner.RunCode(code, test, programmingLanguage.LanguageCode);
+                        if (codeRunnerResult.PointsGiven > 0)
                         {
                             passedTestsCount++;
                         }

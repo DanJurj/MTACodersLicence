@@ -1,8 +1,11 @@
 ﻿@model IEnumerable<MTACodersLicence.Models.ChallengeModels.ChallengeModel>
+
 @{
-    ViewData["Title"] = "Challenges";
+    ViewData["Title"] = "Practice";
 }
-<h2>Challenges</h2>
+
+<h2>Practice Challenges</h2>
+
 <table class="table">
     <thead>
         <tr>
@@ -10,7 +13,7 @@
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Time) (minutes)
+                @Html.DisplayNameFor(model => model.ShortDescription)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.ExecutionTimeLimit)
@@ -19,7 +22,7 @@
                 @Html.DisplayNameFor(model => model.MemoryLimit)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ShortDescription)
+                @Html.DisplayNameFor(model => model.Dificulty)
             </th>
             <th>Actions</th>
         </tr>
@@ -32,7 +35,7 @@
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Time)
+                    @Html.DisplayFor(modelItem => item.ShortDescription)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.ExecutionTimeLimit) s
@@ -40,24 +43,13 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.MemoryLimit) Kb
                 </td>
-                <td style="width: 250px">
-                    @Html.DisplayFor(modelItem => item.ShortDescription)
+                <td>
+                    @Html.DisplayFor(modelItem => item.Dificulty)
                 </td>
-                <td style="width: 500px">
-                    <div class="row">
-                        @if (@item.Active)
-                        {
-                            <a asp-controller="Coding" asp-action="Index" asp-route-id="@item.Id" class="btn btn-success action">Start</a>
-                        }
-                        <a asp-action="Ranking" asp-route-id="@item.Id" class="btn btn-warning action">Ranking</a>
-                    </div>
+                <td>
+                    <a asp-action="Start" asp-route-challengeId="@item.Id" class="btn btn-success">Start</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
-
-
-<div>
-    <a asp-controller="Contest" asp-action="Index" class="btn btn-default">Back to Contests</a>
-</div>
