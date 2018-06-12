@@ -14,12 +14,17 @@ namespace MTACodersLicence.Models.SolutionModels
         public bool Verified { get; set; }
         public float Score { get; set; }
         public float Grade { get; set; }
-        public float Time { get; set; }
-        public float Memory { get; set; }
-        public string Language { get; set; }
+
+        [Display(Name = "Execution Time")]
+        public decimal ExecutionTime { get; set; }
+
+        [Display(Name = "Memory Used")]
+        public float MemoryUsed { get; set; }
+
         [Display(Name = "Received Time")]
         public DateTime ReceiveDateTime { get; set; }
 
+        [DisplayFormat(DataFormatString = "{0:hh\\:mm}", ApplyFormatInEditMode = true)]
         public TimeSpan Duration { get; set; }
 
         public int ChallengeId { get; set; }

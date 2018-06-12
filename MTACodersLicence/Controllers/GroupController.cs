@@ -32,7 +32,7 @@ namespace MTACodersLicence.Controllers
             var groups = await _context.Groups
                                         .Include(s => s.Owner)
                                         .Include(s => s.Members)
-                                        .Include(s => s.Challenges)
+                                        .Include(s => s.Contests)
                                         .Include(s => s.JoinRequests)
                                         .ToListAsync();
             if (User.IsInRole("Profesor"))
@@ -146,7 +146,7 @@ namespace MTACodersLicence.Controllers
 
             var groupModel = await _context.Groups
                 .Include(g => g.Owner)
-                .Include(g => g.Challenges)
+                .Include(g => g.Contests)
                     .ThenInclude(s => s.Contest)
                 .Include(g => g.Members)
                     .ThenInclude(s => s.User)
@@ -171,7 +171,7 @@ namespace MTACodersLicence.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var groupModel = await _context.Groups
-                                            .Include(s => s.Challenges)
+                                            .Include(s => s.Contests)
                                             .Include(s => s.Members)
                                             .SingleOrDefaultAsync(m => m.Id == id);
             _context.Groups.Remove(groupModel);
@@ -189,7 +189,7 @@ namespace MTACodersLicence.Controllers
             var allGroups = await _context.Groups
                 .Include(s => s.Owner)
                 .Include(s => s.Members)
-                .Include(s => s.Challenges)
+                .Include(s => s.Contests)
                 .ToListAsync();
             var userId = _userManager.GetUserId(User);
             // the groups i am member in

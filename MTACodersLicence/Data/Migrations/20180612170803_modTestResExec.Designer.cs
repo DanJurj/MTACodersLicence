@@ -11,9 +11,10 @@ using System;
 namespace WebApplication5.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180612170803_modTestResExec")]
+    partial class modTestResExec
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -468,17 +469,17 @@ namespace WebApplication5.Data.Migrations
 
                     b.Property<TimeSpan>("Duration");
 
-                    b.Property<decimal>("ExecutionTime");
-
                     b.Property<float>("Grade");
 
-                    b.Property<float>("MemoryUsed");
+                    b.Property<float>("Memory");
 
                     b.Property<int>("ProgrammingLanguageId");
 
                     b.Property<DateTime>("ReceiveDateTime");
 
                     b.Property<float>("Score");
+
+                    b.Property<float>("Time");
 
                     b.Property<bool>("Verified");
 

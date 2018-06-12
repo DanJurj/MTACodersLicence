@@ -3,7 +3,7 @@ using MTACodersLicence.Models.ChallengeModels;
 
 namespace MTACodersLicence.Models.GroupModels
 {
-    public class GroupChallengeModel
+    public class GroupContestModel
     {
         public int Id { get; set; }
         public int GroupId { get; set; }

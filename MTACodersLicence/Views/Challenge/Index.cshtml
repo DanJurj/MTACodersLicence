@@ -8,12 +8,8 @@
         <a asp-action="Create" asp-route-contestId="@ViewBag.ContestId" class="btn btn-success" style="float: right; margin: 25px">Create New Challenge</a>
     </p>
 }
-<form asp-controller="Challenge" asp-action="Index" method="get">
-    <div class="col-md-4" style="display: flex; justify-content: center; margin: 20px">
-        <p style="margin: 7px">Name: </p> <input type="text" name="searchString" class="form-control">
-        <input type="submit" value="Search" class="btn btn-default" />
-    </div>
-</form>
+<h2>Challenges</h2>
+
 <table class="table">
     <thead>
         <tr>
@@ -23,15 +19,6 @@
                     <span class="glyphicon glyphicon-triangle-top"></span>
                 </a>
                 <a asp-action="Index" asp-route-order="nameDesc">
-                    <span class="glyphicon glyphicon-triangle-bottom"></span>
-                </a>
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Time) (minutes)
-                <a asp-action="Index" asp-route-order="timeAsc">
-                    <span class="glyphicon glyphicon-triangle-top"></span>
-                </a>
-                <a asp-action="Index" asp-route-order="timeDesc">
                     <span class="glyphicon glyphicon-triangle-bottom"></span>
                 </a>
             </th>
@@ -57,9 +44,6 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Time)
-                </td>
                 <td style="width: 250px">
                     @Html.DisplayFor(modelItem => item.ShortDescription)
                 </td>
@@ -76,7 +60,7 @@
                     <div class="row">
                         @if (@item.Active)
                         {
-                            <a asp-controller="Coding" asp-action="Index" asp-route-id="@item.Id" class="btn btn-success action">Start</a>
+                            <a asp-controller="Coding" asp-action="Index" asp-route-id="@item.Id" class="btn btn-success action">View</a>
                         }
                         <a asp-action="Ranking" asp-route-id="@item.Id" class="btn btn-warning action">Ranking</a>
                         @if (User.IsInRole("Administrator") || User.IsInRole("Profesor"))
@@ -85,7 +69,7 @@
                             <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-default action">Details</a>
                             <a asp-controller="Solution" asp-action="Index" asp-route-challengeId="@item.Id" class="btn btn-success action">Solutions</a>
                             <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning action">Edit</a>
-                            <a asp-controller="CodeTemplate" asp-action="Index" asp-route-challengeId="@item.Id" class="btn btn-default action">Code Templates</a>
+                            <a asp-controller="CodeTemplate" asp-action="Index" asp-route-challengeId="@item.Id" asp-route-contestId="@item.ContestId" class="btn btn-default action">Code Templates</a>
                             <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger action">Delete</a>
                         }
                     </div>

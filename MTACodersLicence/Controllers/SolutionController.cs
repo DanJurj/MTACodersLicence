@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MTACodersLicence.Data;
-using MTACodersLicence.Models;
 using MTACodersLicence.Models.BatteryModels;
-using MTACodersLicence.Models.ChallengeModels;
 using MTACodersLicence.Models.ResultModels;
 using MTACodersLicence.Models.SolutionModels;
 using MTACodersLicence.Models.TestModels;
@@ -20,7 +13,7 @@ using MTACodersLicence.Services;
 
 namespace MTACodersLicence.Controllers
 {
-    [Authorize(Roles = "Administrator,Profesor")]
+    [Authorize]
     public class SolutionController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -40,7 +33,9 @@ namespace MTACodersLicence.Controllers
                                     .Include(s => s.Owner)
                                     .Include(s => s.ProgrammingLanguage)
                                     .Where(s => s.ChallengeId == challengeId)
-                                    .OrderByDescending(s => s.Score);
+                                    .OrderByDescending(s => s.Score)
+                                        .ThenBy(s => s.ExecutionTime)
+                                            .ThenBy(s => s.MemoryUsed);
             if (order != null)
             {
                 switch (order)
@@ -90,9 +85,7 @@ namespace MTACodersLicence.Controllers
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var solutionModel = await _context.Solutions
                 .Include(s => s.Challenge)
@@ -129,9 +122,12 @@ namespace MTACodersLicence.Controllers
             testResult.ResultId = result.Id;
             testResult.TestId = test.Id;
             testResult.PointsGiven = test.ExpectedOutput.Equals(testResult.ResultedOutput) ? test.Points : 0;
-            // inserare in tabelul de rezultate ale testelor
-            _context.TestResults.Add(testResult);
-            await _context.SaveChangesAsync();
+            if (testResult.ExecutionTime <= solution.Challenge.ExecutionTimeLimit && testResult.Memory <= solution.Challenge.MemoryLimit)
+            {
+                // inserare in tabelul de rezultate ale testelor
+                _context.TestResults.Add(testResult);
+                await _context.SaveChangesAsync();
+            }
         }
 
         [Authorize(Roles = "Administrator,Profesor")]
@@ -147,20 +143,24 @@ namespace MTACodersLicence.Controllers
             await _context.SaveChangesAsync();
         }
 
-        [Authorize(Roles = "Administrator,Profesor")]
-        private async Task UpdateScoreAndGrade(SolutionModel solution)
+        private void CalculatePerformance(SolutionModel solution)
         {
             float totalPointsGiven = 0;
             float totalPointsAvailable = 0;
             var results = _context.Results.Where(s => s.SolutionId == solution.Id)
                                            .Include(s => s.TestResults)
                                                 .ThenInclude(s => s.Test);
+            float totalMemoy = 0;
+            decimal totalTime = 0;
+
             foreach (var result in results)
             {
                 foreach (var testResult in result.TestResults)
                 {
                     totalPointsGiven += testResult.PointsGiven;
                     totalPointsAvailable += testResult.Test.Points;
+                    totalTime += testResult.ExecutionTime;
+                    totalMemoy += testResult.Memory;
                 }
             }
             if (results.Any())
@@ -169,7 +169,9 @@ namespace MTACodersLicence.Controllers
             }
             solution.Score = totalPointsGiven;
             solution.Grade = (totalPointsGiven / totalPointsAvailable) * 10;
-            await _context.SaveChangesAsync();
+            solution.ExecutionTime = totalTime;
+            solution.MemoryUsed = totalMemoy;
+            _context.SaveChanges();
         }
 
         [Authorize(Roles = "Administrator,Profesor")]
@@ -205,7 +207,7 @@ namespace MTACodersLicence.Controllers
                                         .Include(t => t.Tests)
                                         .FirstOrDefaultAsync(m => m.Id == batteryId);
             await RunBattery(solution, battery);
-            await UpdateScoreAndGrade(solution);
+            CalculatePerformance(solution);
             return RedirectToAction(nameof(Results), new { id, challengeId = battery.ChallengeId });
 
         }
@@ -255,7 +257,7 @@ namespace MTACodersLicence.Controllers
             }
             _context.Results.Remove(result);
             await _context.SaveChangesAsync();
-            await UpdateScoreAndGrade(solution);
+            CalculatePerformance(solution);
             return RedirectToAction(nameof(Results), new { id = solutionId, challengeId });
         }
 
@@ -273,13 +275,53 @@ namespace MTACodersLicence.Controllers
             {
                 foreach (var battery in batteries)
                 {
-                      await RunBattery(solution, battery);
+                    await RunBattery(solution, battery);
                 }
-                await UpdateScoreAndGrade(solution);
+                CalculatePerformance(solution);
             }
             return RedirectToAction(nameof(Index), new { challengeId });
         }
 
+        public async Task<IActionResult> VerifySubmit(int id)
+        {
+            var solution = _context.Solutions
+                .Include(s => s.ProgrammingLanguage)
+                .Include(s => s.Challenge)
+                .FirstOrDefault(s => s.Id == id);
+            var batteries = _context.Batteries
+                .Where(s => s.ChallengeId == solution.ChallengeId)
+                .Include(s => s.Tests)
+                .ToList();
+            foreach (var battery in batteries)
+            {
+                var result = new ResultModel
+                {
+                    SolutionId = solution.Id,
+                    BatteryId = battery.Id
+                };
+                _context.Results.Add(result);
+                _context.SaveChanges();
+                foreach (var test in battery.Tests)
+                {
+                    var testResult = CodeRunner.RunCode(solution.Code, test, solution.ProgrammingLanguage.LanguageCode);
+                    testResult.ResultId = result.Id;
+                    testResult.TestId = test.Id;
+                    var pointsGiven = test.ExpectedOutput.Equals(testResult.ResultedOutput) ? test.Points : 0;
+                    // primeste punctele doar daca respecta cerintele de performanta
+                    if (pointsGiven > 0)
+                        if (testResult.ExecutionTime <= solution.Challenge.ExecutionTimeLimit && testResult.Memory <= solution.Challenge.MemoryLimit)
+                        {
+                            testResult.PointsGiven = pointsGiven;
+                        }
 
+                    // inserare in tabelul de rezultate ale testelor
+                    _context.TestResults.Add(testResult);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            CalculatePerformance(solution);
+            //await UpdateScoreAndGrade(solution);
+            return RedirectToAction("Ranking", "Challenge", new { id = solution.ChallengeId });
+        }
     }
 }

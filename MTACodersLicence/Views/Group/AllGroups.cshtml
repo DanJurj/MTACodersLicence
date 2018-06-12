@@ -16,7 +16,7 @@
                 @Html.DisplayNameFor(model => model.Owner)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Challenges)
+                @Html.DisplayNameFor(model => model.Contests)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Members)
@@ -35,7 +35,7 @@
                     @Html.DisplayFor(modelItem => item.Owner.FullName)
                 </td>
                 <td>
-                    @item.Challenges.Count
+                    @item.Contests.Count
                 </td>
                 <td>
                     @item.Members.Count

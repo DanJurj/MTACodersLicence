@@ -26,40 +26,50 @@ namespace MTACodersLicence.Controllers
             _userManager = userManager;
         }
 
-        // GET: GroupChallenge
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="groupId"></param>
+        [Authorize(Roles = "Administrator,Profesor")]
         public IActionResult Index(int? groupId)
         {
-            var availableChallenges =  _context.Challenges
+            var availableContests =  _context.Contests
                                              .Where(s => s.ApplicationUserId == _userManager.GetUserId(User))
                                              .ToList();
-            var assignedChallenges =  _context.GroupContests
+            var assignedContests =  _context.GroupContests
                                             .Include(g => g.Contest)
                                             .Where(s => s.GroupId == groupId)
                                             .ToList();
             // eliminam din cele available pe cele deja assigned
-            foreach (var assignedChallenge in assignedChallenges)
+            foreach (var assignedChallenge in assignedContests)
             {
-                //availableChallenges.Remove(assignedChallenge.Contest);
+                availableContests.Remove(assignedChallenge.Contest);
             }
-            var groupChallengeViewModel = new GroupChallengeViewModel
+            var groupContestViewModel = new GroupContestViewModel
             {
-                AssignedChallenges = assignedChallenges,
-                AvailableChallenges = availableChallenges
+                AssignedContests = assignedContests,
+                AvailableContests = availableContests
             };
             ViewData["GroupId"] = groupId;
-            return View(groupChallengeViewModel);
+            return View(groupContestViewModel);
         }
 
-        public async Task<IActionResult> AddChallenge(int? groupId, int? challengeId)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="challengeId"></param>
+        [Authorize(Roles = "Administrator,Profesor")]
+        public async Task<IActionResult> AddContests(int? groupId, int? contestId)
         {
-            if (groupId == null || challengeId == null)
+            if (groupId == null || contestId == null)
             {
                 return NotFound();
             }
-            var groupChallenge = new GroupChallengeModel
+            var groupChallenge = new GroupContestModel
             {
                 GroupId = (int)groupId,
-                ContestId = (int)challengeId,
+                ContestId = (int)contestId,
                 AssignDate = DateTime.Now
             };
             _context.GroupContests.Add(groupChallenge);
@@ -67,14 +77,15 @@ namespace MTACodersLicence.Controllers
             return RedirectToAction(nameof(Index), new { groupId });
         }
 
-        public async Task<IActionResult> RemoveChallenge(int? groupId, int? challengeId)
+        [Authorize(Roles = "Administrator,Profesor")]
+        public async Task<IActionResult> RemoveContest(int? groupId, int? contestId)
         {
-            if (groupId == null || challengeId == null)
+            if (groupId == null || contestId == null)
             {
                 return NotFound();
             }
             var groupChallenge = await _context.GroupContests
-                                        .SingleOrDefaultAsync(s => s.ContestId == challengeId && s.GroupId == groupId);
+                                        .SingleOrDefaultAsync(s => s.ContestId == contestId && s.GroupId == groupId);
             if (groupChallenge == null)
             {
                 return NotFound();
@@ -84,33 +95,33 @@ namespace MTACodersLicence.Controllers
             return RedirectToAction(nameof(Index), new { groupId });
         }
 
-        public async Task<IActionResult> AssignedChallenges(int? groupId)
+        public async Task<IActionResult> AssignedContests(int? groupId)
         {
             if (groupId == null)
             {
                 return NotFound();
             }
-            var assignedChallenges = await _context.GroupContests
+            var assignedContests = await _context.GroupContests
                 .Include(g => g.Contest)
                 .Where(s => s.GroupId == groupId)
                 .ToListAsync();
-            return View(assignedChallenges);
+            return View(assignedContests);
         }
 
         [Authorize(Roles = "Administrator,Profesor")]
-        public async Task<IActionResult> ToogleActivation(int? challengeId, int? groupId, int? active)
+        public async Task<IActionResult> ToogleActivation(int? contestId, int? groupId, int? active)
         {
-            if (challengeId == null || groupId == null || active == null)
+            if (contestId == null || groupId == null || active == null)
             {
                 return NotFound();
             }
-            var challenge = await _context.Challenges
-                                    .FirstOrDefaultAsync(s => s.Id == challengeId);
+            var contest = await _context.Contests
+                                    .FirstOrDefaultAsync(s => s.Id == contestId);
             if (active == 0)
-                challenge.Active = false;
+                contest.Active = false;
             else
-                challenge.Active = true;
-            _context.Challenges.Update(challenge);
+                contest.Active = true;
+            _context.Contests.Update(contest);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index", new { groupId });
         }

@@ -9,7 +9,7 @@ namespace MTACodersLicence.Models.GroupModels
         public string Name { get; set; }
 
         public ICollection<GroupMemberModel> Members { get; set; }
-        public ICollection<GroupChallengeModel> Challenges { get; set; }
+        public ICollection<GroupContestModel> Contests { get; set; }
         public ICollection<JoinGroupRequestModel> JoinRequests { get; set; }
 
         public string ApplicationUserId { get; set; }

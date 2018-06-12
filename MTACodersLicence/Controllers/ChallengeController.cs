@@ -43,8 +43,6 @@ namespace MTACodersLicence.Controllers
             {
                 case "nameAsc": return challenges.OrderBy(s => s.Name).ToList();
                 case "nameDesc": return challenges.OrderByDescending(s => s.Name).ToList();
-                case "timeAsc": return challenges.OrderBy(s => s.Time).ToList();
-                case "timeDesc": return challenges.OrderByDescending(s => s.Time).ToList();
                 default: return challenges.ToList();
             }
         }
@@ -61,6 +59,7 @@ namespace MTACodersLicence.Controllers
                                     .Include(s => s.Owner)
                                     .Where(s => s.ContestId == contestId);
             ViewData["ContestId"] = contestId;
+           
             return View(challenges.ToList());
 
             if (User.IsInRole("Administrator"))
@@ -90,7 +89,7 @@ namespace MTACodersLicence.Controllers
                     var groups = _context.GroupMembers.Include(s => s.Group)
                         .Where(s => s.ApplicationUserId == _userManager.GetUserId(User))
                         .Select(s => s.Group)
-                        .Select(s => s.Challenges)
+                        .Select(s => s.Contests)
                         .ToList();
 
                     var challengesStudent = new List<ChallengeModel>();
@@ -121,6 +120,9 @@ namespace MTACodersLicence.Controllers
             }
             var challenges = _context.Challenges.Where(s => s.ContestId == contestId);
             ViewData["ContestId"] = contestId;
+            var contest = _context.Contests.FirstOrDefault(s => s.Id == contestId);
+            var remainingTime = contest.Duration - (DateTime.Now - contest.StartDate).TotalMinutes;
+            ViewData["remainingTime"] = Math.Round(remainingTime); ;
             return View(challenges.ToList());
         }
 
@@ -169,7 +171,7 @@ namespace MTACodersLicence.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator,Profesor")]
-        public async Task<IActionResult> Create([Bind("Name,ShortDescription,Desciption,Tasks,Time,Hint,CodeTemplate,ContestId,ExecutionTimeLimit,MemoryLimit")] ChallengeModel challengeModel)
+        public async Task<IActionResult> Create([Bind("Name,ShortDescription,Desciption,Tasks,Time,Hint,CodeTemplate,ContestId,ExecutionTimeLimit,MemoryLimit,Dificulty,AvailableForPractice")] ChallengeModel challengeModel)
         {
             try
             {
@@ -290,20 +292,28 @@ namespace MTACodersLicence.Controllers
         }
 
 
-        public async Task<IActionResult> Ranking(int id)
+        public IActionResult Ranking(int id)
         {
-            var solutions = await _context.Solutions.Include(s => s.Owner)
-                .Where(s => s.ChallengeId == id).ToListAsync();
+            var solutions = _context.Solutions
+                .Include(s => s.ProgrammingLanguage)
+                .Include(s => s.Owner)
+                .Where(s => s.ChallengeId == id)
+                .ToList();
             var rankingList = solutions.Select(solution => new RankingViewModel()
             {
                 Grade = solution.Grade,
                 Score = solution.Score,
-                SentBy = solution.Owner.FullName
+                SentBy = solution.Owner.FullName,
+                TotalExecutionTime = solution.ExecutionTime,
+                TotalMemoryUsed = solution.MemoryUsed,
+                Language = solution.ProgrammingLanguage.Name
             })
-                .ToList();
+                .ToList().OrderByDescending(s => s.Score)
+                .ThenBy(s => s.TotalExecutionTime)
+                .ThenBy(s => s.TotalMemoryUsed);
             return View(rankingList);
         }
 
-       
+
     }
 }

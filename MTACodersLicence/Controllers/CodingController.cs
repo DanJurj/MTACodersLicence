@@ -32,75 +32,42 @@ namespace MTACodersLicence.Controllers
             _userManager = userManager;
         }
 
+        private bool IsChallengeActive(ChallengeModel challenge)
+        {
+            // verificam daca este in desfasurare
+            if (challenge?.Contest != null)
+            {
+                // verificam daca este activata
+                if (!challenge.Active)
+                    return false;
+                // verificam daca a trecut peste timpul admis
+                if (challenge.Contest.Duration - (DateTime.Now - challenge.Contest.StartDate).TotalMinutes < 0)
+                    return false;
+                // verificam daca este inaintea inceperii concursului
+                if (DateTime.Now.CompareTo(challenge.Contest.StartDate) < 0)
+                    return false;
+            }
+            else
+            {
+                return false;
+            }
+            return true;
+        }
+
         public async Task<IActionResult> Index(int? id, string stdout, string stderr, string error, float grade, bool hasGrade)
         {
             if (id == null)
-            {
                 return NotFound();
+            // challenge-ul in curs de desfasurare
+            var challenge = _context.Challenges
+                                    .Include(s => s.Contest)
+                                    .FirstOrDefault(m => m.Id == id);
+            if (!IsChallengeActive(challenge))
+            {
+                return RedirectToAction("EroareTimp");
             }
-            var challenge = await _context.Challenges.FirstOrDefaultAsync(m => m.Id == id);
-            var progLang = await _context.ProgrammingLanguages.FirstOrDefaultAsync();
-            if (challenge == null)
-            {
-                return NotFound();
-            }
-            var userId = _userManager.GetUserId(User);
-            var codingSession = _context.CodingSessions
-                                        .FirstOrDefault(s => s.ChallengeId == id && s.ApplicationUserId == userId);
-            // daca utilizatorul are deja o sesiune de coding creata verificam daca nu i-a expirat timpul alocat acesteia
-            if (codingSession != null)
-            {
-                var passedTimee = DateTime.Now - codingSession.StartTime;
-                var passedTimeMinutess = passedTimee.TotalMinutes;
-                if (passedTimeMinutess > challenge.Time)
-                {
-                    return RedirectToAction("EroareTimp");
-                }
-            }
-
-            // daca nu e nici o sesiune de coding inceputa cream una
-            if (codingSession == null)
-            {
-                var newCodingSession = new CodingSessionModel
-                {
-                    ChallengeId = challenge.Id,
-                    StartTime = DateTime.Now,
-                    ApplicationUserId = userId,
-                    ProgrammingLanguageId = progLang.Id,
-                    Code = progLang.CodeTemplate,
-                };
-                _context.CodingSessions.Add(newCodingSession);
-                await _context.SaveChangesAsync();
-                codingSession = newCodingSession;
-            }
-            // cream coding ViewModel-ul
-            var codingViewModel = new CodingViewModel
-            {
-                Challenge = challenge,
-                CodingSession = codingSession
-            };
-            // calculam timpul ramas din challenge
-            var passedTime = DateTime.Now - codingSession.StartTime;
-            var passedTimeMinutes = passedTime.TotalMinutes;
-            codingViewModel.RemainingTime = challenge.Time - (int)passedTimeMinutes;
-            codingViewModel.HasGrade = hasGrade;
-            codingViewModel.Grade = grade;
-           /* if (stdout != null || stderr != null || error != null)
-            {
-                var codeResult = new CodeRunnerResult()
-                {
-                    Stdout = stdout,
-                    Stderr = stderr,
-                    Error = error,
-                };
-                if (error != null)
-                {
-                    codeResult.HasError = true;
-                }
-                codingViewModel.CodeResult = codeResult;
-            }*/
+            //inserare template-uri aferente challenge-ului in limbaje
             var programmingLanguages = _context.ProgrammingLanguages.Where(s => s.Available).ToList();
-            var programmingLanguage = _context.ProgrammingLanguages.FirstOrDefault(s => s.Id == codingSession.ProgrammingLanguageId);
             var codeTemplates = _context.CodeTemplates.Where(s => s.ChallengeId == id);
             foreach (var codeTemplate in codeTemplates)
             {
@@ -112,9 +79,42 @@ namespace MTACodersLicence.Controllers
                     }
                 }
             }
-            var programmingLanguagesSelectList = new SelectList(programmingLanguages, "LanguageCode", "Name", programmingLanguage.LanguageCode);
-            codingViewModel.ProgramingLanguages = programmingLanguages;
+            //formare sesiune de coding
+            var userId = _userManager.GetUserId(User);  // id-ul utilizatorului curent
+            var codingSession = _context.CodingSessions     // verificam sa vedem daca este salvata o sesiune deja
+                                        .Include(s => s.ProgrammingLanguage)
+                                        .FirstOrDefault(s => s.ChallengeId == id && s.ApplicationUserId == userId);
+            if (codingSession == null)      // daca nu este una salvata in baza de date cream una aferenta utilizatorului si challenge-ului
+            {
+                var progLang = programmingLanguages.First();
+                var newCodingSession = new CodingSessionModel
+                {
+                    ChallengeId = challenge.Id,
+                    ApplicationUserId = userId,
+                    ProgrammingLanguageId = progLang.Id,
+                    Code = progLang.CodeTemplate,
+                };
+                _context.CodingSessions.Add(newCodingSession);
+                await _context.SaveChangesAsync();
+                codingSession = newCodingSession;
+            }
+            // creare condingView pentru afisare in view
+            var codingViewModel = new CodingViewModel
+            {
+                Challenge = challenge,
+                CodingSession = codingSession,
+                HasGrade = hasGrade,
+                Grade = grade,
+                ProgramingLanguages = programmingLanguages
+            };
+            // creare select list pentru selectare limbaj de programare
+            var currentLangCode = codingSession.ProgrammingLanguage.LanguageCode;
+            var programmingLanguagesSelectList = new SelectList(programmingLanguages, "LanguageCode", "Name", currentLangCode);
             ViewData["ProgrammingLanguages"] = programmingLanguagesSelectList;
+            //calculare timp ramas din concurs
+            var contest = challenge.Contest;
+            var remainingTime = contest.Duration - (DateTime.Now - contest.StartDate).TotalMinutes;
+            ViewData["remainingTime"] = Math.Round(remainingTime);
             return View(codingViewModel);
         }
 
@@ -123,7 +123,7 @@ namespace MTACodersLicence.Controllers
             return View();
         }
 
-        private async Task SaveCodeFunc(string savedCode, int? challengeId, int programmmingLanguageId)
+        private void SaveCodeFunc(string savedCode, int? challengeId, int programmmingLanguageId)
         {
             var userId = _userManager.GetUserId(User);
             var codingSession = _context.CodingSessions
@@ -136,50 +136,48 @@ namespace MTACodersLicence.Controllers
             codingSession.ProgrammingLanguageId = programmmingLanguageId;
             codingSession.HasPreviousSave = true;
             _context.CodingSessions.Update(codingSession);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
         }
 
-        public async Task<IActionResult> SaveCode(string savedCode, int? challengeId, string language)
+        public IActionResult SaveCode(string savedCode, int? challengeId, string language)
         {
-            var programmingLanguage = await _context.ProgrammingLanguages.FirstOrDefaultAsync(s => s.Name == language);
-            await SaveCodeFunc(savedCode, challengeId, programmingLanguage.Id);
+            var programmingLanguage = _context.ProgrammingLanguages.FirstOrDefault(s => s.Name == language);
+            if (programmingLanguage != null)
+                SaveCodeFunc(savedCode, challengeId, programmingLanguage.Id);
             return RedirectToAction("Index", new { id = challengeId });
         }
 
         [HttpPost]
-        public async Task<IActionResult> Code([Bind("Code,ChallengeId")] SolutionModel solution, string code, string input, int language, string codeButton, int? challengeId)
+        public IActionResult Code([Bind("Code,ChallengeId")] SolutionModel solution, string code, string input, int language, string codeButton, int? challengeId)
         {
-            var programmingLanguage = await _context.ProgrammingLanguages.FirstOrDefaultAsync(s => s.LanguageCode == language);
+            var programmingLanguage = _context.ProgrammingLanguages.FirstOrDefault(s => s.LanguageCode == language);
             if (codeButton.Equals("Submit Code"))
             {
                 if (ModelState.IsValid)
                 {
-                    await SaveCodeFunc(code, challengeId, programmingLanguage.Id);
+                    // salvam codul deja scris pentru restaurare
+                    SaveCodeFunc(code, challengeId, programmingLanguage.Id);
                     var userId = _userManager.GetUserId(User);
-                    var codingSession = _context.CodingSessions.FirstOrDefault(s =>
-                        s.ApplicationUserId == userId && s.ChallengeId == challengeId);
+                    // preluam sesiunea de coding din baza de date
+                    var codingSession = _context.CodingSessions
+                        .Include(s => s.Challenge)
+                            .ThenInclude(s => s.Contest)
+                        .FirstOrDefault(s => s.ApplicationUserId == userId && s.ChallengeId == challengeId);
+                    if (codingSession == null)
+                        return NotFound();
+                    // formare solutie
                     solution.ApplicationUserId = userId;
                     solution.ReceiveDateTime = DateTime.Now;
                     solution.ProgrammingLanguageId = programmingLanguage.Id;
-                    var existentSolution = await _context.Solutions
-                        .FirstOrDefaultAsync(s => s.ApplicationUserId == userId && s.ChallengeId == challengeId);
-                    if (existentSolution != null)
-                    {
-                        existentSolution.Duration = DateTime.Now - codingSession.StartTime;
-                        existentSolution.Code = code;
-                    }
-                    else
-                    {
-                        solution.Duration = DateTime.Now - codingSession.StartTime;
-                        _context.Add(solution);
-                    }
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index), new { id = solution.ChallengeId });
+                    solution.Duration = DateTime.Now - codingSession.Challenge.Contest.StartDate;
+                    _context.Add(solution);
+                    _context.SaveChanges();
+                    return RedirectToAction("VerifySubmit","Solution", new { id = solution.Id });
                 }
             }
             if (codeButton.Equals("Run Tests"))
             {
-                await SaveCodeFunc(code, challengeId, programmingLanguage.Id);
+                SaveCodeFunc(code, challengeId, programmingLanguage.Id);
                 var publicBatteries = _context.Batteries
                                                 .Where(s => s.IsPublic)
                                                 .Include(s => s.Tests)

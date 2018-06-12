@@ -20,7 +20,7 @@ namespace MTACodersLicence.Controllers
         }
 
         // GET: CodeTemplate
-        public async Task<IActionResult> Index(int challengeId)
+        public async Task<IActionResult> Index(int challengeId, int? contestId)
         {
             var codeTemplates = await _context.CodeTemplates
                                             .Include(c => c.Challenge)
@@ -28,6 +28,7 @@ namespace MTACodersLicence.Controllers
                                             .Where(s => s.ChallengeId == challengeId)
                                             .ToListAsync();
             ViewData["ChallengeId"] = challengeId;
+            ViewData["ContestId"] = contestId;
             return View(codeTemplates);
         }
 
@@ -47,12 +48,12 @@ namespace MTACodersLicence.Controllers
             {
                 return NotFound();
             }
-
+            ViewData["ContestId"] = codeTemplateModel.Challenge.ContestId;
             return View(codeTemplateModel);
         }
 
         // GET: CodeTemplate/Create
-        public IActionResult Create(int challengeId)
+        public IActionResult Create(int challengeId, int? contestId)
         {
             ViewData["ChallengeId"] = challengeId;
             ViewData["ProgrammingLanguageId"] = new SelectList(_context.ProgrammingLanguages, "Id", "Name");
@@ -68,7 +69,8 @@ namespace MTACodersLicence.Controllers
             {
                 _context.Add(codeTemplateModel);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index), new { codeTemplateModel.ChallengeId });
+                var contestId = _context.CodeTemplates.Include(s => s.Challenge).FirstOrDefault(s => s.Id == codeTemplateModel.Id).Challenge.ContestId;
+                return RedirectToAction(nameof(Index), new { codeTemplateModel.ChallengeId, contestId });
             }
             ViewData["ChallengeId"] = codeTemplateModel.ChallengeId;
             ViewData["ProgrammingLanguageId"] = new SelectList(_context.ProgrammingLanguages, "Id", "Name", codeTemplateModel.ProgrammingLanguageId);
@@ -83,12 +85,13 @@ namespace MTACodersLicence.Controllers
                 return NotFound();
             }
 
-            var codeTemplateModel = await _context.CodeTemplates.SingleOrDefaultAsync(m => m.Id == id);
+            var codeTemplateModel = await _context.CodeTemplates.Include(s => s.Challenge).SingleOrDefaultAsync(m => m.Id == id);
             if (codeTemplateModel == null)
             {
                 return NotFound();
             }
             ViewData["ChallengeId"] = new SelectList(_context.Challenges, "Id", "Name", codeTemplateModel.ChallengeId);
+            ViewData["ContestId"] = codeTemplateModel.Challenge.ContestId;
             ViewData["ProgrammingLanguageId"] = new SelectList(_context.ProgrammingLanguages, "Id", "Name", codeTemplateModel.ProgrammingLanguageId);
             return View(codeTemplateModel);
         }
@@ -121,7 +124,8 @@ namespace MTACodersLicence.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index), new { codeTemplateModel.ChallengeId });
+                var contestId = _context.CodeTemplates.Include(s => s.Challenge).FirstOrDefault(s => s.Id == codeTemplateModel.Id).Challenge.ContestId;
+                return RedirectToAction(nameof(Index), new { codeTemplateModel.ChallengeId, contestId });
             }
             ViewData["ChallengeId"] = new SelectList(_context.Challenges, "Id", "Name", codeTemplateModel.ChallengeId);
             ViewData["ProgrammingLanguageId"] = new SelectList(_context.ProgrammingLanguages, "Id", "Name", codeTemplateModel.ProgrammingLanguageId);
@@ -137,15 +141,17 @@ namespace MTACodersLicence.Controllers
             }
 
             var codeTemplateModel = await _context.CodeTemplates
+                .Include(s => s.Challenge)
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (codeTemplateModel == null)
             {
                 return NotFound();
             }
             var challengeId = codeTemplateModel.ChallengeId;
+            var contestId = codeTemplateModel.Challenge.ContestId;
             _context.CodeTemplates.Remove(codeTemplateModel);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index), new { challengeId });
+            return RedirectToAction(nameof(Index), new { challengeId, contestId });
         }
 
         private bool CodeTemplateModelExists(int id)

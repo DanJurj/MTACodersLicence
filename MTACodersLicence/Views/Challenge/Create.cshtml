@@ -20,14 +20,14 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="StartDate" class="control-label"></label>
-                <input asp-for="StartDate" class="form-control" type="date" placeholder="MM/DD/YYY" id="date" />
-                <span asp-validation-for="StartDate" class="text-danger"></span>
+                <label asp-for="Active" class="control-label"></label>
+                <input asp-for="Active" class="form-control" />
+                <span asp-validation-for="Active" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Time" class="control-label"></label>
-                <input asp-for="Time" class="form-control" placeholder="minutes" />
-                <span asp-validation-for="Time" class="text-danger"></span>
+                <label asp-for="AvailableForPractice" class="control-label"></label>
+                <input asp-for="AvailableForPractice" class="form-control" />
+                <span asp-validation-for="AvailableForPractice" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="ExecutionTimeLimit" class="control-label"></label>

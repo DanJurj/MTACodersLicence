@@ -37,7 +37,7 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Index" class="btn btn-default"  asp-route-challengeId="@Model.ChallengeId">Back to Code Templates</a>
+    <a asp-action="Index" class="btn btn-default"  asp-route-challengeId="@Model.ChallengeId" asp-route-contestId="@ViewBag.ContestId">Back to Code Templates</a>
     <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
 </div>
 <script src="~/lib/Ace/src/ace.js"></script>

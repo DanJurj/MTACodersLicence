@@ -9,7 +9,7 @@
 @if (User.IsInRole("Administrator") || User.IsInRole("Profesor"))
 {
     <p>
-      
+        <a asp-action="Create" class="btn btn-success" style="float: right; margin-top: -25px">Create New Contest</a>
     </p>
 }
 <table class="table">
@@ -25,11 +25,29 @@
                 </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Time) (minutes)
+                @Html.DisplayNameFor(model => model.StartDate)
+                <a asp-action="Index" asp-route-order="dateAsc">
+                    <span class="glyphicon glyphicon-triangle-top"></span>
+                </a>
+                <a asp-action="Index" asp-route-order="dateDesc">
+                    <span class="glyphicon glyphicon-triangle-bottom"></span>
+                </a>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Duration)
                 <a asp-action="Index" asp-route-order="timeAsc">
                     <span class="glyphicon glyphicon-triangle-top"></span>
                 </a>
                 <a asp-action="Index" asp-route-order="timeDesc">
+                    <span class="glyphicon glyphicon-triangle-bottom"></span>
+                </a>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Challenges)
+                <a asp-action="Index" asp-route-order="challengesAsc">
+                    <span class="glyphicon glyphicon-triangle-top"></span>
+                </a>
+                <a asp-action="Index" asp-route-order="challengesDesc">
                     <span class="glyphicon glyphicon-triangle-bottom"></span>
                 </a>
             </th>
@@ -50,8 +68,19 @@
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Time)
+                    @Html.DisplayFor(modelItem => item.StartDate)
                 </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Duration) min
+                </td>
+                @if (item.Challenges.Any())
+                {
+                    <td>@item.Challenges.Count</td>
+                }
+                else
+                {
+                    <td>0</td>
+                }
                 @if (User.IsInRole("Administrator"))
                 {
                     <td>
@@ -59,11 +88,17 @@
                     </td>
                 }
                 <td>
-                    @if (@item.Active)
+                    <!-- apare butonul doar data challenge-ul este active si in intervalul orar specificat -->
+                    @if (item.Active && item.StartDate.CompareTo(DateTime.Now) < 0 && (DateTime.Now - item.StartDate).TotalMinutes < item.Duration)
                     {
                         <a asp-controller="Challenge" asp-action="Start" asp-route-contestId="@item.Id" class="btn btn-success">Start</a>
                     }
+                    else
+                    {
+                        <a class="btn btn-success" disabled>Start</a>
+                    }
                     <a asp-action="Ranking" asp-route-id="@item.Id" class="btn btn-success">Ranking</a>
+                    
                     @if (User.IsInRole("Administrator") || User.IsInRole("Profesor"))
                     {
                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>

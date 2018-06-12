@@ -1,25 +1,27 @@
-﻿@model MTACodersLicence.ViewModels.GroupViewModels.GroupChallengeViewModel
+﻿@model MTACodersLicence.ViewModels.GroupViewModels.GroupContestViewModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Assign Contests";
 }
 
-<h2>Assign Challenges to Group @ViewBag.GroupName</h2>
-
+<h2>Assign Contests to Group @ViewBag.GroupName</h2>
 
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <h4>Available Challenges</h4>
+        <h4>Available Contests</h4>
         <hr />
         <table class="table">
             <thead>
                 <tr>
                     <th>
-                        Challenge Name
+                        Contests Name
                     </th>
                     <th>
-                        Duration (minutes)
+                        Starts on
+                    </th>
+                    <th>
+                        Lasts
                     </th>
                     <th>
                         Actions
@@ -27,12 +29,13 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var challenge in Model.AvailableChallenges)
+                @foreach (var contest in Model.AvailableContests)
                 {
                     <tr>
-                        <td>@challenge.Name</td>
-                        <td>@challenge.Time</td>
-                        <td><a asp-action="AddChallenge" asp-route-challengeId="@challenge.Id" asp-route-groupId="@ViewBag.GroupId" class="btn btn-success">Add</a></td>
+                        <td>@contest.Name</td>
+                        <td>@contest.StartDate</td>
+                        <td>@contest.Duration min</td>
+                        <td><a asp-action="AddContests" asp-route-contestId="@contest.Id" asp-route-groupId="@ViewBag.GroupId" class="btn btn-success">Add</a></td>
                     </tr>
                 }
             </tbody>
@@ -40,16 +43,19 @@
 
     </div>
     <div class="col-md-7 col-md-offset-1">
-        <h4>Assigned Challenges</h4>
+        <h4>Assigned Contests</h4>
         <hr />
         <table class="table">
             <thead>
                 <tr>
                     <th>
-                        Challenge Name
+                        Contest Name
                     </th>
                     <th>
-                        Duration
+                        Starts on
+                    </th>
+                    <th>
+                        Lasts
                     </th>
                     <th>
                         Assign Date
@@ -60,22 +66,23 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var challenge in Model.AssignedChallenges)
+                @foreach (var groupContest in Model.AssignedContests)
                 {
                     <tr>
-                        <td>@challenge.Challenge.Name</td>
-                        <td>@challenge.Challenge.Time</td>
-                        <td>@challenge.AssignDate</td>
+                        <td>@groupContest.Contest.Name</td>
+                        <td>@groupContest.Contest.StartDate</td>
+                        <td>@groupContest.Contest.Duration min</td>
+                        <td>@groupContest.AssignDate</td>
                         <td>
-                            @if (challenge.Challenge.Active)
+                            @if (groupContest.Contest.Active)
                             {
-                                <a asp-action="ToogleActivation" asp-route-challengeId="@challenge.ChallengeId" asp-route-groupId="@challenge.GroupId" asp-route-active="0" class="btn btn-warning">Deactivate</a>
+                                <a asp-action="ToogleActivation" asp-route-contestId="@groupContest.ContestId" asp-route-groupId="@groupContest.GroupId" asp-route-active="0" class="btn btn-warning">Deactivate</a>
                             }
                             else
                             {
-                                <a asp-action="ToogleActivation" asp-route-challengeId="@challenge.ChallengeId" asp-route-groupId="@challenge.GroupId" asp-route-active="1" class="btn btn-success">Activate</a>
+                                <a asp-action="ToogleActivation" asp-route-contestId="@groupContest.ContestId" asp-route-groupId="@groupContest.GroupId" asp-route-active="1" class="btn btn-success">Activate</a>
                             }
-                            <a asp-action="RemoveChallenge" asp-route-challengeId="@challenge.ChallengeId" asp-route-groupId="@challenge.GroupId"  class="btn btn-danger">Remove</a>
+                            <a asp-action="RemoveContest" asp-route-contestId="@groupContest.ContestId" asp-route-groupId="@groupContest.GroupId" class="btn btn-danger">Remove</a>
                         </td>
                     </tr>
                 }

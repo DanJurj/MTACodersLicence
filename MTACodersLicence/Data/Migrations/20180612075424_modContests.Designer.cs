@@ -11,9 +11,10 @@ using System;
 namespace WebApplication5.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180612075424_modContests")]
+    partial class modContests
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -258,6 +259,8 @@ namespace WebApplication5.Data.Migrations
 
                     b.Property<int>("ProgrammingLanguageId");
 
+                    b.Property<DateTime>("StartTime");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserId");
@@ -434,7 +437,7 @@ namespace WebApplication5.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<decimal>("ExecutionTime");
+                    b.Property<float>("ExecutionTime");
 
                     b.Property<float>("Memory");
 
@@ -468,17 +471,19 @@ namespace WebApplication5.Data.Migrations
 
                     b.Property<TimeSpan>("Duration");
 
-                    b.Property<decimal>("ExecutionTime");
-
                     b.Property<float>("Grade");
 
-                    b.Property<float>("MemoryUsed");
+                    b.Property<string>("Language");
+
+                    b.Property<float>("Memory");
 
                     b.Property<int>("ProgrammingLanguageId");
 
                     b.Property<DateTime>("ReceiveDateTime");
 
                     b.Property<float>("Score");
+
+                    b.Property<float>("Time");
 
                     b.Property<bool>("Verified");
 
@@ -642,7 +647,7 @@ namespace WebApplication5.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("MTACodersLicence.Models.GroupModels.GroupModel", "Group")
-                        .WithMany("Contests")
+                        .WithMany("Challenges")
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

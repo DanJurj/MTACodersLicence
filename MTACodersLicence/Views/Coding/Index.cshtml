@@ -205,7 +205,7 @@
     initTime();
     // functie de initializare timp ramas
     function initTime() {
-        var minutes = @Html.Raw(JsonConvert.SerializeObject(this.Model.RemainingTime));
+        var minutes = @ViewData["remainingTime"];
         var hours = Math.floor(minutes / 60);
         if (hours !== 0)
             minutes = minutes % (hours * 60);

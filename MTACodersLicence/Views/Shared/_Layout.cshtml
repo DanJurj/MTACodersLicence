@@ -33,13 +33,12 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
                     @if (SignInManager.IsSignedIn(User))
                     {
                         <li><a asp-controller="Practice" asp-action="Index">Practice</a></li>
                         if (User.IsInRole("Student"))
-                        {  
-                            <li><a asp-controller="Contest" asp-action="Compete">Compete</a></li>
+                        {
+                            <li><a asp-controller="Contest" asp-action="Index">Compete</a></li>
                         }
                         else if (User.IsInRole("Profesor"))
                         {
@@ -52,13 +51,12 @@
                         <li><a asp-controller="Group" asp-action="Index">My Groups</a></li>
                         <li><a asp-controller="Group" asp-action="AllGroups">All Groups</a></li>
                     }
-                    <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
                     @if (User.IsInRole("Administrator"))
                     {
                         <li><a asp-controller="AdminManageAccounts" asp-action="Index">Accounts</a></li>
                         <li><a asp-controller="ProgramingLanguage" asp-action="Index">Programming Languages</a></li>
                     }
+                    <li><a asp-area="" asp-controller="Home" asp-action="About">Help</a></li>
                 </ul>
                 @await Html.PartialAsync("_LoginPartial")
             </div>

@@ -22,7 +22,7 @@
                 Members
             </th>
             <th>
-                Challenges
+                Contests
             </th>
             <th>
                 Requests
@@ -50,13 +50,13 @@
                 {
                     <td>@item.Members.Count</td>
                 }
-                @if (item.Challenges == null)
+                @if (item.Contests == null)
                 {
                     <td>0</td>
                 }
                 else
                 {
-                    <td>@item.Challenges.Count</td>
+                    <td>@item.Contests.Count</td>
                 }
                 @if (item.JoinRequests == null)
                 {
@@ -72,10 +72,10 @@
                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning acionGroup">Edit</a>
                         <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger acionGroup">Delete</a>
                         <a asp-controller="GroupMember" asp-action="Index" asp-route-groupId="@item.Id" class="btn btn-success acionGroup">Assign Members</a>
-                        <a asp-controller="GroupChallenge" asp-action="Index" asp-route-groupId="@item.Id" class="btn btn-success acionGroup">Assign Contests</a>
+                        <a asp-controller="GroupContest" asp-action="Index" asp-route-groupId="@item.Id" class="btn btn-success acionGroup">Assign Contests</a>
                         <a asp-controller="JoinGroupRequest" asp-action="Index" asp-route-groupId="@item.Id" class="btn btn-default acionGroup">Join Requests</a>
                     }
-                    <a asp-controller="GroupChallenge" asp-action="AssignedChallenges" asp-route-groupId="@item.Id" class="btn btn-default acionGroup">View Contests</a>
+                    <a asp-controller="GroupContest" asp-action="AssignedContests" asp-route-groupId="@item.Id" class="btn btn-default acionGroup">View Contests</a>
                     @if (User.IsInRole("Student"))
                     {
                         <a asp-controller="GroupMember" asp-action="LeaveGroup" asp-route-groupId="@item.Id" class="btn btn-danger acionGroup">Leave Group</a>

@@ -53,7 +53,7 @@ namespace MTACodersLicence.Services
 
             var result = JObject.Parse(content);
             var memoryUsed = result.Value<float>("memory");
-            var executionTime = result.Value<float>("time");
+            var executionTime = result.Value<decimal>("time");
             var stdoutBase64 = result.Value<string>("stdout");
             var stdout = ConvertFromBase64(stdoutBase64);
             return new TestResultModel()

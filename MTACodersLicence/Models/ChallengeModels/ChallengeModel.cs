@@ -18,8 +18,6 @@ namespace MTACodersLicence.Models.ChallengeModels
         public string ShortDescription { get; set; }
         public string Desciption { get; set; }
         public string Tasks { get; set; }
-        [Display(Name = "Duration")]
-        public int Time { get; set; }  //minutes
         public string Hint { get; set; }
         [Display(Name = "Code Template")]
         public string CodeTemplate { get; set; }
@@ -29,14 +27,13 @@ namespace MTACodersLicence.Models.ChallengeModels
         [Display(Name = "Memory Limit")]
         public int MemoryLimit { get; set; }
         public string Dificulty { get; set; }
-        [Display(Name = "Starts on:")]
-        public DateTime StartDate { get; set; }
+        
         [Display(Name = "Available for Practice")]
         public bool AvailableForPractice { get; set; }
 
         public ICollection<BatteryModel> Batteries { get; set; }
         public ICollection<SolutionModel> Solutions { get; set; }
-        public ICollection<GroupChallengeModel> ChallengeGroups { get; set; }
+        public ICollection<GroupContestModel> ChallengeGroups { get; set; }
 
         public string ApplicationUserId { get; set; }
         [ForeignKey(nameof(ApplicationUserId))]
@@ -44,5 +41,6 @@ namespace MTACodersLicence.Models.ChallengeModels
 
         public int ContestId { get; set; }
         public ContestModel Contest { get; set; }
+
     }
 }

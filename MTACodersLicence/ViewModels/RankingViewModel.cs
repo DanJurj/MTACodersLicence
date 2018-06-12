@@ -13,5 +13,10 @@ namespace MTACodersLicence.ViewModels
         public string SentBy { get; set; }
         public float Score { get; set; }
         public float Grade { get; set; }
+        [Display(Name = "Execution time")]
+        public decimal TotalExecutionTime { get; set; }
+        [Display(Name = "Memory Used")]
+        public float TotalMemoryUsed { get; set; }
+        public string Language { get; set; }
     }
 }

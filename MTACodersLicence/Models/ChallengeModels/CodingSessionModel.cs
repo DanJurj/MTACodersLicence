@@ -6,7 +6,6 @@ namespace MTACodersLicence.Models.ChallengeModels
     public class CodingSessionModel
     {
         public int Id { get; set; }
-        public DateTime StartTime { get; set; }
 
         public int ChallengeId { get; set; }
         [ForeignKey(nameof(ChallengeId))]

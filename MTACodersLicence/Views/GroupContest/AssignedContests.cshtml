@@ -1,0 +1,38 @@
+﻿@model IEnumerable<MTACodersLicence.Models.GroupModels.GroupContestModel>
+
+@{
+    ViewData["Title"] = "Assigned Contests";
+}
+
+<h2>Assigned Contests</h2>
+
+<hr />
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            Contests Name
+        </th>
+        <th>
+            Duration
+        </th>
+        <th>
+            Actions
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var groupContest in Model)
+    {
+        <tr>
+            <td>@groupContest.Contest.Name</td>
+            <td>@groupContest.Contest.Time</td>
+            <td>
+                <a asp-controller="Coding" asp-action="Index" asp-route-id="@groupContest.Contest" class="btn btn-success">Start</a>
+                <a asp-action="RemoveChallenge" asp-route-challengeId="@groupContest.ContestId" asp-route-groupId="@groupContest.GroupId" class="btn btn-warning">Ranking</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+<a asp-controller="Group" asp-action="Index" class="btn btn-default">Back to Groups</a>
