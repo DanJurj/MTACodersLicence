@@ -14,9 +14,6 @@
             <th>
                 @Html.DisplayNameFor(model => model.Tests)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsPublic)
-            </th>
             <th> Actions </th>
         </tr>
     </thead>
@@ -34,15 +31,6 @@
                 else
                 {
                     <td>0</td>
-                }
-
-                @if (item.IsPublic)
-                {
-                    <td>Yes</td>
-                }
-                else
-                {
-                    <td>No</td>
                 }
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id" asp-route-challengeId="@ViewData["challengeId"]" class="btn btn-warning">Edit</a>

@@ -1,0 +1,76 @@
+﻿@model MTACodersLicence.Models.ProgrammingLanguageModel
+
+@{
+    ViewData["Title"] = "Add";
+}
+
+<h2>Add</h2>
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Examples</button>
+<hr />
+<div class="row">
+    <div class="col-md-4 col-md-offset-2">
+        <form asp-action="Add">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LanguageCode" class="control-label"></label>
+                <input asp-for="LanguageCode" class="form-control" />
+                <span asp-validation-for="LanguageCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EditorMode" class="control-label"></label>
+                <input asp-for="EditorMode" class="form-control" />
+                <span asp-validation-for="EditorMode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="Available" /> @Html.DisplayNameFor(model => model.Available)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-success" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index" class="btn btn-default">Back to Languages</a>
+</div>
+
+<!-- The Modal -->
+<div class="modal" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Modal Heading</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <pre>
+Name         LanguageCode     EditorMode
+C#           16               csharp
+Ruby         39               ruby
+JavaScript   29               javascript
+</pre>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>

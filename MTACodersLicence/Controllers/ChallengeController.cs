@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -13,9 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using MTACodersLicence.Data;
 using MTACodersLicence.Models;
 using MTACodersLicence.Models.ChallengeModels;
-using MTACodersLicence.Models.GroupModels;
 using MTACodersLicence.ViewModels;
-using Newtonsoft.Json;
 
 namespace MTACodersLicence.Controllers
 {
@@ -31,25 +26,14 @@ namespace MTACodersLicence.Controllers
             _userManager = userManager;
         }
 
-        private List<ChallengeModel> OrderAndSearch(string searchString, string order, IEnumerable<ChallengeModel> challenges)
-        {
-            //search
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                return challenges.Where(s => s.Name.Contains(searchString)).ToList();
-            }
-            //ordonare
-            switch (order)
-            {
-                case "nameAsc": return challenges.OrderBy(s => s.Name).ToList();
-                case "nameDesc": return challenges.OrderByDescending(s => s.Name).ToList();
-                default: return challenges.ToList();
-            }
-        }
-
-        // GET: Challenge
+        /// <summary>
+        /// Folosit de profesor in general pentru a adauga/edita/sterge/modifica problemele unui concurs dar si
+        /// si pentru a vedea solutiile trimise pentru aceasta
+        /// </summary>
+        /// <param name="contestId">id-ul concursului</param>
+        /// <param name="order">in functie de ce coloana sa se ordoneze rezultatele</param>
         [Authorize(Roles = "Administrator, Profesor")]
-        public IActionResult Index(int? contestId, string searchString, string order)
+        public IActionResult Index(int? contestId, string order)
         {
             if (contestId == null)
             {
@@ -57,61 +41,26 @@ namespace MTACodersLicence.Controllers
             }
             var challenges = _context.Challenges
                                     .Include(s => s.Owner)
-                                    .Where(s => s.ContestId == contestId);
+                                    .Where(s => s.ContestId == contestId)
+                                    .ToList();
+            // ordonare
+            switch (order)
+            {
+                case "nameAsc":
+                    challenges = challenges.OrderBy(s => s.Name).ToList();
+                    break;
+                case "nameDesc":
+                    challenges = challenges.OrderByDescending(s => s.Name).ToList();
+                    break;
+            }
             ViewData["ContestId"] = contestId;
-           
             return View(challenges.ToList());
-
-            if (User.IsInRole("Administrator"))
-            {
-                // daca e administrator poate sa vada toate concursurile din baza de date
-                var allChallenges = _context.Challenges
-                    .Include(s => s.Owner)
-                    .ToList();
-                allChallenges = OrderAndSearch(searchString, order, allChallenges);
-                return View(allChallenges);
-            }
-            else if (User.IsInRole("Profesor"))
-            {
-                // daca e profesor poate sa vada toate concursurile create de el
-                var challengesProfessor = _context.Challenges
-                                        .Include(s => s.Owner)
-                                        .Where(c => c.ApplicationUserId == _userManager.GetUserId(User))
-                                        .ToList();
-                challengesProfessor = OrderAndSearch(searchString, order, challengesProfessor);
-                return View(challengesProfessor);
-            }
-            else
-            {
-                if (User.IsInRole("Student"))
-                {
-                    // selectam toate grupurile in care este inscris utilizatorul curent
-                    var groups = _context.GroupMembers.Include(s => s.Group)
-                        .Where(s => s.ApplicationUserId == _userManager.GetUserId(User))
-                        .Select(s => s.Group)
-                        .Select(s => s.Contests)
-                        .ToList();
-
-                    var challengesStudent = new List<ChallengeModel>();
-                    foreach (var groupMember in groups)
-                    {
-                        foreach (var challengeModel in groupMember)
-                        {
-                            var challenge = _context.Challenges.FirstOrDefault(s => s.Id == challengeModel.ContestId);
-                            challengesStudent.Add(challenge);
-                        }
-                    }
-                    challengesStudent = OrderAndSearch(searchString, order, challengesStudent);
-                    return View(challengesStudent);
-                }
-                return NotFound();
-            }
         }
 
         /// <summary>
         /// Actiune apelata de studenti in momentul in care vor sa inceapa un concurs
         /// </summary>
-        /// <param name="contestId"></param> id-ul concursului
+        /// <param name="contestId">id-ul concursului</param> 
         public IActionResult Start(int? contestId)
         {
             if (contestId == null)
@@ -121,12 +70,16 @@ namespace MTACodersLicence.Controllers
             var challenges = _context.Challenges.Where(s => s.ContestId == contestId);
             ViewData["ContestId"] = contestId;
             var contest = _context.Contests.FirstOrDefault(s => s.Id == contestId);
-            var remainingTime = contest.Duration - (DateTime.Now - contest.StartDate).TotalMinutes;
-            ViewData["remainingTime"] = Math.Round(remainingTime); ;
+            if (contest != null)
+            {
+                var remainingTime = contest.Duration - (DateTime.Now - contest.StartDate).TotalMinutes;
+                ViewData["remainingTime"] = Math.Round(remainingTime);
+            }
             return View(challenges.ToList());
         }
 
-        // GET: Challenge/Details/5
+        /// <param name="id">id-ul problemei</param>
+        /// <returns>Pagina cu Detaliile unei probleme incluzand si bateriile de teste cu testele aferente</returns>
         [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> Details(int? id)
         {
@@ -148,7 +101,8 @@ namespace MTACodersLicence.Controllers
             return View(challengeModel);
         }
 
-        // GET: Challenge/Create
+        /// <param name="contestId">id-ul concursului pentru care se creaza problema aceasta</param>
+        /// <returns>Pagina de creare a unei probleme</returns>
         [Authorize(Roles = "Administrator,Profesor")]
         public IActionResult Create(int? contestId)
         {
@@ -167,7 +121,11 @@ namespace MTACodersLicence.Controllers
             return View();
         }
 
-        // POST: Challenge/Create
+        /// <summary>
+        /// Actiunea apelata in momentul submit-ului de date pentru crearea unei probleme
+        /// </summary>
+        /// <param name="challengeModel">modelul continand toate datele din form</param>
+        /// <returns>Pagina de Index a problemelor in caz de succes sau aceeasi pagina in cazul unei erori</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator,Profesor")]
@@ -193,7 +151,8 @@ namespace MTACodersLicence.Controllers
             return View(challengeModel);
         }
 
-        // GET: Challenge/Edit/5
+        /// <param name="id">id-ul problemei</param>
+        /// <returns>Pagina de editare a unei probleme</returns>
         [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -224,11 +183,15 @@ namespace MTACodersLicence.Controllers
             return View(challengeModel);
         }
 
-        // POST: Challenge/Edit/5
+        /// <summary>
+        /// Actiunea apelata in momentul trimiterii datelor modificate
+        /// </summary>
+        /// <param name="challengeModel"></param>
+        /// <returns>Pagina Index in caz de succes sau pagina de Edit in caz de esec</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator,Profesor")]
-        public async Task<IActionResult> Edit([Bind("Id,Name,ShortDescription,Desciption,Tasks,Time,Hint,ApplicationUserId,Active,ContestId,ExecutionTimeLimit,MemoryLimit,Dificulty,AvailableForPractice")] ChallengeModel challengeModel)
+        public async Task<IActionResult> Edit(ChallengeModel challengeModel)
         {
             challengeModel.ApplicationUserId = _userManager.GetUserId(User);
             if (ModelState.IsValid)
@@ -244,17 +207,18 @@ namespace MTACodersLicence.Controllers
                     {
                         return NotFound();
                     }
-                    else
-                    {
-                        throw;
-                    }
+                    throw;
                 }
                 return RedirectToAction(nameof(Index), new { contestId = challengeModel.ContestId });
             }
             return View(challengeModel);
         }
 
-        // GET: Challenge/Delete/5
+        /// <summary>
+        /// Stergerea unei probleme. Se vor sterge si bateriile de teste impreuna cu testele aferente
+        /// </summary>
+        /// <param name="id">id-ul problemei</param>
+        /// <returns>Index in caz de succes sau NotFound in caz de eroare</returns>
         [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -286,12 +250,16 @@ namespace MTACodersLicence.Controllers
             return RedirectToAction(nameof(Index), new { contestId });
         }
 
+        // Verifica existenta problemei cu id-ul id. Folosita la cereri de Edit sau Delete
         private bool ChallengeModelExists(int id)
         {
             return _context.Challenges.Any(e => e.Id == id);
         }
 
-
+        /// <summary>
+        /// Creeaza o lista de rezultate pe baza solutiilor pentru o problema si o trimite spre afisare
+        /// </summary>
+        /// <param name="id">id-ul problemei</param>
         public IActionResult Ranking(int id)
         {
             var solutions = _context.Solutions
@@ -313,7 +281,5 @@ namespace MTACodersLicence.Controllers
                 .ThenBy(s => s.TotalMemoryUsed);
             return View(rankingList);
         }
-
-
     }
 }

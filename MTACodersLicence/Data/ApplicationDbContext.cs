@@ -62,5 +62,7 @@ namespace MTACodersLicence.Data
 
         public DbSet<RankingViewModel> Rankings { get; set; }
 
+        public DbSet<ProfessorKey> ProfessorKeys { get; set; }
+
     }
 }

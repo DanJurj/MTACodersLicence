@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MTACodersLicence.Data;
 using MTACodersLicence.Models;
@@ -27,9 +25,10 @@ namespace MTACodersLicence.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Pagina cu concursurile disponibile si cele atribuite grupului
+        /// Profesorul care a creat grupul si concursurile le poate adauga sau nu grupului
         /// </summary>
-        /// <param name="groupId"></param>
+        /// <param name="groupId">id-ul grupului</param>
         [Authorize(Roles = "Administrator,Profesor")]
         public IActionResult Index(int? groupId)
         {
@@ -55,10 +54,10 @@ namespace MTACodersLicence.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Adaugarea unui concurs la un grup. Acum membrii grupului pot vedea concursul
         /// </summary>
-        /// <param name="groupId"></param>
-        /// <param name="challengeId"></param>
+        /// <param name="groupId">id-ul grupului</param>
+        /// <param name="contestId">id-ul concursului</param>
         [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> AddContests(int? groupId, int? contestId)
         {
@@ -77,6 +76,12 @@ namespace MTACodersLicence.Controllers
             return RedirectToAction(nameof(Index), new { groupId });
         }
 
+        /// <summary>
+        /// Face inaccesibil concursul pentru grupul in cauza
+        /// </summary>
+        /// <param name="groupId">id-ul grupului</param>
+        /// <param name="contestId">id-ul concursului</param>
+        /// <returns>Pagina Index</returns>
         [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> RemoveContest(int? groupId, int? contestId)
         {
@@ -95,6 +100,7 @@ namespace MTACodersLicence.Controllers
             return RedirectToAction(nameof(Index), new { groupId });
         }
 
+        // actiune disponibila si studentilor pentru a vedea concursurile disponibile grupului respectiv
         public async Task<IActionResult> AssignedContests(int? groupId)
         {
             if (groupId == null)
@@ -108,6 +114,8 @@ namespace MTACodersLicence.Controllers
             return View(assignedContests);
         }
 
+        // activarea sau dezactivarea concuruslui. Daca un concurs este atribuit si nu este activat, membrii grupului
+        // nu vor putea participa
         [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> ToogleActivation(int? contestId, int? groupId, int? active)
         {

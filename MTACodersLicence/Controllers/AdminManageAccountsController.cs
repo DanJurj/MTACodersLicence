@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MTACodersLicence.Data;
 using MTACodersLicence.Models;
@@ -25,7 +23,9 @@ namespace MTACodersLicence.Controllers
             _userManager = userManager;
         }
 
-        // GET: AdminManageAccounts
+        /// <summary>
+        ///  Afiseaza toate conturile din baza de date impreuna cu rolurile acestora printr-un ViewModel
+        /// </summary>
         public async Task<IActionResult> Index()
         {
             var accounts = await _context.ApplicationUser.ToListAsync();
@@ -44,7 +44,10 @@ namespace MTACodersLicence.Controllers
             return View(adminManageViewModelList);
         }
 
-        // GET: AdminManageAccounts/Edit/5
+        /// <summary>
+        /// Cerere GET de Editare a unui cont
+        /// </summary>
+        /// <param name="id">id-ul contului</param> 
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
@@ -60,7 +63,11 @@ namespace MTACodersLicence.Controllers
             return View(applicationUser);
         }
 
-        // POST: AdminManageAccounts/Edit/5
+        /// <summary>
+        /// Cerere POST de editare a contului
+        /// </summary>
+        /// <param name="id">id-ul contului</param>
+        /// <param name="applicationUser">modelul format din totalitatea parametrilor trimisi</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("FirstName,LastName,Id,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PhoneNumber")] ApplicationUser applicationUser)
@@ -102,7 +109,11 @@ namespace MTACodersLicence.Controllers
             return View(applicationUser);
         }
 
-        // GET: AdminManageAccounts/Delete/5
+        /// <summary>
+        /// Cerere de tip GET de stergere a unui cont
+        /// </summary>
+        /// <param name="id">id-ul contului ce urmeaza a fi sters</param>
+        /// <returns>view-ul de confirmare a stergerii</returns>
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
@@ -120,7 +131,11 @@ namespace MTACodersLicence.Controllers
             return View(applicationUser);
         }
 
-        // POST: AdminManageAccounts/Delete/5
+        /// <summary>
+        /// Cerere de tip POST in urma confirmarii de stergere a contului
+        /// </summary>
+        /// <param name="id">id-ul contului ce urmeaza a fi sters</param>
+        /// <returns>pagina de Index</returns>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
@@ -131,11 +146,16 @@ namespace MTACodersLicence.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        /// Verifica daca utilizatorul cu id-ul id exista in baza de date
         private bool ApplicationUserExists(string id)
         {
             return _context.ApplicationUser.Any(e => e.Id == id);
         }
 
+        /// <summary>
+        /// Folosita pentru a sterge sesiunile de cod existente
+        /// </summary>
+        /// <returns>Pagina de Index</returns>
         public async Task<IActionResult> ClearCodingSessions()
         {
             var codingSessions = await _context.CodingSessions.ToListAsync();

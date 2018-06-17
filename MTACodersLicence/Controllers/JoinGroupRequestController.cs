@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MTACodersLicence.Data;
-using MTACodersLicence.Models;
 using MTACodersLicence.Models.GroupModels;
 
 namespace MTACodersLicence.Controllers
@@ -17,12 +13,10 @@ namespace MTACodersLicence.Controllers
     public class JoinGroupRequestController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
 
-        public JoinGroupRequestController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public JoinGroupRequestController(ApplicationDbContext context)
         {
             _context = context;
-            _userManager = userManager;
         }
 
         // GET: JoinGroupRequest

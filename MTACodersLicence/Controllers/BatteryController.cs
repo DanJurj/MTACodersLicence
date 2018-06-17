@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +6,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MTACodersLicence.Data;
 using MTACodersLicence.Models.BatteryModels;
-using MTACodersLicence.Models.ChallengeModels;
 
 namespace MTACodersLicence.Controllers
 {
@@ -22,7 +19,8 @@ namespace MTACodersLicence.Controllers
             _context = context;
         }
 
-        // GET: Battery
+        /// <param name="challengeId">id-ul problemei pentru care dorim lista de baterii de teste disponibile</param>
+        /// <returns>Lista de baterii de teste pentru problema cu id-ul: challengeId</returns>
         public async Task<IActionResult> Index(int? challengeId)
         {
             if (challengeId == null)
@@ -43,7 +41,8 @@ namespace MTACodersLicence.Controllers
             return View(await batteries.ToListAsync());
         }
 
-        // GET: Battery/Details/5
+        /// <param name="id">id-ul bateriei de teste</param>
+        /// <returns>Detaliile bateriei de teste cu id-ul = id</returns>
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -63,14 +62,20 @@ namespace MTACodersLicence.Controllers
             return View(batteryModel);
         }
 
-        // GET: Battery/Create
+        /// <summary>
+        /// Actiunea aferenta unui request de tip GET pentru crearea unei baterii de teste
+        /// </summary>
+        /// <param name="challengeId">id-ul problemei pentru care se doreste crearea bateriei de teste</param>
+        /// <returns>View-ul pentru crearea unei noi baterii de teste</returns>
         public IActionResult Create(int? challengeId)
         {
             ViewData["ChallengeId"] = challengeId;
             return View();
         }
 
-        // POST: Battery/Create
+        /// <summary>
+        /// POST-ul cu datele de crearea a unei noi baterii de teste
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,IsPublic,ChallengeId")] BatteryModel batteryModel)
@@ -84,7 +89,8 @@ namespace MTACodersLicence.Controllers
             return View(batteryModel);
         }
 
-        // GET: Battery/Edit/5
+        /// <param name="id">id-ul bateriei</param>
+        /// <returns>Pagina de editare a unei baterii de teste</returns>
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -102,9 +108,9 @@ namespace MTACodersLicence.Controllers
             return View(batteryModel);
         }
 
-        // POST: Battery/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>
+        /// POST-ul cu datele modificate ale bateriei de teste
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,IsPublic,ChallengeId")] BatteryModel batteryModel)
@@ -127,10 +133,7 @@ namespace MTACodersLicence.Controllers
                     {
                         return NotFound();
                     }
-                    else
-                    {
-                        throw;
-                    }
+                    throw;
                 }
                 return RedirectToAction(nameof(Index), new {challengeId = batteryModel.ChallengeId});
             }
@@ -138,27 +141,29 @@ namespace MTACodersLicence.Controllers
             return View(batteryModel);
         }
 
-        // GET: Battery/Delete/5
+        /// <summary>
+        /// Cerere de tip GET pentru stergerea unei baterii de teste
+        /// </summary>
+        /// <param name="id">id-ul bateriei ce se doreste a fi stearsa</param>
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var batteryModel = await _context.Batteries
                 .Include(b => b.Challenge)
                 .Include(b => b.Tests)
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (batteryModel == null)
-            {
                 return NotFound();
-            }
 
             return View(batteryModel);
         }
 
-        // POST: Battery/Delete/5
+        /// <summary>
+        /// POST-ul cu confirmarea cereri de stergere
+        /// </summary>
+        /// <param name="id">id-ul bateriei ce se doreste a fi stearsa</param>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

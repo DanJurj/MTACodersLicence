@@ -8,8 +8,9 @@ using SendGrid.Helpers.Mail;
 
 namespace MTACodersLicence.Services
 {
-    // This class is used by the application to send email for account confirmation and password reset.
-    // For more details see https://go.microsoft.com/fwlink/?LinkID=532713
+    /// <summary>
+    /// Serviciu de Email pentru confirmare cont si resetare parola
+    /// </summary>
     public class EmailSender : IEmailSender
     {
         public Task SendEmailAsync(string email, string subject, string message)
@@ -21,7 +22,7 @@ namespace MTACodersLicence.Services
             var client = new SendGridClient(apiKey);
             var msg = new SendGridMessage()
             {
-                From = new EmailAddress("Joe@contoso.com", "Joe Smith"),
+                From = new EmailAddress("mtacoders@mta.com", "MTACoders"),
                 Subject = subject,
                 PlainTextContent = message,
                 HtmlContent = message

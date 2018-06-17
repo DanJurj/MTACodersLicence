@@ -9,27 +9,31 @@
 <hr />
 <table class="table">
     <thead>
-    <tr>
-        <th>
-            Contests Name
-        </th>
-        <th>
-            Duration
-        </th>
-        <th>
-            Actions
-        </th>
-    </tr>
+        <tr>
+            <th>
+                Contests Name
+            </th>
+            <th>
+                Start on:
+            </th>
+            <th>
+                Duration
+            </th>
+            <th>
+                Actions
+            </th>
+        </tr>
     </thead>
     <tbody>
     @foreach (var groupContest in Model)
     {
         <tr>
             <td>@groupContest.Contest.Name</td>
-            <td>@groupContest.Contest.Time</td>
+            <td>@groupContest.Contest.StartDate</td>
+            <td>@groupContest.Contest.Duration</td>
             <td>
                 <a asp-controller="Coding" asp-action="Index" asp-route-id="@groupContest.Contest" class="btn btn-success">Start</a>
-                <a asp-action="RemoveChallenge" asp-route-challengeId="@groupContest.ContestId" asp-route-groupId="@groupContest.GroupId" class="btn btn-warning">Ranking</a>
+                <a asp-controller="Contest" asp-action="Ranking" asp-route-id="@groupContest.Contest" class="btn btn-warning">Ranking</a>
             </td>
         </tr>
     }

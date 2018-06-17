@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -14,9 +10,7 @@ using MTACodersLicence.Data;
 using MTACodersLicence.Models;
 using MTACodersLicence.Models.ChallengeModels;
 using MTACodersLicence.Models.SolutionModels;
-using MTACodersLicence.Services;
 using MTACodersLicence.ViewModels;
-using Newtonsoft.Json.Linq;
 
 namespace MTACodersLicence.Controllers
 {
@@ -31,7 +25,8 @@ namespace MTACodersLicence.Controllers
             _context = context;
             _userManager = userManager;
         }
-
+        
+        // metoda privata care verifica daca problema este din cadrul unui concurs in desfasurare
         private bool IsChallengeActive(ChallengeModel challenge)
         {
             // verificam daca este in desfasurare
@@ -54,7 +49,13 @@ namespace MTACodersLicence.Controllers
             return true;
         }
 
-        public async Task<IActionResult> Index(int? id, string stdout, string stderr, string error, float grade, bool hasGrade)
+        /// <summary>
+        /// Pagina de concurs a unei probleme. Aici se rezolva problema si se trimite solutia
+        /// </summary>
+        /// <param name="id">id-ul problemei</param>
+        /// <param name="grade">nota obtinuta in urma trimiterii unei solutii</param>
+        /// <param name="hasGrade">parametru de verificare in View daca a fost verificata solutia si a primit nota</param>
+        public async Task<IActionResult> Index(int? id, float grade, bool hasGrade)
         {
             if (id == null)
                 return NotFound();
@@ -118,11 +119,16 @@ namespace MTACodersLicence.Controllers
             return View(codingViewModel);
         }
 
+        /// <summary>
+        /// Pagina afisata daca problema se afla intr-un concurs care s-a terminat
+        /// </summary>
+        /// <returns>O pagina in care se explica faptul ca acel concurs s-a terminat</returns>
         public IActionResult EroareTimp()
         {
             return View();
         }
 
+        // metoda privata apelata cu scopul de a salva codul pentru a putea reveni ulterior la rezolvarea unei probleme
         private void SaveCodeFunc(string savedCode, int? challengeId, int programmmingLanguageId)
         {
             var userId = _userManager.GetUserId(User);
@@ -139,6 +145,7 @@ namespace MTACodersLicence.Controllers
             _context.SaveChanges();
         }
 
+        // Actiune apelata la apasarea butonului de Save sau la CTRL+S
         public IActionResult SaveCode(string savedCode, int? challengeId, string language)
         {
             var programmingLanguage = _context.ProgrammingLanguages.FirstOrDefault(s => s.Name == language);
@@ -147,59 +154,38 @@ namespace MTACodersLicence.Controllers
             return RedirectToAction("Index", new { id = challengeId });
         }
 
+        /// <summary>
+        /// Actiune apelata in momentul apasarii butonului Submit Code
+        /// </summary>
+        /// <param name="solution">modelul continant codul sursa si id-ul problemei</param>
+        /// <param name="language">LanguageCode-ul limbajului de programare ales</param>
+        /// <returns>Pagina de clasament a problemei</returns>
         [HttpPost]
-        public IActionResult Code([Bind("Code,ChallengeId")] SolutionModel solution, string code, string input, int language, string codeButton, int? challengeId)
+        [ValidateAntiForgeryToken]
+        public IActionResult Code([Bind("Code,ChallengeId")] SolutionModel solution, int language)
         {
-            var programmingLanguage = _context.ProgrammingLanguages.FirstOrDefault(s => s.LanguageCode == language);
-            if (codeButton.Equals("Submit Code"))
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
-                {
-                    // salvam codul deja scris pentru restaurare
-                    SaveCodeFunc(code, challengeId, programmingLanguage.Id);
-                    var userId = _userManager.GetUserId(User);
-                    // preluam sesiunea de coding din baza de date
-                    var codingSession = _context.CodingSessions
-                        .Include(s => s.Challenge)
-                            .ThenInclude(s => s.Contest)
-                        .FirstOrDefault(s => s.ApplicationUserId == userId && s.ChallengeId == challengeId);
-                    if (codingSession == null)
-                        return NotFound();
-                    // formare solutie
-                    solution.ApplicationUserId = userId;
-                    solution.ReceiveDateTime = DateTime.Now;
-                    solution.ProgrammingLanguageId = programmingLanguage.Id;
-                    solution.Duration = DateTime.Now - codingSession.Challenge.Contest.StartDate;
-                    _context.Add(solution);
-                    _context.SaveChanges();
-                    return RedirectToAction("VerifySubmit","Solution", new { id = solution.Id });
-                }
-            }
-            if (codeButton.Equals("Run Tests"))
-            {
-                SaveCodeFunc(code, challengeId, programmingLanguage.Id);
-                var publicBatteries = _context.Batteries
-                                                .Where(s => s.IsPublic)
-                                                .Include(s => s.Tests)
-                                                .AsNoTracking();
-                var totalTestsCount = 0;
-                var passedTestsCount = 0;
-                foreach (var battery in publicBatteries)
-                {
-                    totalTestsCount += battery.Tests.Count;
-                    foreach (var test in battery.Tests)
-                    {
-                        var codeRunnerResult = CodeRunner.RunCode(code, test, programmingLanguage.LanguageCode);
-                        if (codeRunnerResult.PointsGiven > 0)
-                        {
-                            passedTestsCount++;
-                        }
-                    }
-                }
-                var grade = (float)passedTestsCount / totalTestsCount;
-                grade = grade * 10;
-                return RedirectToAction("Index", new { id = challengeId, grade, hasGrade = true });
-            }
+                var programmingLanguage = _context.ProgrammingLanguages.FirstOrDefault(s => s.LanguageCode == language);
+                // salvam codul deja scris pentru restaurare
+                SaveCodeFunc(solution.Code, solution.ChallengeId, programmingLanguage.Id);
+                var userId = _userManager.GetUserId(User);
+                // preluam sesiunea de coding din baza de date
+                var codingSession = _context.CodingSessions
+                    .Include(s => s.Challenge)
+                    .ThenInclude(s => s.Contest)
+                    .FirstOrDefault(s => s.ApplicationUserId == userId && s.ChallengeId == solution.ChallengeId);
+                if (codingSession == null)
+                    return NotFound();
+                // formare solutie
+                solution.ApplicationUserId = userId;
+                solution.ReceiveDateTime = DateTime.Now;
+                solution.ProgrammingLanguageId = programmingLanguage.Id;
+                solution.Duration = DateTime.Now - codingSession.Challenge.Contest.StartDate;
+                _context.Add(solution);
+                _context.SaveChanges();
+                return RedirectToAction("VerifySubmit", "Solution", new { id = solution.Id });
+            }           
             return NotFound();
         }
     }

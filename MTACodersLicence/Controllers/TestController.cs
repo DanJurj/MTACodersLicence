@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MTACodersLicence.Data;
-using MTACodersLicence.Models;
 using MTACodersLicence.Models.TestModels;
 
 namespace MTACodersLicence.Controllers
@@ -22,7 +19,8 @@ namespace MTACodersLicence.Controllers
             _context = context;
         }
 
-        // GET: Test
+        /// <param name="batteryId">id-ul bateriei de teste pentru care se doreste afisarea testelor</param>
+        /// <returns>Pagina cu testele aferente bateriei cu id-ul dat</returns>
         public async Task<IActionResult> Index(int? batteryId)
         {
             var tests = _context.Tests.Include(t => t.Battery).Where(c => c.BatteryId == batteryId);
@@ -96,10 +94,7 @@ namespace MTACodersLicence.Controllers
                     {
                         return NotFound();
                     }
-                    else
-                    {
-                        throw;
-                    }
+                    throw;
                 }
                 return RedirectToAction(nameof(Index), new {batteryId = testModel.BatteryId});
             }

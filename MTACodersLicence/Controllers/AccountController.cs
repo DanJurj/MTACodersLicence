@@ -49,7 +49,7 @@ namespace MTACodersLicence.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(string returnUrl = null)
         {
-            // Clear the existing external cookie to ensure a clean login process
+            // Curatam cookie-urile exitente
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
             ViewData["ReturnUrl"] = returnUrl;
@@ -64,8 +64,6 @@ namespace MTACodersLicence.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, lockoutOnFailure: true);
                 if (result.Succeeded)
                 {
@@ -84,63 +82,8 @@ namespace MTACodersLicence.Controllers
                 }
             }
 
-            // If we got this far, something failed, redisplay form
+            // Re-afisam Login form-ul in caz de eroare
             return View(model);
-        }
-
-
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> LoginWithRecoveryCode(string returnUrl = null)
-        {
-            // Ensure the user has gone through the username & password screen first
-            var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
-            if (user == null)
-            {
-                throw new ApplicationException($"Unable to load two-factor authentication user.");
-            }
-
-            ViewData["ReturnUrl"] = returnUrl;
-
-            return View();
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> LoginWithRecoveryCode(LoginWithRecoveryCodeViewModel model, string returnUrl = null)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
-            if (user == null)
-            {
-                throw new ApplicationException($"Unable to load two-factor authentication user.");
-            }
-
-            var recoveryCode = model.RecoveryCode.Replace(" ", string.Empty);
-
-            var result = await _signInManager.TwoFactorRecoveryCodeSignInAsync(recoveryCode);
-
-            if (result.Succeeded)
-            {
-                _logger.LogInformation("User with ID {UserId} logged in with a recovery code.", user.Id);
-                return RedirectToLocal(returnUrl);
-            }
-            if (result.IsLockedOut)
-            {
-                _logger.LogWarning("User with ID {UserId} account locked out.", user.Id);
-                return RedirectToAction(nameof(Lockout));
-            }
-            else
-            {
-                _logger.LogWarning("Invalid recovery code entered for user with ID {UserId}", user.Id);
-                ModelState.AddModelError(string.Empty, "Invalid recovery code entered.");
-                return View();
-            }
         }
 
         [HttpGet]
@@ -181,12 +124,25 @@ namespace MTACodersLicence.Controllers
                 {
                     if (model.Role.Equals("Profesor"))
                     {
-                        if (!model.PasswordForAdminOrProfessor.Equals("pr0fes0r"))
+                        var key = _context.ProfessorKeys.FirstOrDefault(s =>
+                            s.Key == model.PasswordForAdminOrProfessor);
+                        if (key == null)
                         {
                             ViewData["error"] = "Parola pentru crearea unui cont de profesor este INCORECTA!";
                             ViewData["Roles"] = new SelectList(_roleManager.Roles, "Name", "Name").OrderByDescending(s => s.Value);
                             return View(model);
                         }
+                        // daca exista cheia continua
+                        key.NumberOfAccountsAvailable--;
+                        if (key.NumberOfAccountsAvailable == 0)
+                        {
+                            _context.ProfessorKeys.Remove(key);
+                        }
+                        else
+                        {
+                            _context.ProfessorKeys.Update(key);
+                        }
+                        _context.SaveChanges();
                     }
                 }
                 var result = await _userManager.CreateAsync(user, model.Password);
@@ -218,7 +174,7 @@ namespace MTACodersLicence.Controllers
                 AddErrors(result);
             }
 
-            // If we got this far, something failed, redisplay form
+            // Re-afisam Login form-ul in caz de eroare
             return View(model);
         }
 
@@ -348,8 +304,6 @@ namespace MTACodersLicence.Controllers
                     return RedirectToAction(nameof(ForgotPasswordConfirmation));
                 }
 
-                // For more information on how to enable account confirmation and password reset please
-                // visit https://go.microsoft.com/fwlink/?LinkID=532713
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
                 var callbackUrl = Url.ResetPasswordCallbackLink(user.Id, code, Request.Scheme);
                 await _emailSender.SendEmailAsync(model.Email, "Reset Password",
@@ -357,7 +311,7 @@ namespace MTACodersLicence.Controllers
                 return RedirectToAction(nameof(ForgotPasswordConfirmation));
             }
 
-            // If we got this far, something failed, redisplay form
+            // Re-afisam Login form-ul in caz de eroare
             return View(model);
         }
 

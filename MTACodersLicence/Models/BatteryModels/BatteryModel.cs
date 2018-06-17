@@ -12,9 +12,6 @@ namespace MTACodersLicence.Models.BatteryModels
         public string Name { get; set; }
         public ICollection<TestModel> Tests { get; set; }
 
-        [Display(Name = "Public")]
-        public bool IsPublic { get; set; }
-
         public int? ChallengeId { get; set; }
         [ForeignKey(nameof(ChallengeId))]
         public virtual ChallengeModel Challenge { get; set; }

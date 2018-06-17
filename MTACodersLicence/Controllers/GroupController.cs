@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MTACodersLicence.Data;
 using MTACodersLicence.Models;
@@ -25,7 +23,13 @@ namespace MTACodersLicence.Controllers
             _userManager = userManager;
         }
 
-        // GET: Group
+        /// <summary>
+        /// Pagina de Listare a grupurilor
+        /// </summary>
+        /// <returns>Daca utilizatorul este administrator le va vedea pe toate.
+        /// Daca este profesor le poate vedea doar pe cele create de el
+        /// Daca este student le poate vedea dora pe cele in care este membru
+        /// </returns>
         public async Task<IActionResult> Index()
         {
             // administrator
@@ -45,13 +49,12 @@ namespace MTACodersLicence.Controllers
             {
                 groups = await _context.GroupMembers
                     .Where(s => s.ApplicationUserId == _userManager.GetUserId(User))
+                    .Include(s => s.Group)
                     .Select(s => s.Group)
                     .ToListAsync();
             }
             return View(groups);
         }
-
-      
 
         // GET: Group/Create
         [Authorize(Roles = "Administrator,Profesor")]
@@ -125,17 +128,18 @@ namespace MTACodersLicence.Controllers
                     {
                         return NotFound();
                     }
-                    else
-                    {
-                        throw;
-                    }
+                    throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
             return View(groupModel);
         }
 
-        // GET: Group/Delete/5
+        /// <summary>
+        /// Cerere de stergere a unui grup. 
+        /// Se va verifica daca cel care doreste stergerea este proprietarul grupului sau administrator.
+        /// </summary>
+        /// <param name="id">id-ul grupului ce se doreste a fi sters</param>
         [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -164,7 +168,7 @@ namespace MTACodersLicence.Controllers
             return View(groupModel);
         }
 
-        // POST: Group/Delete/5
+        // confirmarea stergerii
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator,Profesor")]
@@ -184,6 +188,7 @@ namespace MTACodersLicence.Controllers
             return _context.Groups.Any(e => e.Id == id);
         }
 
+        // posibilitatea de a vedea toate grupurile pentru a putea trimite cereri de inscriere
         public async Task<IActionResult> AllGroups()
         {
             var allGroups = await _context.Groups
@@ -192,12 +197,12 @@ namespace MTACodersLicence.Controllers
                 .Include(s => s.Contests)
                 .ToListAsync();
             var userId = _userManager.GetUserId(User);
-            // the groups i am member in
+            // grupurile in care utilizatorul este membru
             var memberGroups = await  _context.GroupMembers
                                             .Where(s => s.ApplicationUserId == userId)
                                             .Select(s => s.Group)
                                             .ToListAsync();
-            // the groups i already sent requests to
+            // grupurile catre care au fost trimise cereri deja
             var requestGroups = await _context.JoinGroupRequests
                                             .Where(s => s.ApplicationUserId == userId)
                                             .Select(s => s.Group)
@@ -220,6 +225,7 @@ namespace MTACodersLicence.Controllers
             return View(allGroups);
         }
 
+        // trimiterea unei cereri de join
         public async Task<IActionResult> AddJoinRequest(int? groupId)
         {
             if (groupId == null)

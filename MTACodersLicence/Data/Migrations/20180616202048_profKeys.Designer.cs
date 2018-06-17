@@ -11,9 +11,10 @@ using System;
 namespace WebApplication5.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180616202048_profKeys")]
+    partial class profKeys
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -191,6 +192,8 @@ namespace WebApplication5.Data.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<int?>("ChallengeId");
+
+                    b.Property<bool>("IsPublic");
 
                     b.Property<string>("Name");
 
@@ -387,20 +390,6 @@ namespace WebApplication5.Data.Migrations
                     b.HasIndex("GroupId");
 
                     b.ToTable("JoinGroupRequests");
-                });
-
-            modelBuilder.Entity("MTACodersLicence.Models.ProfessorKey", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Key");
-
-                    b.Property<int>("NumberOfAccountsAvailable");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ProfessorKeys");
                 });
 
             modelBuilder.Entity("MTACodersLicence.Models.ProgrammingLanguageModel", b =>

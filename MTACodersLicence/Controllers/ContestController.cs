@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MTACodersLicence.Data;
 using MTACodersLicence.Models;
@@ -25,6 +23,8 @@ namespace MTACodersLicence.Controllers
             _userManager = userManager;
         }
 
+        /// <param name="order">parametrul in functie de care sa se faca sortarea rezultatelor</param>
+        /// <returns>Pagina de afisare a concursurilor.</returns>
         public IActionResult Index(string order)
         {
             //administrator
@@ -36,6 +36,19 @@ namespace MTACodersLicence.Controllers
             if (User.IsInRole("Profesor"))
             {
                 contests = contests.Where(s => s.ApplicationUserId == _userManager.GetUserId(User)).ToList();
+            }
+            //daca e student poate vedea doar concursurile disponibile pentru grupurile in care este inscris
+            if (User.IsInRole("Student"))
+            {
+                var contestsList = _context.GroupMembers.Include(s => s.Group)
+                    .Where(s => s.ApplicationUserId == _userManager.GetUserId(User))
+                    .Select(s => s.Group)
+                    .Select(s => s.Contests)
+                    .ToList();
+                contests = new List<ContestModel>();
+                foreach (var item in contestsList)
+                    foreach (var contestGroup in item)
+                        contests.Add(contestGroup.Contest);
             }
             // ordonare in functie de Nume, Data inceperii si durata
             switch (order)
@@ -69,6 +82,7 @@ namespace MTACodersLicence.Controllers
             return View(contests);
         }
 
+        // return: Pagina de Create
         [Authorize(Roles = "Administrator, Profesor")]
         public IActionResult Create()
         {
@@ -140,6 +154,11 @@ namespace MTACodersLicence.Controllers
             return View(contestModel);
         }
 
+        /// <summary>
+        /// Actiunea apelata pentru stergerea unui concurs. Se vor sterge recursiv si toate problemele cu bateriile de teste si sabloanele aferente.
+        /// </summary>
+        /// <param name="id">id-ul concursului</param>
+        /// <returns>Pagina Index cu respectivul concurs sters in caz de succes</returns>
         [Authorize(Roles = "Administrator, Profesor")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -175,6 +194,7 @@ namespace MTACodersLicence.Controllers
             return _context.Contests.Any(e => e.Id == id);
         }
 
+        //clasamentul total per concurs
         public IActionResult Ranking(int id)
         {
             var challenges = _context.Challenges

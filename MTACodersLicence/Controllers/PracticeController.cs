@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MTACodersLicence.Data;
-using MTACodersLicence.Models.ChallengeModels;
 using MTACodersLicence.ViewModels;
 
 namespace MTACodersLicence.Controllers
@@ -22,7 +19,7 @@ namespace MTACodersLicence.Controllers
             _context = context;
         }
 
-        // GET: Practice
+        // Pagina cu problemele disponibile pentru antrenament
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.Challenges
@@ -30,6 +27,7 @@ namespace MTACodersLicence.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
+        // Pagina de rezolvare a problemei
         public IActionResult Start(int challengeId)
         {
             var challenge = _context.Challenges.FirstOrDefault(s => s.Id == challengeId);

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -19,7 +17,11 @@ namespace MTACodersLicence.Controllers
             _context = context;
         }
 
-        // GET: CodeTemplate
+        /// <summary>
+        /// Returneaza lista de sabloane de cod pentru o problema din cadrul unui concurs
+        /// </summary>
+        /// <param name="challengeId">id-ul problemei</param>
+        /// <param name="contestId">id-ul concursului</param>
         public async Task<IActionResult> Index(int challengeId, int? contestId)
         {
             var codeTemplates = await _context.CodeTemplates
@@ -32,14 +34,14 @@ namespace MTACodersLicence.Controllers
             return View(codeTemplates);
         }
 
-        // GET: CodeTemplate/Details/5
+        /// <param name="id">id-ul sablonului de cod</param>
+        /// <returns>Pagina de detalii pentru sablonul de cod cu id-ul dat</returns>
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-
             var codeTemplateModel = await _context.CodeTemplates
                 .Include(c => c.Challenge)
                 .Include(c => c.ProgrammingLanguage)
@@ -52,7 +54,9 @@ namespace MTACodersLicence.Controllers
             return View(codeTemplateModel);
         }
 
-        // GET: CodeTemplate/Create
+        /// <param name="challengeId">id-ul problemei</param>
+        /// <param name="contestId">id-ul concursului</param>
+        /// <returns>Pagina de creare a unui nou sablon pentru o problema din cadul unui concurs</returns>
         public IActionResult Create(int challengeId, int? contestId)
         {
             ViewData["ChallengeId"] = challengeId;
@@ -60,7 +64,11 @@ namespace MTACodersLicence.Controllers
             return View();
         }
 
-        // POST: CodeTemplate/Create
+        /// <summary>
+        /// Actiunea apelata in urma submit-ului cu datele de creare a unui nou sablon
+        /// </summary>
+        /// <param name="codeTemplateModel">modelul care inglobeaza toate datele din form</param>
+        /// <returns>Pagina Index in caz de succes sau pagina Create in cazul unui esec</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Code,ProgrammingLanguageId,ChallengeId")] CodeTemplateModel codeTemplateModel)
@@ -77,7 +85,8 @@ namespace MTACodersLicence.Controllers
             return View(codeTemplateModel);
         }
 
-        // GET: CodeTemplate/Edit/5
+        /// <param name="id">id-ul sablonului de code</param>
+        /// <returns>Pagina de editare a sablonui de cod cu id-ul dat</returns>
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -96,7 +105,12 @@ namespace MTACodersLicence.Controllers
             return View(codeTemplateModel);
         }
 
-        // POST: CodeTemplate/Edit/5
+        /// <summary>
+        /// Actiunea apelata in momentul unui submit din pagina de Edit
+        /// </summary>
+        /// <param name="id">id-ul sablonului de cod</param>
+        /// <param name="codeTemplateModel">modelul cu toate datele modificate</param>
+        /// <returns>Index in caz de succes sau Edit in caz de esec</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Code,ProgrammingLanguageId,ChallengeId")] CodeTemplateModel codeTemplateModel)
@@ -119,10 +133,7 @@ namespace MTACodersLicence.Controllers
                     {
                         return NotFound();
                     }
-                    else
-                    {
-                        throw;
-                    }
+                    throw;
                 }
                 var contestId = _context.CodeTemplates.Include(s => s.Challenge).FirstOrDefault(s => s.Id == codeTemplateModel.Id).Challenge.ContestId;
                 return RedirectToAction(nameof(Index), new { codeTemplateModel.ChallengeId, contestId });
@@ -132,7 +143,11 @@ namespace MTACodersLicence.Controllers
             return View(codeTemplateModel);
         }
 
-        // GET: CodeTemplate/Delete/5
+        /// <summary>
+        /// Actiune apelata pentru stergerea unui sablon
+        /// </summary>
+        /// <param name="id">id-ul sablonului</param>
+        /// <returns>Index in caz de succes sau NotFound in caz de esec</returns>
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)

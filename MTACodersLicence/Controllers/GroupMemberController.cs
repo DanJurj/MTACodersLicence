@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MTACodersLicence.Data;
 using MTACodersLicence.Models;
@@ -26,7 +24,7 @@ namespace MTACodersLicence.Controllers
             _userManager = userManager;
         }
 
-        // GET: GroupMember
+        // Pagina in care un profesor poate sa gestioneze membrii unuia din grupurile sale
         [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> Index(int? groupId)
         {
@@ -43,7 +41,9 @@ namespace MTACodersLicence.Controllers
             return View(await groupMembers.ToListAsync());
         }
 
-        // GET: GroupMember/Details/5
+        /// <param name="id">id-ul membrului pentru care se doreste afisarea detaliilor</param>
+        /// <param name="groupId">id-ul grupului</param>
+        /// <returns>Pagina cu detaliile unui membru al unui grup</returns>
         [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> Details(int? id, int? groupId)
         {
@@ -65,7 +65,7 @@ namespace MTACodersLicence.Controllers
             return View(groupMemberModel);
         }
 
-        // GET: GroupMember/Create
+        // Pagina cu membrii grupului si cu ceilalti utilizatori disponibili din baza de date.
         [Authorize(Roles = "Administrator,Profesor")]
         public IActionResult Create(int? groupId)
         {
@@ -84,6 +84,11 @@ namespace MTACodersLicence.Controllers
             return View(groupMemberViewModel);
         }
 
+        /// <summary>
+        /// Adaugarea unui nou membru grupului cu id-u groupId
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="groupId"></param>
         [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> AddMember(string userId, int? groupId)
         {
@@ -102,6 +107,7 @@ namespace MTACodersLicence.Controllers
             return RedirectToAction(nameof(Create), new { groupId });
         }
 
+        // Stergerea unui membru dintr-un grup
         [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> RemoveMember(string userId, int? groupId)
         {
@@ -118,6 +124,7 @@ namespace MTACodersLicence.Controllers
             return RedirectToAction(nameof(Create), new { groupId });
         }
 
+        // Stergerea unui membru al grupului din pagina Index
         [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> RemoveMemberPrim(string userId, int? groupId)
         {
@@ -134,6 +141,7 @@ namespace MTACodersLicence.Controllers
             return RedirectToAction(nameof(Index), new { groupId });
         }
 
+        // Actiune efectuata de un student cand vrea sa paraseasca un grup
         [Authorize(Roles = "Student")]
         public async Task<IActionResult> LeaveGroup(int? groupId)
         {

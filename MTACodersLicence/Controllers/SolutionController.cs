@@ -8,7 +8,6 @@ using MTACodersLicence.Data;
 using MTACodersLicence.Models.BatteryModels;
 using MTACodersLicence.Models.ResultModels;
 using MTACodersLicence.Models.SolutionModels;
-using MTACodersLicence.Models.TestModels;
 using MTACodersLicence.Services;
 
 namespace MTACodersLicence.Controllers
@@ -23,7 +22,8 @@ namespace MTACodersLicence.Controllers
             _context = context;
         }
 
-        // GET: Solution
+        // Pagina in care profesorul poate vedea toate solutiile trimise
+        // Solutiile sunt ordonate in functie de performanta, facand astfel un clasament
         [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> Index(int? challengeId, string order)
         {
@@ -80,7 +80,7 @@ namespace MTACodersLicence.Controllers
             return View(await solutions.ToListAsync());
         }
 
-        // GET: Solution/Details/5
+        // Detaliile unei Solutii
         [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> Details(int? id)
         {
@@ -101,6 +101,7 @@ namespace MTACodersLicence.Controllers
             return View(solutionModel);
         }
 
+        // Stergerea unei solutii
         [Authorize(Roles = "Administrator,Profesor")]
         public IActionResult Delete(int id)
         {
@@ -115,23 +116,10 @@ namespace MTACodersLicence.Controllers
             return RedirectToAction(nameof(Index), new { challengeId });
         }
 
+        // Verificam daca exista deja un rezultat pentru solutia si bateria respectiva, 
+        // iar daca exista il stergem pentru a-l inlocui cu cel nou
         [Authorize(Roles = "Administrator,Profesor")]
-        private async Task RunTest(TestModel test, SolutionModel solution, ResultModel result)
-        {
-            var testResult = CodeRunner.RunCode(solution.Code, test, solution.ProgrammingLanguage.LanguageCode);
-            testResult.ResultId = result.Id;
-            testResult.TestId = test.Id;
-            testResult.PointsGiven = test.ExpectedOutput.Equals(testResult.ResultedOutput) ? test.Points : 0;
-            if (testResult.ExecutionTime <= solution.Challenge.ExecutionTimeLimit && testResult.Memory <= solution.Challenge.MemoryLimit)
-            {
-                // inserare in tabelul de rezultate ale testelor
-                _context.TestResults.Add(testResult);
-                await _context.SaveChangesAsync();
-            }
-        }
-
-        [Authorize(Roles = "Administrator,Profesor")]
-        private async Task VerifyIfResultExists(int? solutionId, int? batteryId)
+        private void VerifyIfResultExists(int? solutionId, int? batteryId)
         {
             var resultExistent = _context.Results
                                         .Where(s => s.BatteryId == batteryId && s.SolutionId == solutionId)
@@ -140,9 +128,10 @@ namespace MTACodersLicence.Controllers
             {
                 _context.Results.Remove(resultModel);
             }
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
         }
 
+        // se verifica outputu-ul cu cel dorit si daca respecta cerintele legate de timpul de executie si memoria consumata
         private void CalculatePerformance(SolutionModel solution)
         {
             float totalPointsGiven = 0;
@@ -174,11 +163,12 @@ namespace MTACodersLicence.Controllers
             _context.SaveChanges();
         }
 
+        // Verificarea unei solutii pe o baterie de teste
         [Authorize(Roles = "Administrator,Profesor")]
         private async Task RunBattery(SolutionModel solution, BatteryModel battery)
         {
             // Verificam daca exista deja rezultate pentru bateria si solutia data si daca exista le suprascriem
-            await VerifyIfResultExists(solution.Id, battery.Id);
+            VerifyIfResultExists(solution.Id, battery.Id);
             var result = new ResultModel
             {
                 SolutionId = solution.Id,
@@ -188,10 +178,20 @@ namespace MTACodersLicence.Controllers
             await _context.SaveChangesAsync();
             foreach (var test in battery.Tests)
             {
-                await RunTest(test, solution, result);
+                var testResult = CodeRunner.RunCode(solution.Code, test, solution.ProgrammingLanguage.LanguageCode);
+                testResult.ResultId = result.Id;
+                testResult.TestId = test.Id;
+                testResult.PointsGiven = test.ExpectedOutput.Equals(testResult.ResultedOutput) ? test.Points : 0;
+                if (testResult.ExecutionTime <= solution.Challenge.ExecutionTimeLimit && testResult.Memory <= solution.Challenge.MemoryLimit)
+                {
+                    // inserare in tabelul de rezultate ale testelor
+                    _context.TestResults.Add(testResult);
+                    _context.SaveChanges();
+                }
             }
         }
 
+        // verificarea unei solutii pe o baterie de teste la alegere
         [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> Run(int? id, int? batteryId)
         {
@@ -212,6 +212,7 @@ namespace MTACodersLicence.Controllers
 
         }
 
+        // Detaliile unui din utilizatorii care au trimis solutiile
         [Authorize(Roles = "Administrator,Profesor")]
         public IActionResult UserDetails(string userId)
         {
@@ -219,6 +220,11 @@ namespace MTACodersLicence.Controllers
             return View(user);
         }
 
+        /// <summary>
+        ///  Rezultatele solutiei pe bateriile de teste
+        /// </summary>
+        /// <param name="id">id-ul solutiei</param>
+        /// <param name="challengeId">id-ul problemei</param>
         [Authorize(Roles = "Administrator,Profesor")]
         public IActionResult Results(int? id, int? challengeId)
         {
@@ -236,6 +242,7 @@ namespace MTACodersLicence.Controllers
             return View(results);
         }
 
+        // Stergerea unui rezultat
         [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> DeleteResult(int? resultId)
         {
@@ -261,6 +268,7 @@ namespace MTACodersLicence.Controllers
             return RedirectToAction(nameof(Results), new { id = solutionId, challengeId });
         }
 
+        // Actiune de reverificare a tuturor solutiilor pe toate bateriile de teste
         [Authorize(Roles = "Administrator,Profesor")]
         public async Task<IActionResult> VerifyAll(int? challengeId)
         {
@@ -282,6 +290,8 @@ namespace MTACodersLicence.Controllers
             return RedirectToAction(nameof(Index), new { challengeId });
         }
 
+        // Actiune apelata in momentul in care se face un submit Code pentru a verica codul 
+        // si a-l putea redirectiona pe utilizator la clasamentul problemei
         public async Task<IActionResult> VerifySubmit(int id)
         {
             var solution = _context.Solutions
