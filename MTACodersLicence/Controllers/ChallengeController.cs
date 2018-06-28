@@ -129,7 +129,7 @@ namespace MTACodersLicence.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator,Profesor")]
-        public async Task<IActionResult> Create([Bind("Name,ShortDescription,Desciption,Tasks,Time,Hint,CodeTemplate,ContestId,ExecutionTimeLimit,MemoryLimit,Dificulty,AvailableForPractice")] ChallengeModel challengeModel)
+        public async Task<IActionResult> Create(ChallengeModel challengeModel)
         {
             try
             {

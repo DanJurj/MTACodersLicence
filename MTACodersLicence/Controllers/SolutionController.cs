@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -141,7 +142,20 @@ namespace MTACodersLicence.Controllers
                                                 .ThenInclude(s => s.Test);
             float totalMemoy = 0;
             decimal totalTime = 0;
-
+            if (results.Any())
+            {
+                solution.Verified = true;
+            }
+            else
+            {
+                solution.Verified = false;
+                solution.Score = 0;
+                solution.Grade = 0;
+                solution.ExecutionTime = 0;
+                solution.MemoryUsed = 0;
+                _context.SaveChanges();
+                return;
+            }
             foreach (var result in results)
             {
                 foreach (var testResult in result.TestResults)
@@ -151,10 +165,6 @@ namespace MTACodersLicence.Controllers
                     totalTime += testResult.ExecutionTime;
                     totalMemoy += testResult.Memory;
                 }
-            }
-            if (results.Any())
-            {
-                solution.Verified = true;
             }
             solution.Score = totalPointsGiven;
             solution.Grade = (totalPointsGiven / totalPointsAvailable) * 10;
@@ -181,7 +191,10 @@ namespace MTACodersLicence.Controllers
                 var testResult = CodeRunner.RunCode(solution.Code, test, solution.ProgrammingLanguage.LanguageCode);
                 testResult.ResultId = result.Id;
                 testResult.TestId = test.Id;
-                testResult.PointsGiven = test.ExpectedOutput.Equals(testResult.ResultedOutput) ? test.Points : 0;
+                var expectedOutput = test.ExpectedOutput.Replace("\r", "").Replace("\n", "").Replace("\t", "").Replace("\n", "").Replace(" ", "");
+                var resultedOutput = testResult.ResultedOutput.Replace("\r", "").Replace("\n", "").Replace("\t", "").Replace("\t", "").Replace("\n", "").Replace(" ", "");
+                var pointsGiven = expectedOutput.Equals(resultedOutput) ? test.Points : 0;
+                testResult.PointsGiven = pointsGiven;
                 if (testResult.ExecutionTime <= solution.Challenge.ExecutionTimeLimit && testResult.Memory <= solution.Challenge.MemoryLimit)
                 {
                     // inserare in tabelul de rezultate ale testelor
@@ -205,6 +218,7 @@ namespace MTACodersLicence.Controllers
                 .FirstOrDefaultAsync(m => m.Id == id);
             var battery = await _context.Batteries
                                         .Include(t => t.Tests)
+                                        .Include(s => s.Challenge)
                                         .FirstOrDefaultAsync(m => m.Id == batteryId);
             await RunBattery(solution, battery);
             CalculatePerformance(solution);
@@ -273,11 +287,13 @@ namespace MTACodersLicence.Controllers
         public async Task<IActionResult> VerifyAll(int? challengeId)
         {
             IList<SolutionModel> solutions = _context.Solutions
+                                                    .Include(s => s.ProgrammingLanguage)
                                                     .Where(s => s.ChallengeId == challengeId)
                                                     .ToList();
             IList<BatteryModel> batteries = _context.Batteries
                                                     .Where(s => s.ChallengeId == challengeId)
                                                     .Include(s => s.Tests)
+                                                    .Include(s => s.Challenge)
                                                     .ToList();
             foreach (var solution in solutions)
             {
@@ -316,7 +332,10 @@ namespace MTACodersLicence.Controllers
                     var testResult = CodeRunner.RunCode(solution.Code, test, solution.ProgrammingLanguage.LanguageCode);
                     testResult.ResultId = result.Id;
                     testResult.TestId = test.Id;
-                    var pointsGiven = test.ExpectedOutput.Equals(testResult.ResultedOutput) ? test.Points : 0;
+                    // eliminam caracterele de editare a output-ului
+                    var expectedOutput = test.ExpectedOutput.Replace("\r", "").Replace("\n", "").Replace("\t", "").Replace("\n", "").Replace(" ", "");
+                    var resultedOutput = testResult.ResultedOutput.Replace("\r", "").Replace("\n", "").Replace("\t", "").Replace("\t", "").Replace("\n", "").Replace(" ", "");
+                    var pointsGiven = expectedOutput.Equals(resultedOutput) ? test.Points : 0;
                     // primeste punctele doar daca respecta cerintele de performanta
                     if (pointsGiven > 0)
                         if (testResult.ExecutionTime <= solution.Challenge.ExecutionTimeLimit && testResult.Memory <= solution.Challenge.MemoryLimit)

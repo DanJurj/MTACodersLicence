@@ -24,5 +24,6 @@ namespace MTACodersLicence.Models
 
         public ICollection<GroupMemberModel> Groups { get; set; }
         public ICollection<ChallengeModel> Challenges { get; set; }
+        public ICollection<ContestModel> Contests { get; set; }
     }
 }

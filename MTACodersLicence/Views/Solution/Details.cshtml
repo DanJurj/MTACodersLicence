@@ -68,9 +68,6 @@
                     <th>
                         @Html.DisplayNameFor(model => model.Challenge.Batteries.FirstOrDefault().Tests)
                     </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Challenge.Batteries.FirstOrDefault().IsPublic)
-                    </th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -90,15 +87,6 @@
                             else
                             {
                                 <td>0</td>
-                            }
-
-                            @if (battery.IsPublic)
-                            {
-                                <td>Yes</td>
-                            }
-                            else
-                            {
-                                <td>No</td>
                             }
                             <td>
                                 <a asp-action="Run" asp-route-id=@Model.Id asp-route-batteryId=@battery.Id class="btn btn-success" onclick="showLoading();">Run tests</a>

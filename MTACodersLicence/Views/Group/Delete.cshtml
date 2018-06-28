@@ -30,12 +30,12 @@
             </dd>
         }
         <dt>
-            @Html.DisplayNameFor(model => model.Challenges)
+            @Html.DisplayNameFor(model => model.Contests)
         </dt>
-        @foreach (var challenge in Model.Challenges)
+        @foreach (var challenge in Model.Contests)
         {
             <dd>
-                @challenge.Challenge.Name
+                @challenge.Contest.Name
             </dd>
         }
     </dl>

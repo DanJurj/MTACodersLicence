@@ -16,7 +16,7 @@ namespace MTACodersLicence.Models
         public int Duration { get; set; }  //minutes
 
         [Display(Name = "Starts on:")]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime StartDate { get; set; }
 
         public bool Active { get; set; }

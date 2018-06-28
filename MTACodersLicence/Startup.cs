@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -68,6 +70,8 @@ namespace MTACodersLicence
                     .RequireAuthenticatedUser()
                     .Build();
                 config.Filters.Add(new AuthorizeFilter(policy));
+                config.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());    // auto-validare token anti-forgery. Protectie impotriva CSRF
+                config.Filters.Add(new RequireHttpsAttribute());    // restrictie sa ruleze doar pe HTTPS
             });
         }
 
@@ -84,6 +88,23 @@ namespace MTACodersLicence
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers.Add("X-Frame-Options", "SAMEORIGIN");  // protectie impotriva atacurilor de tip Clickjack
+                await next();
+            });
+
+            app.UseForwardedHeaders(new ForwardedHeadersOptions()
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto    // forwardare http la https
+            });
+            
+            app.UseHsts(options => options.MaxAge(days: 365).IncludeSubdomains());   // fortam sa ruleze doar pe https
+
+            app.UseXXssProtection(options => options.EnabledWithBlockMode());   // header de protectie impotriva atacurilor de tip XSS
+
+            app.UseXContentTypeOptions();
 
             app.UseStaticFiles();
 

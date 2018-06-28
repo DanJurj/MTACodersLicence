@@ -140,7 +140,12 @@ namespace MTACodersLicence.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var applicationUser = await _context.ApplicationUser.SingleOrDefaultAsync(m => m.Id == id);
+            var applicationUser = await _context.ApplicationUser
+                .Include(s => s.Contests)
+                .Include(s => s.Challenges)
+                    .ThenInclude(s => s.Solutions)
+                .Include(s=>s.Challenges).ThenInclude(s=>s.Batteries).ThenInclude(s=>s.Tests)
+                .SingleOrDefaultAsync(m => m.Id == id);
             _context.ApplicationUser.Remove(applicationUser);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

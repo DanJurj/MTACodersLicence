@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -49,7 +50,7 @@ namespace MTACodersLicence.Controllers
             {
                 _context.Add(testModel);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index), new {batteryId = testModel.BatteryId});
+                return RedirectToAction(nameof(Index), new { batteryId = testModel.BatteryId });
             }
             return View(testModel);
         }
@@ -96,7 +97,7 @@ namespace MTACodersLicence.Controllers
                     }
                     throw;
                 }
-                return RedirectToAction(nameof(Index), new {batteryId = testModel.BatteryId});
+                return RedirectToAction(nameof(Index), new { batteryId = testModel.BatteryId });
             }
             ViewData["BatteryId"] = new SelectList(_context.Batteries, "Id", "Id", testModel.BatteryId);
             return View(testModel);
@@ -129,7 +130,7 @@ namespace MTACodersLicence.Controllers
             var testModel = await _context.Tests.SingleOrDefaultAsync(m => m.Id == id);
             _context.Tests.Remove(testModel);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index), new {batteryId = testModel.BatteryId});
+            return RedirectToAction(nameof(Index), new { batteryId = testModel.BatteryId });
         }
 
         private bool TestModelExists(int id)
